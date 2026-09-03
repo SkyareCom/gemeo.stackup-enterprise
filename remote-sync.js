@@ -6,13 +6,17 @@
 
   const applyGlobalFont=()=>{
     if(document.querySelector('link[data-stackup-global-font]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='font-global.css?v=8b7bb48f';link.dataset.stackupGlobalFont='1';(document.head||document.documentElement).appendChild(link);
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='font-global.css?v=99da1bd9';
+    link.dataset.stackupGlobalFont='1';
+    (document.head||document.documentElement).appendChild(link);
   };
   applyGlobalFont();
 
   const applyOperationalUiStandard=()=>{
     const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
-    const excluded=page==='index.html'||page==='login.html'||page==='players.html'||page.startsWith('cast-')||page.startsWith('broadcast')||page.startsWith('layout-');
+    const excluded=page==='index.html'||page==='login.html'||page==='players.html'||page.startsWith('cast-');
     if(excluded||document.querySelector('link[data-stackup-ui-standard]'))return;
     const link=document.createElement('link');
     link.rel='stylesheet';
@@ -38,7 +42,7 @@
     const s=JSON.parse(JSON.stringify(state));
     ['staffUsers','staffContacts','staffAlerts','auditLog','messageQueue','messageLog','botCommands','paymentIntents','walletTransactions','validationLog','rankings','loyaltyAccounts','campaigns','playerCommunications','cashTables','cashSessions','cashTransactions','authPeople','authClubs','authMemberships'].forEach(k=>delete s[k]);
     s.players=(s.players||[]).map(p=>({id:p.id,name:p.name,status:p.status,seatedAt:p.seatedAt,table:p.table,seat:p.seat}));
-    s.transactions=(s.transactions||[]).map(t=>({eventId:t.eventId,type:t.type,status:t.status,itemCode:t.itemCode,payment:t.payment?{reference:t.payment.reference}:undefined,breakdown:t.breakdown?{prize:t.breakdown.prize}:undefined,value:t.value}));
+    s.transactions=(s.transactions||[]).map(t=>({eventId:t.eventId,type:t.type,status:t.status,itemCode:t.itemCode,breakdown:t.breakdown?{prize:t.breakdown.prize}:undefined,value:t.value}));
     s.seatCheckins=(s.seatCheckins||[]).map(x=>({eventId:x.eventId,playerId:x.playerId,status:x.status}));
     return s;
   };
@@ -55,8 +59,8 @@
 
   const publish=()=>{
     if(isViewer||!room)return;
-    const snapshot=publicState();if(!snapshot)return;
-    send('state_snapshot',{state:snapshot});
+    const snapshot=publicState();
+    if(snapshot)send('state_snapshot',{state:snapshot});
   };
 
   const applyRemote=payload=>{
@@ -82,7 +86,10 @@
     if(existing){existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});return}
     const s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-    s.async=true;s.dataset.stackupSupabase='1';s.onload=resolve;s.onerror=reject;
+    s.async=true;
+    s.dataset.stackupSupabase='1';
+    s.onload=resolve;
+    s.onerror=reject;
     (document.head||document.documentElement).appendChild(s);
   });
 
@@ -97,7 +104,8 @@
       channel.on('broadcast',{event:'request_state'},()=>{if(!isViewer)publish()});
       channel.subscribe(status=>{
         if(status==='SUBSCRIBED'){
-          emitStatus('connected');patchSave();
+          emitStatus('connected');
+          patchSave();
           if(isViewer)send('request_state',{});else publish();
           clearInterval(heartbeat);
           heartbeat=setInterval(()=>{if(isViewer)send('request_state',{});else publish()},3000);
@@ -109,5 +117,6 @@
   function newRoom(){const next=randomRoom();localStorage.setItem(ROOM_KEY,next);return next}
   function viewerUrl(file='cast-10px.html'){const base=new URL(file,location.href);base.searchParams.set('room',room);base.searchParams.set('role','viewer');return base.toString()}
   window.StackupRemoteSync={room:()=>room,role:()=>isViewer?'viewer':'manager',connected:()=>connected,publish,newRoom,viewerUrl,reconnect:connect};
-  patchSave();connect();
+  patchSave();
+  connect();
 })();
