@@ -21,10 +21,13 @@ jobs:
       - name: Clone integrated source snapshot
         run: |
           git clone --depth 1 https://github.com/SkyareCom/stackup.holdem.enterprise.git /tmp/stackup-source
-          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          rsync -a --exclude='.git' /tmp/stackup-source/ ./
+          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name .github -exec rm -rf {} +
+          mkdir -p .github/workflows
+          find .github -mindepth 1 -maxdepth 1 ! -name workflows -exec rm -rf {} +
+          find .github/workflows -mindepth 1 -maxdepth 1 ! -name import-source.yml -exec rm -rf {} +
+          rsync -a --exclude='.git' --exclude='.github/workflows/' /tmp/stackup-source/ ./
 
-      - name: Commit exact source contents
+      - name: Commit source contents
         run: |
           git config user.name 'SkyareCom Clone Bot'
           git config user.email 'actions@users.noreply.github.com'
