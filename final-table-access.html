@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ACESSO À FT</title>
+<link rel="stylesheet" href="app-theme.css">
+<style>
+body{margin:0;background:#020302;color:#fff}.app{max-width:980px;margin:auto;padding:18px}.ey{color:#8DFC3B;letter-spacing:.14em}.title{margin:4px 0 24px}.section{color:#8DFC3B;letter-spacing:.14em;margin:16px 2px 7px}.label{color:#AEB8B1;margin:0 0 7px}.approvalCard{display:grid;gap:8px;margin-top:8px}.infoCard{width:100%!important;height:44px!important;min-height:44px!important;padding:10px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;box-sizing:border-box!important}.infoLabel{color:#AEB8B1!important;line-height:1!important;white-space:nowrap}.infoValue{color:#fff!important;font-weight:400!important;line-height:1!important;margin-left:auto!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}.actions button{width:100%!important;min-height:44px!important;border-radius:9px!important}.status{margin-top:8px;color:#AEB8B1;min-height:18px}.empty{color:#AEB8B1;padding:12px 0}.activeText{color:#8DFC3B!important}@media(max-width:700px){.actions{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="ey">STACKUP HOLD'EM ENTERPRISE</div>
+<h1 class="title">ACESSO À FT</h1>
+<div class="section">AUTORIZAÇÃO</div>
+<div class="approvalCard"><div class="infoCard"><span class="infoLabel">RESPONSÁVEL</span><span id="managerName" class="infoValue"></span></div><div class="infoCard"><span class="infoLabel">AMBIENTE</span><span id="managerClub" class="infoValue"></span></div><div class="infoCard"><span class="infoLabel">FUNÇÃO</span><span id="managerRole" class="infoValue"></span></div></div>
+<div id="requestWrap">
+  <div id="emptyState" class="empty"></div>
+  <div id="approvalCard" class="approvalCard">
+    <div class="infoCard"><span class="infoLabel">STATUS</span><span id="accessStatus" class="infoValue"></span></div>
+    <div class="infoCard"><span class="infoLabel">DEALER</span><span id="dealerName" class="infoValue"></span></div>
+    <div class="infoCard"><span class="infoLabel">CPF</span><span id="dealerCpf" class="infoValue"></span></div>
+    <div class="infoCard"><span class="infoLabel">MESA</span><span id="tableNumber" class="infoValue"></span></div>
+    <div class="infoCard"><span class="infoLabel">SOLICITADO</span><span id="requestedAt" class="infoValue"></span></div>
+    <div class="infoCard"><span class="infoLabel">APARELHO</span><span id="deviceId" class="infoValue"></span></div>
+    <div class="infoCard"><span class="infoLabel">AUTORIZADO POR</span><span id="approvedBy" class="infoValue"></span></div>
+  </div>
+  <div id="actions" class="actions"><button id="approveBtn" class="primary" type="button">LIBERAR ACESSO</button><button id="rejectBtn" type="button">RECUSAR ACESSO</button></div>
+  <div id="result" class="status"></div>
+</div>
+</main>
+<script src="shared.js"></script><script src="auth-engine.js"></script><script>StackupAuth.guard()</script><script src="final-table-hands.js"></script>
+<script>
+function selectedManager(){return StackupAuth.staffForSession()}
+function maskCpf(v){const d=String(v||'').replace(/\D/g,'');if(d.length<4)return'';return`***.***.***-${d.slice(-2)}`}
+function fmt(ts){return ts?new Date(ts).toLocaleString('pt-BR'):''}
+function shortDevice(v){const s=String(v||'');return s.length>20?s.slice(0,10)+'...'+s.slice(-6):s}
+function statusText(a){if(a.status==='PENDING')return'AGUARDANDO LIBERAÇÃO';if(a.status==='APPROVED')return'ACESSO ATIVO';if(a.status==='REJECTED')return'ACESSO RECUSADO';if(a.status==='RELEASED')return'SESSÃO ENCERRADA';return'SEM SOLICITAÇÃO'}
+function render(){const session=StackupAuth.current(),staff=selectedManager();managerName.textContent=session?.personName||staff?.name||'';managerClub.textContent=session?.clubName||'';managerRole.textContent=session?.role||staff?.role||'';const allowed=['OWNER','TD','FLOOR','GESTOR'].includes(staff?.role);const a=FinalTableHands.access(),has=a&&a.status&&a.status!=='IDLE';approvalCard.style.display=has?'grid':'none';actions.style.display=a.status==='PENDING'&&allowed?'grid':'none';emptyState.textContent=has?'':allowed?'NENHUMA SOLICITAÇÃO DE ACESSO À FINAL TABLE.':'ESTE PERFIL NÃO POSSUI PERMISSÃO PARA AUTORIZAR A FINAL TABLE.';if(!has)return;accessStatus.textContent=statusText(a);accessStatus.classList.toggle('activeText',a.status==='APPROVED');dealerName.textContent=a.dealerName||'';dealerCpf.textContent=maskCpf(a.dealerCpf);tableNumber.textContent=a.table?`MESA ${a.table}`:'';requestedAt.textContent=fmt(a.requestedAt);deviceId.textContent=shortDevice(a.deviceId);approvedBy.textContent=a.approvedByName||''}
+approveBtn.onclick=()=>{const r=FinalTableHands.approve({staff:selectedManager()});result.textContent=r.ok?`ACESSO LIBERADO PARA ${r.access.dealerName} • MESA ${r.access.table}.`:(r.error||'NÃO FOI POSSÍVEL LIBERAR O ACESSO.');render()}
+rejectBtn.onclick=()=>{const r=FinalTableHands.reject({staff:selectedManager()});result.textContent=r.ok?'ACESSO À FINAL TABLE RECUSADO.':(r.error||'NÃO FOI POSSÍVEL RECUSAR O ACESSO.');render()}
+window.onPokerStateChange=render;FinalTableHands.ensure();render();
+</script>
+</body>
+</html>

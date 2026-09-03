@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Cantarell:wght@400;600&display=swap');
+
+:root{
+  --su-bg:#020302;
+  --su-green:#8DFC3B;
+  --su-white:#FFFFFF;
+  --su-field:#060907;
+  --su-card-top:#0B100D;
+  --su-card-bottom:#060907;
+  --su-border:#27342D;
+  --su-secondary:#AEB8B1;
+  --su-description:#9CA69F;
+  --su-radius:9px;
+  --su-gap:8px;
+  --su-section-gap:18px;
+  --su-control-h:44px;
+  --su-page:980px;
+}
+
+/* PADRÃO VISUAL OFICIAL — STAFF / JOGADORES */
+html,body{background:var(--su-bg)!important;color:var(--su-white)!important}
+body,body *,button,input,select,textarea,option{font-family:'Cantarell',Arial,sans-serif!important;font-style:normal!important;text-transform:uppercase!important}
+body{font-size:12px!important;font-weight:400!important}
+
+/* SHELL DIRETO NO FUNDO — SEM BORDA ESTRUTURAL */
+main.app,main.wrap,.app,.wrap,.container,.shell,.page,.page-shell,.app-shell,.content-shell,.layout-shell,.screen-shell,.section-shell,.section-wrap,.panel-shell,.panel-wrap,.form-shell,.form-wrap{
+  width:100%!important;max-width:var(--su-page)!important;margin-left:auto!important;margin-right:auto!important;
+  background:transparent!important;border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important;
+}
+main.app,main.wrap,.app,.wrap{padding:18px!important}
+main.app>.card:not(a):not(button),main.wrap>.card:not(a):not(button),main.app>.panel:not(a):not(button),main.wrap>.panel:not(a):not(button){
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;
+}
+
+/* TIPOGRAFIA */
+h1,.page-title,.hero-title,.display-title{font-size:20px!important;font-weight:600!important;line-height:1.25!important;color:var(--su-white)!important}
+h2,.title,.card-title{font-size:16px!important;font-weight:600!important;line-height:1.25!important}
+h3,.section,.section-title,.subtitle{font-size:14px!important;font-weight:600!important;line-height:1.3!important}
+p,span,a,label,li,td,th,small,.meta,.desc,.description,input,select,textarea,button,.btn,.button,.badge,.tag{font-size:12px!important}
+.ey,.section,.section-title,.tag{color:var(--su-green)!important;font-weight:600!important;letter-spacing:.14em!important}
+.meta,.label,.secondary{color:var(--su-secondary)!important}.desc,.description{color:var(--su-description)!important}
+
+/* RITMO E ESPAÇAMENTOS */
+.grid,.grid2,.grid3,.grid4,.grid5,.fullGrid,.filters,.checks,.actions,.cards,.items,.payGrid,.idGrid,.tables,.tableList,.rebuyList{gap:var(--su-gap)!important}
+.section,.section-title{margin-top:var(--su-section-gap)!important;margin-bottom:var(--su-gap)!important}
+.block,.list,.history,.statusLine,.meta{margin-top:var(--su-gap)!important}
+main.app>*+*,main.wrap>*+*{margin-top:var(--su-gap)!important}
+main.app>.section,main.wrap>.section,main.app>.section-title,main.wrap>.section-title{margin-top:var(--su-section-gap)!important}
+.top+h1,.top .ey+h1,.ey+h1,.ey+.title{margin-top:5px!important}
+
+/* CAMPOS E CONTROLES SEMELHANTES */
+input:not([type='checkbox']):not([type='radio']),select,textarea,button,.btn,.button,a.btn,a.button,[role='button']{
+  min-height:var(--su-control-h)!important;border-radius:var(--su-radius)!important;box-sizing:border-box!important;
+}
+input:not([type='checkbox']):not([type='radio']),select,textarea{
+  width:100%!important;padding:10px!important;background:var(--su-field)!important;color:var(--su-white)!important;border:1px solid var(--su-border)!important;box-shadow:none!important;outline:none!important;
+}
+input::placeholder,textarea::placeholder{color:var(--su-secondary)!important;opacity:1!important}
+input:focus,select:focus,textarea:focus{border-color:var(--su-green)!important}
+button,.btn,.button,a.btn,a.button,[role='button']{
+  padding:10px 12px!important;background:var(--su-field)!important;color:var(--su-green)!important;border:1px solid var(--su-green)!important;box-shadow:none!important;font-weight:600!important;text-align:center!important;text-decoration:none!important;
+}
+button.primary,.primary{background:var(--su-green)!important;color:var(--su-bg)!important;border-color:var(--su-green)!important}
+
+/* BORDAS SOMENTE EM CONTEÚDO FUNCIONAL */
+.infoField,.metric,.idCard,.tableCard,.playerCard,.historyRow .badge,.check,.tile,[class$='-card']{
+  border-color:var(--su-border)!important;box-shadow:none!important;
+}
+.infoField,.metric,.idCard,.tableCard,.playerCard,.check,.tile,[class$='-card']{
+  border-radius:var(--su-radius)!important;
+}
+.historyRow,.listRow,.balancingMove{border-left:0!important;border-right:0!important;border-top:0!important}
+
+/* NÃO CRIAR BORDA EXTERNA EM AGRUPADORES */
+form,fieldset,section,article,aside,.content,.content-wrap,.group,.group-wrap,.fields,.fields-wrap,.controls,.controls-wrap{
+  box-shadow:none!important;outline:none!important;
+}
+fieldset{border:0!important;padding:0!important;margin:0!important}
+
+@media(max-width:700px){
+  main.app,main.wrap,.app,.wrap,.container,.shell,.page,.page-shell,.app-shell,.content-shell{max-width:100%!important;padding-left:12px!important;padding-right:12px!important}
+  .grid,.grid2,.grid3,.grid4,.grid5,.fullGrid,.filters,.tableList{grid-template-columns:minmax(0,1fr)!important}
+  .actions{grid-template-columns:minmax(0,1fr)!important;display:grid!important}
+}
