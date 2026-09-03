@@ -4,13 +4,19 @@
   const ROOM_KEY='stackup-cast-room-v1';
   const DEVICE_KEY='stackup-cast-device-v1';
 
+  const applyGlobalFont=()=>{
+    if(document.querySelector('link[data-stackup-global-font]'))return;
+    const link=document.createElement('link');link.rel='stylesheet';link.href='font-global.css?v=8b7bb48f';link.dataset.stackupGlobalFont='1';(document.head||document.documentElement).appendChild(link);
+  };
+  applyGlobalFont();
+
   const applyOperationalUiStandard=()=>{
     const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
     const excluded=page==='index.html'||page==='login.html'||page==='players.html'||page.startsWith('cast-')||page.startsWith('broadcast')||page.startsWith('layout-');
     if(excluded||document.querySelector('link[data-stackup-ui-standard]'))return;
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='ui-standard.css?v=ff3eab00';
+    link.href='ui-standard.css?v=c3942be';
     link.dataset.stackupUiStandard='1';
     (document.head||document.documentElement).appendChild(link);
   };
