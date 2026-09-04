@@ -70,8 +70,10 @@
 (function(){
   if(typeof document==='undefined'||typeof location==='undefined')return;
   const page=(location.pathname.split('/').pop()||'').toLowerCase();
-  const loadDealerUi=()=>{if(page!=='dealer.html'||document.querySelector('script[data-final-table-dealer-ui]'))return;const ui=document.createElement('script');ui.src='final-table-dealer.js?v=1f97ba648605b50d58805397732b73332d18f2ee';ui.dataset.finalTableDealerUi='1';document.head.appendChild(ui)};
+  const loadScript=(src,key,onload)=>{if(document.querySelector(`script[data-stackup-loader="${key}"]`)){onload?.();return}const s=document.createElement('script');s.src=src;s.dataset.stackupLoader=key;if(onload)s.onload=onload;document.head.appendChild(s)};
+  const loadDealerRequests=()=>{if(page==='dealer.html')loadScript('dealer-requests.js?v=9ada5b8','dealer-requests')};
+  const loadDealerUi=()=>{if(page!=='dealer.html')return;loadScript('final-table-dealer.js?v=1f97ba648605b50d58805397732b73332d18f2ee','final-table-dealer-ui')};
+  loadScript('request-center.js?v=cbfa36a','request-center',loadDealerRequests);
   if(window.FinalTableHands){window.FinalTableHands.ensure?.();loadDealerUi();return}
-  if(document.querySelector('script[data-final-table-hands-loader]'))return;
-  const hands=document.createElement('script');hands.src='final-table-hands.js?v=3e03cb3333f16dbdb5735343fb47edd2c2853454';hands.dataset.finalTableHandsLoader='1';hands.onload=()=>{window.FinalTableHands?.ensure?.();loadDealerUi()};document.head.appendChild(hands);
+  loadScript('final-table-hands.js?v=3e03cb3333f16dbdb5735343fb47edd2c2853454','final-table-hands',()=>{window.FinalTableHands?.ensure?.();loadDealerUi()});
 })();
