@@ -14,6 +14,20 @@ for(const file of ['index.html','login.html']){
   assert(`${file}: limpeza auth após engine`,auth>=0&&cleanup>auth);
 }
 
+for(const file of ['checkin.html','players.html','players-directory.html','staff.html','dealer.html','tournament-close.html','tournament-manager.html','tournament-settings.html']){
+  const html=fs.readFileSync(file,'utf8');
+  assert(`${file}: carrega auth-engine`,html.includes('auth-engine.js'));
+  assert(`${file}: aplica guard de autenticação`,html.includes('StackupAuth.guard()'));
+}
+const movements=fs.readFileSync('players.html','utf8');
+assert('movimentações não usa TD sintético como operador',!movements.includes("id:'MOVEMENTS_PANEL',name:'MOVEMENTS PANEL',role:'TD'"));
+assert('movimentações obtém staff da sessão',movements.includes('StackupAuth.staffForSession()'));
+const close=fs.readFileSync('tournament-close.html','utf8');
+assert('fechamento obtém responsável da sessão',close.includes('SESSION_STAFF=StackupAuth.staffForSession()'));
+assert('fechamento não permite escolher outro responsável',close.includes('id="staff" disabled'));
+const directory=fs.readFileSync('players-directory.html','utf8');
+assert('cadastro geral integra documento IA',directory.includes('smart-registration.html?return=players-directory.html'));
+
 const sharedSource=fs.readFileSync('shared.js','utf8');
 for(const legacy of ['MAIN EVENT - ETAPA 4','event-main-4','clubName:"POKER CLUB"','guaranteed:150000','startingStack:30000','buyin:500,fee:50']){
   assert(`shared sem dado demonstrativo: ${legacy}`,!sharedSource.includes(legacy));
