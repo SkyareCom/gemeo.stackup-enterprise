@@ -13,7 +13,7 @@ html:root body option{
   letter-spacing:1px!important;
 }
 
-/* ESCALA GLOBAL +100% SOBRE O PADRÃO ATUAL DO APP */
+/* ESCALA GLOBAL: -40% SOBRE A ESCALA AMPLIADA ANTERIOR */
 html:root body,
 html:root body p,
 html:root body span,
@@ -37,7 +37,7 @@ html:root body .label,
 html:root body .value,
 html:root body .badge,
 html:root body .primary{
-  font-size:24px!important;
+  font-size:14.4px!important;
 }
 
 html:root body h1,
@@ -45,24 +45,24 @@ html:root body .page-title,
 html:root body .hero-title,
 html:root body .display-title,
 html:root body .brand{
-  font-size:40px!important;
+  font-size:24px!important;
 }
 
 html:root body h2,
 html:root body .title,
 html:root body .card-title,
 html:root body .sub{
-  font-size:32px!important;
+  font-size:19.2px!important;
 }
 
 html:root body h3,
 html:root body .section,
 html:root body .section-title,
 html:root body .subtitle{
-  font-size:28px!important;
+  font-size:16.8px!important;
 }
 
-html:root body .name{font-size:36px!important}
-html:root body .tag{font-size:22px!important}
-html:root body .ey{font-size:24px!important}
-html:root body .status{font-size:24px!important}
+html:root body .name{font-size:21.6px!important}
+html:root body .tag{font-size:13.2px!important}
+html:root body .ey{font-size:14.4px!important}
+html:root body .status{font-size:14.4px!important}
