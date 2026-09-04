@@ -26,3 +26,5 @@ jobs:
         run: node tests/production-readiness.js
       - name: Run in-app drawer audit
         run: node tests/in-app-drawer-audit.js
+      - name: Run secondary screen audit
+        run: node tests/secondary-screen-audit.js
