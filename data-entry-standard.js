@@ -3,7 +3,7 @@
   const $=id=>document.getElementById(id);
   const lock=(els,on=true)=>els.filter(Boolean).forEach(el=>{if(el.tagName==='SELECT'||el.type==='checkbox')el.disabled=on;else el.readOnly=on});
   const addConfirm=(anchor,id,label='CONFIRMAR')=>{if(!anchor||$(id))return null;const b=document.createElement('button');b.type='button';b.id=id;b.className='primary';b.textContent=label;b.style.marginTop='8px';anchor.insertAdjacentElement('afterend',b);return b};
-  const loadInlineLists=()=>{if(document.querySelector('script[data-stackup-inline-lists]'))return;const s=document.createElement('script');s.src='in-app-lists.js?v=82d1d75221517915f988a62ba0208af0c80bb3bd';s.defer=true;s.dataset.stackupInlineLists='1';(document.head||document.documentElement).appendChild(s)};
+  const loadInlineLists=()=>{if(document.querySelector('script[data-stackup-inline-lists]'))return;const s=document.createElement('script');s.src='in-app-lists.js?v=eb0555e9e38382ce0d685a19cad86b2ca80923e4';s.defer=true;s.dataset.stackupInlineLists='1';(document.head||document.documentElement).appendChild(s)};
 
   function setup(){
     if(page!=='setup.html')return;
