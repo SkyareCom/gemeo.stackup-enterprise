@@ -8,8 +8,18 @@ for(const file of ['index.html','login.html']){
   const html=fs.readFileSync(file,'utf8');
   const prod=html.indexOf('production-init.js');
   const shared=html.indexOf('shared.js');
+  const auth=html.indexOf('auth-engine.js');
+  const cleanup=html.indexOf('production-auth-cleanup.js');
   assert(`${file}: production-init antes de shared`,prod>=0&&shared>=0&&prod<shared);
+  assert(`${file}: limpeza auth após engine`,auth>=0&&cleanup>auth);
 }
+
+const sharedSource=fs.readFileSync('shared.js','utf8');
+for(const legacy of ['MAIN EVENT - ETAPA 4','event-main-4','clubName:"POKER CLUB"','guaranteed:150000','startingStack:30000','buyin:500,fee:50']){
+  assert(`shared sem dado demonstrativo: ${legacy}`,!sharedSource.includes(legacy));
+}
+assert('shared inicia relógio zerado',/remaining:0,elapsed:0/.test(sharedSource));
+assert('shared inicia operação sem torneio',/eventId:"",operator:"",tournamentName:"",clubName:""/.test(sharedSource));
 
 const storage=new Map([
   ['poker-club-state-v4',JSON.stringify({tournamentName:'MAIN EVENT - ETAPA 4',remaining:1200,elapsed:777,players:[{id:'test'}],transactions:[{id:'tx-test'}]})],
