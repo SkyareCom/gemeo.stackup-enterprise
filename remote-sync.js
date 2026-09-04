@@ -17,10 +17,10 @@
   applyGlobalFont();
 
   const applyGlobalTypography=()=>{
-    if(page.startsWith('cast-')||document.querySelector('link[data-stackup-global-typography]'))return;
+    if(document.querySelector('link[data-stackup-global-typography]'))return;
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='typography-global.css?v=20260904-1';
+    link.href=page.startsWith('cast-')?'cast-scale.css?v=20260904-1':'typography-global.css?v=20260904-1';
     link.dataset.stackupGlobalTypography='1';
     (document.head||document.documentElement).appendChild(link);
   };
