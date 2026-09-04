@@ -13,14 +13,20 @@
       .structureSelectCheck:checked{background:#8DFC3B!important;box-shadow:inset 0 0 0 4px #060907!important}
       #selectedStructureName{margin:10px 0 2px!important;padding:10px 12px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;color:#fff!important;font-weight:600!important}
       #selectedStructureName b{color:#8DFC3B!important;font-weight:600!important}
-      #finalTableModeSettings{margin:12px 0 4px!important}
+      #finalTableModeSettings{margin:14px 0 4px!important}
       #finalTableModeSettings .ftModeTitle{color:#8DFC3B!important;letter-spacing:.14em!important;margin:0 2px 7px!important}
+      #finalTableModeSettings .ftModeHint{color:#AEB8B1!important;font-size:12px!important;line-height:1.45!important;margin:0 2px 8px!important}
       #finalTableModeSettings .ftModeGrid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
       #finalTableModeSettings .ftModeOption{display:grid!important;grid-template-columns:24px minmax(0,1fr)!important;align-items:center!important;gap:10px!important;width:100%!important;min-height:48px!important;padding:10px 12px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;color:#fff!important;text-align:left!important}
       #finalTableModeSettings .ftModeSquare{width:20px!important;height:20px!important;min-width:20px!important;border:2px solid #8DFC3B!important;border-radius:4px!important;background:#060907!important;box-sizing:border-box!important}
       #finalTableModeSettings .ftModeOption.active .ftModeSquare{background:#8DFC3B!important;box-shadow:inset 0 0 0 4px #060907!important}
       #finalTableModeSettings .ftModeOption.active{border-color:#8DFC3B!important}
       #finalTableModeSettings .ftModeText{display:block!important;color:#fff!important;line-height:1.35!important}
+      #finalTableModeSettings .ftManualConfig{display:grid!important;grid-template-columns:minmax(0,1fr) 110px!important;gap:8px!important;align-items:center!important;margin-top:8px!important;padding:10px 12px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important}
+      #finalTableModeSettings .ftManualConfig.hidden{display:none!important}
+      #finalTableModeSettings .ftManualLabel{color:#AEB8B1!important;font-size:12px!important;line-height:1.35!important}
+      #finalTableModeSettings .ftManualConfig input{width:100%!important;height:44px!important;min-height:44px!important;text-align:center!important}
+      #finalTableModeSettings .ftContinuity{margin-top:8px!important;color:#8DFC3B!important;font-size:12px!important;line-height:1.45!important}
       @media(max-width:700px){#historyList .historyItem{grid-template-columns:28px minmax(0,1fr)!important}#historyList .historyActions{grid-column:2!important}}
     `;
     document.head.appendChild(style);
@@ -40,7 +46,9 @@
 
   const ensureFinalTableMode=()=>{
     if(!['TIMER','MANUAL'].includes(state.finalTableStructureMode))state.finalTableStructureMode='TIMER';
-    state.finalTableMode=state.finalTableStructureMode==='MANUAL'?'HANDS':'TIMER';
+    if(!Number.isFinite(+state.finalTableHandsPerLevel)||+state.finalTableHandsPerLevel<=0)state.finalTableHandsPerLevel=10;
+    state.finalTableHandsPerLevel=Math.max(1,Math.floor(+state.finalTableHandsPerLevel||10));
+    if(!state.finalTableManualActive)state.finalTableMode='TIMER';
   };
 
   const finalTableModeSettings=()=>{
@@ -50,15 +58,20 @@
     if(!menu)return null;
     box=document.createElement('div');
     box.id='finalTableModeSettings';
-    box.innerHTML=`<div class="ftModeTitle">MESA FINAL</div><div class="ftModeGrid"><button type="button" class="ftModeOption" data-ft-mode="TIMER"><span class="ftModeSquare" aria-hidden="true"></span><span class="ftModeText">MESA FINAL COM TEMPORIZADOR (SEGUE A ESTRUTURA NA SEQUÊNCIA)</span></button><button type="button" class="ftModeOption" data-ft-mode="MANUAL"><span class="ftModeSquare" aria-hidden="true"></span><span class="ftModeText">MESA FINAL COM SISTEMA MANUAL (ALTERA PARA ESTRUTURA MANUAL)</span></button></div>`;
+    box.innerHTML=`<div class="ftModeTitle">MESA FINAL</div><div class="ftModeHint">A MESA FINAL USA A MESMA ESTRUTURA, O MESMO NÍVEL E TODO O HISTÓRICO DO TORNEIO. A CONFIGURAÇÃO ABAIXO DEFINE APENAS COMO O PRÓXIMO NÍVEL SERÁ ACIONADO QUANDO A FT COMEÇAR.</div><div class="ftModeGrid"><button type="button" class="ftModeOption" data-ft-mode="TIMER"><span class="ftModeSquare" aria-hidden="true"></span><span class="ftModeText">MESA FINAL COM TEMPORIZADOR — CONTINUA A ESTRUTURA E A CONTAGEM DE TEMPO NORMALMENTE, SEM CHECK IN ESPECÍFICO.</span></button><button type="button" class="ftModeOption" data-ft-mode="MANUAL"><span class="ftModeSquare" aria-hidden="true"></span><span class="ftModeText">MESA FINAL COM SISTEMA MANUAL — O CHECK IN DO DEALER DA FT FAZ A TRANSIÇÃO DE TEMPO PARA MÃOS, SEM ALTERAR NÍVEL, BLINDS OU HISTÓRICO.</span></button></div><div id="ftManualConfig" class="ftManualConfig hidden"><div class="ftManualLabel">MÃOS POR NÍVEL NA MESA FINAL</div><input id="ftHandsPerLevel" type="tel" inputmode="numeric" maxlength="3" aria-label="MÃOS POR NÍVEL"></div><div class="ftContinuity">TRANSIÇÃO CONTÍNUA: EVENTO, LEVEL INDEX, SB, BB, ANTE, JOGADORES, LEFT/FIELD, ITM, CHIPS, MÉDIAS, MOVIMENTAÇÕES, FINANCEIRO, ALERTAS, TICKER E AUDITORIA PERMANECEM NO MESMO TORNEIO.</div>`;
     menu.insertAdjacentElement('afterend',box);
     box.querySelectorAll('[data-ft-mode]').forEach(btn=>btn.addEventListener('click',()=>{
       state.finalTableStructureMode=btn.dataset.ftMode;
-      state.finalTableMode=state.finalTableStructureMode==='MANUAL'?'HANDS':'TIMER';
-      if(state.finalTableStructureMode==='TIMER'&&state.finalTableHands){state.finalTableHands.completed=0;state.finalTableHands.levelIndex=+state.levelIndex||0}
+      state.finalTableManualActive=false;
+      state.finalTableMode='TIMER';
+      if(state.finalTableHands){state.finalTableHands.completed=0;state.finalTableHands.levelIndex=+state.levelIndex||0;state.finalTableHands.target=state.finalTableHandsPerLevel}
       saveState();
       renderFinalTableMode();
     }));
+    const hands=box.querySelector('#ftHandsPerLevel');
+    hands.value=String(state.finalTableHandsPerLevel||10);
+    hands.oninput=()=>{hands.value=hands.value.replace(/\D/g,'').slice(0,3)};
+    hands.onchange=()=>{const n=Math.max(1,Math.min(999,Math.floor(+hands.value||10)));state.finalTableHandsPerLevel=n;if(state.finalTableHands)state.finalTableHands.target=n;hands.value=String(n);saveState()};
     return box;
   };
 
@@ -67,6 +80,10 @@
     const box=finalTableModeSettings();
     if(!box)return;
     box.querySelectorAll('[data-ft-mode]').forEach(btn=>btn.classList.toggle('active',btn.dataset.ftMode===state.finalTableStructureMode));
+    const manual=box.querySelector('#ftManualConfig');
+    manual?.classList.toggle('hidden',state.finalTableStructureMode!=='MANUAL');
+    const hands=box.querySelector('#ftHandsPerLevel');
+    if(hands)hands.value=String(state.finalTableHandsPerLevel||10);
   };
 
   const savedStructures=()=>Array.isArray(state.savedStructures)?state.savedStructures:[];
