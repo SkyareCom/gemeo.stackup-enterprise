@@ -27,9 +27,23 @@ assert('fechamento obtém responsável da sessão',close.includes('SESSION_STAFF
 assert('fechamento não permite escolher outro responsável',close.includes('id="staff" disabled'));
 const directory=fs.readFileSync('players-directory.html','utf8');
 assert('cadastro geral integra documento IA',directory.includes('smart-registration.html?return=players-directory.html'));
+assert('jogadores editam no próprio card',directory.includes('data-inline-confirm')&&!directory.includes('window.scrollTo({top:0'));
+assert('jogadores usam confirmar',directory.includes('>CONFIRMAR<'));
+const staff=fs.readFileSync('staff.html','utf8');
+assert('staff edita no próprio card',staff.includes('data-inline-confirm')&&!staff.includes('window.scrollTo({top:0'));
+assert('staff usa confirmar',staff.includes('>CONFIRMAR<'));
 const checkin=fs.readFileSync('checkin.html','utf8');
 assert('check-in atribui operador autenticado',checkin.includes('CHECKIN_STAFF=StackupAuth.staffForSession()'));
 assert('check-in bloqueia inscrição sem torneio',checkin.includes('SELECIONE E CONFIGURE UM TORNEIO'));
+
+const htmlFiles=fs.readdirSync('.').filter(f=>f.endsWith('.html'));
+for(const file of htmlFiles){
+  const html=fs.readFileSync(file,'utf8');
+  if(/\bplaceholder\s*=/.test(html)){
+    assert(`${file}: tela com placeholder possui confirmação explícita`,/CONFIRMAR/.test(html));
+  }
+  assert(`${file}: não usa prompt externo para preencher dados`,!/(^|[^\w])prompt\s*\(/.test(html));
+}
 
 const authSource=fs.readFileSync('auth-engine.js','utf8');
 assert('auth não recria POKER CLUB legado',!authSource.includes("state.clubName||'POKER CLUB'"));
