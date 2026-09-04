@@ -12,32 +12,33 @@
     const registration=registrationTitle?.nextElementSibling,historyBtn=$('historyBtn'),history=$('history');
     if(!registrationTitle||!registration||!historyBtn||!history)return;
     const style=document.createElement('style');style.dataset.directoryHubStyle='1';style.textContent=`
-      .directoryHub{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
-      .directoryHubCard{display:block;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;margin:0!important;min-height:0!important;box-shadow:none!important;overflow:visible!important}
-      .directoryHubTrigger{width:100%!important;height:44px!important;min-height:44px!important;margin:0!important;padding:10px 12px!important;border:1px solid #8DFC3B!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;color:#8DFC3B!important;text-align:center!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:12px!important;line-height:1.15!important}
-      .directoryHubTrigger::after{content:' • ABRIR';font-size:12px!important;color:#8DFC3B!important;margin-left:5px}
-      .directoryHubCard.open>.directoryHubTrigger::after{content:' • FECHAR'}
-      .directoryHubBody{display:none;padding:8px 0 0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
-      .directoryHubCard.open>.directoryHubBody{display:block}
-      .directoryHubBody>.card,.directoryHubBody>.history,.directoryHubBody>div{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
-      .directoryHubBody .section{margin-top:18px!important}
+      .directoryHub{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin:8px 0 0!important;align-items:start!important}
+      .directoryHubCard{display:flex!important;flex-direction:column!important;gap:12px!important;color:#fff!important;background:linear-gradient(#0B100D,#060907)!important;border:1px solid #27342D!important;border-radius:14px!important;padding:18px!important;height:150px!important;min-height:150px!important;box-sizing:border-box!important;overflow:hidden!important;margin:0!important;box-shadow:none!important}
+      .directoryHubCard:hover{border-color:#8DFC3B!important}
+      .directoryHubTrigger{width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#fff!important;text-align:left!important;display:block!important;font-size:18px!important;line-height:1.15!important;letter-spacing:1px!important}
+      .directoryHubTrigger::before{display:block!important;content:attr(data-tag)!important;color:#8DFC3B!important;font-size:11px!important;line-height:1.2!important;margin:0 0 12px!important}
+      .directoryHubTrigger::after{display:block!important;content:'ABRIR'!important;color:#9CA69F!important;font-size:12px!important;line-height:1.35!important;margin-top:12px!important}
+      .directoryHubCard.open{height:auto!important;min-height:150px!important;overflow:visible!important;grid-column:1/-1!important}
+      .directoryHubCard.open>.directoryHubTrigger::after{content:'FECHAR'!important;color:#8DFC3B!important}
+      .directoryHubBody{display:none!important;padding:10px 0 0!important;margin-top:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+      .directoryHubCard.open>.directoryHubBody{display:block!important}
+      .directoryHubBody>.card,.directoryHubBody>.history,.directoryHubBody>div{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding-left:0!important;padding-right:0!important}
       .directoryHubBody .historyRow{padding:10px 0!important;border:0!important;border-bottom:1px solid #27342D!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
       .directoryHubBody .historyRow:last-child{border-bottom:0!important}
-      .directoryHubBody .historyActions,.directoryHubBody .inlineActions{gap:8px!important}
       .directoryHubBody input:not([type=checkbox]):not([type=radio]),.directoryHubBody select,.directoryHubBody .check{min-height:44px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important}
       .directoryHubBody button,.directoryHubBody a.directoryBtn{min-height:44px!important;border:1px solid #8DFC3B!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;color:#8DFC3B!important}
-      @media(max-width:700px){.directoryHub{grid-template-columns:minmax(0,1fr)}}
+      @media(max-width:700px){.directoryHub{grid-template-columns:1fr!important}.directoryHubCard{height:136px!important;min-height:136px!important;padding:16px!important}.directoryHubCard.open{min-height:136px!important}}
     `;document.head.appendChild(style);
     const hub=document.createElement('div');hub.className='directoryHub';hub.dataset.directoryHub='1';
-    const makeCard=(label,node)=>{const card=document.createElement('section');card.className='directoryHubCard';const trigger=document.createElement('button');trigger.type='button';trigger.className='directoryHubTrigger';trigger.textContent=label;const body=document.createElement('div');body.className='directoryHubBody';body.appendChild(node);trigger.onclick=()=>card.classList.toggle('open');card.append(trigger,body);return card};
+    const makeCard=(tag,label,node)=>{const card=document.createElement('section');card.className='directoryHubCard';const trigger=document.createElement('button');trigger.type='button';trigger.className='directoryHubTrigger';trigger.dataset.tag=tag;trigger.textContent=label;const body=document.createElement('div');body.className='directoryHubBody';body.appendChild(node);trigger.onclick=()=>card.classList.toggle('open');card.append(trigger,body);return card};
     const registrationWrap=document.createElement('div');registrationWrap.appendChild(registration);const historyWrap=document.createElement('div');history.classList.remove('hidden');historyWrap.appendChild(history);
     const staff=page==='staff.html';
-    hub.append(makeCard(staff?'CADASTRAR STAFF':'CADASTRAR JOGADOR',registrationWrap),makeCard(staff?'STAFF CADASTRADO':'JOGADORES CADASTRADOS',historyWrap));
+    hub.append(makeCard('01 • CADASTRO',staff?'CADASTRAR STAFF':'CADASTRAR JOGADOR',registrationWrap),makeCard('02 • BASE CADASTRADA',staff?'STAFF CADASTRADO':'JOGADORES CADASTRADOS',historyWrap));
     registrationTitle.replaceWith(hub);historyBtn.remove();
     if(staff){
       const envTitle=[...document.querySelectorAll('.section')].find(el=>String(el.textContent||'').trim()==='AMBIENTES');
       const envForm=envTitle?.nextElementSibling;
-      if(envTitle&&envForm){const envHub=document.createElement('div');envHub.className='directoryHub';envHub.dataset.environmentHub='1';const formWrap=document.createElement('div');formWrap.appendChild(envForm);const list=document.createElement('div');list.id='environmentDirectoryList';list.className='meta';const renderEnv=()=>{if(typeof StackupAuth!=='undefined')StackupAuth.ensure();const arr=(window.state?.authClubs||[]).filter(c=>c.active!==false);list.innerHTML=arr.length?arr.map(c=>`<div class="historyRow"><div class="historyInfo"><b>${String(c.name||'')}</b><div class="meta">${c.type==='HOME_GAME'?'HOME GAME':'CLUBE'}</div></div></div>`).join(''):'NENHUM AMBIENTE CADASTRADO.'};const listWrap=document.createElement('div');listWrap.appendChild(list);envHub.append(makeCard('CADASTRAR AMBIENTE',formWrap),makeCard('AMBIENTES CADASTRADOS',listWrap));envTitle.replaceWith(envHub);setTimeout(renderEnv,0);$('createClub')?.addEventListener('click',()=>setTimeout(renderEnv,0));}
+      if(envTitle&&envForm){const envHub=document.createElement('div');envHub.className='directoryHub';envHub.dataset.environmentHub='1';const formWrap=document.createElement('div');formWrap.appendChild(envForm);const list=document.createElement('div');list.id='environmentDirectoryList';list.className='meta';const renderEnv=()=>{if(typeof StackupAuth!=='undefined')StackupAuth.ensure();const arr=(window.state?.authClubs||[]).filter(c=>c.active!==false);list.innerHTML=arr.length?arr.map(c=>`<div class="historyRow"><div class="historyInfo"><b>${String(c.name||'')}</b><div class="meta">${c.type==='HOME_GAME'?'HOME GAME':'CLUBE'}</div></div></div>`).join(''):'NENHUM AMBIENTE CADASTRADO.'};const listWrap=document.createElement('div');listWrap.appendChild(list);envHub.append(makeCard('01 • CADASTRO','CADASTRAR AMBIENTE',formWrap),makeCard('02 • BASE CADASTRADA','AMBIENTES CADASTRADOS',listWrap));envTitle.replaceWith(envHub);setTimeout(renderEnv,0);$('createClub')?.addEventListener('click',()=>setTimeout(renderEnv,0));}
     }
   }
 
