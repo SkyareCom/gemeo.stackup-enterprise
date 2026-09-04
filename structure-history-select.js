@@ -13,6 +13,14 @@
       .structureSelectCheck:checked{background:#8DFC3B!important;box-shadow:inset 0 0 0 4px #060907!important}
       #selectedStructureName{margin:10px 0 2px!important;padding:10px 12px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;color:#fff!important;font-weight:600!important}
       #selectedStructureName b{color:#8DFC3B!important;font-weight:600!important}
+      #finalTableModeSettings{margin:12px 0 4px!important}
+      #finalTableModeSettings .ftModeTitle{color:#8DFC3B!important;letter-spacing:.14em!important;margin:0 2px 7px!important}
+      #finalTableModeSettings .ftModeGrid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+      #finalTableModeSettings .ftModeOption{display:grid!important;grid-template-columns:24px minmax(0,1fr)!important;align-items:center!important;gap:10px!important;width:100%!important;min-height:48px!important;padding:10px 12px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;color:#fff!important;text-align:left!important}
+      #finalTableModeSettings .ftModeSquare{width:20px!important;height:20px!important;min-width:20px!important;border:2px solid #8DFC3B!important;border-radius:4px!important;background:#060907!important;box-sizing:border-box!important}
+      #finalTableModeSettings .ftModeOption.active .ftModeSquare{background:#8DFC3B!important;box-shadow:inset 0 0 0 4px #060907!important}
+      #finalTableModeSettings .ftModeOption.active{border-color:#8DFC3B!important}
+      #finalTableModeSettings .ftModeText{display:block!important;color:#fff!important;line-height:1.35!important}
       @media(max-width:700px){#historyList .historyItem{grid-template-columns:28px minmax(0,1fr)!important}#historyList .historyActions{grid-column:2!important}}
     `;
     document.head.appendChild(style);
@@ -28,6 +36,37 @@
     row.className='hidden';
     history.insertAdjacentElement('afterend',row);
     return row;
+  };
+
+  const ensureFinalTableMode=()=>{
+    if(!['TIMER','MANUAL'].includes(state.finalTableStructureMode))state.finalTableStructureMode='TIMER';
+    state.finalTableMode=state.finalTableStructureMode==='MANUAL'?'HANDS':'TIMER';
+  };
+
+  const finalTableModeSettings=()=>{
+    let box=document.getElementById('finalTableModeSettings');
+    if(box)return box;
+    const menu=document.querySelector('.structureMenu');
+    if(!menu)return null;
+    box=document.createElement('div');
+    box.id='finalTableModeSettings';
+    box.innerHTML=`<div class="ftModeTitle">MESA FINAL</div><div class="ftModeGrid"><button type="button" class="ftModeOption" data-ft-mode="TIMER"><span class="ftModeSquare" aria-hidden="true"></span><span class="ftModeText">MESA FINAL COM TEMPORIZADOR (SEGUE A ESTRUTURA NA SEQUÊNCIA)</span></button><button type="button" class="ftModeOption" data-ft-mode="MANUAL"><span class="ftModeSquare" aria-hidden="true"></span><span class="ftModeText">MESA FINAL COM SISTEMA MANUAL (ALTERA PARA ESTRUTURA MANUAL)</span></button></div>`;
+    menu.insertAdjacentElement('afterend',box);
+    box.querySelectorAll('[data-ft-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+      state.finalTableStructureMode=btn.dataset.ftMode;
+      state.finalTableMode=state.finalTableStructureMode==='MANUAL'?'HANDS':'TIMER';
+      if(state.finalTableStructureMode==='TIMER'&&state.finalTableHands){state.finalTableHands.completed=0;state.finalTableHands.levelIndex=+state.levelIndex||0}
+      saveState();
+      renderFinalTableMode();
+    }));
+    return box;
+  };
+
+  const renderFinalTableMode=()=>{
+    ensureFinalTableMode();
+    const box=finalTableModeSettings();
+    if(!box)return;
+    box.querySelectorAll('[data-ft-mode]').forEach(btn=>btn.classList.toggle('active',btn.dataset.ftMode===state.finalTableStructureMode));
   };
 
   const savedStructures=()=>Array.isArray(state.savedStructures)?state.savedStructures:[];
@@ -143,6 +182,9 @@
 
   const boot=()=>{
     addStyle();
+    ensureFinalTableMode();
+    finalTableModeSettings();
+    renderFinalTableMode();
     reconcileSelection();
     showSelectedStructure();
     const list=document.getElementById('historyList');
