@@ -5,13 +5,16 @@
     if(!s.finalTableHands||typeof s.finalTableHands!=='object')s.finalTableHands={};
     const h=s.finalTableHands;
     const idx=+s.levelIndex||0;
+    const structureMode=['TIMER','MANUAL'].includes(s.finalTableStructureMode)?s.finalTableStructureMode:'TIMER';
+    s.finalTableStructureMode=structureMode;
+    s.finalTableMode=structureMode==='MANUAL'?'HANDS':'TIMER';
     if(!Number.isFinite(+h.target)||+h.target<=0)h.target=10;
     if(!Number.isFinite(+h.completed)||+h.completed<0)h.completed=0;
     if(!Number.isFinite(+h.levelIndex))h.levelIndex=idx;
     if(+h.levelIndex!==idx){h.levelIndex=idx;h.completed=0;h.updatedAt=Date.now()}
     h.target=Math.max(1,Math.floor(+h.target||10));
     h.completed=Math.max(0,Math.min(h.target,Math.floor(+h.completed||0)));
-    s.finalTableMode='HANDS';
+    if(structureMode==='TIMER'&&h.completed!==0){h.completed=0;h.levelIndex=idx;h.updatedAt=Date.now()}
     if(!s.finalTableAccess||typeof s.finalTableAccess!=='object')s.finalTableAccess=emptyAccess(s);
     const a=s.finalTableAccess;
     if(!a.status)a.status=a.active?'APPROVED':'IDLE';
@@ -24,6 +27,7 @@
     if(!('requestId' in a))a.requestId='';
     return h;
   }
+  function isManualMode(s=state){ensure(s);return s.finalTableStructureMode==='MANUAL'}
   function deviceId(){
     let id='';
     try{id=localStorage.getItem(DEVICE_KEY)||''}catch(e){}
@@ -33,7 +37,7 @@
   function access(s=state){ensure(s);return s.finalTableAccess}
   function snapshot(s=state){
     const h=ensure(s),target=h.target,completed=h.completed,remaining=Math.max(0,target-completed);
-    return{target,completed,remaining,progress:target?completed/target:0,levelIndex:+s.levelIndex||0,access:{...access(s)},deviceId:deviceId()};
+    return{target,completed,remaining,progress:target?completed/target:0,levelIndex:+s.levelIndex||0,mode:s.finalTableStructureMode,access:{...access(s)},deviceId:deviceId()};
   }
   function save(){if(typeof saveState==='function')saveState();if(typeof window.onPokerStateChange==='function')window.onPokerStateChange(state)}
   function isPrivileged(staff){return !!staff&&['OWNER','TD','FLOOR','GESTOR'].includes(staff.role)}
@@ -79,11 +83,11 @@
   }
   function setTarget(value){const h=ensure();h.target=Math.max(1,Math.floor(+value||10));h.completed=Math.min(h.completed,h.target);h.updatedAt=Date.now();save();return snapshot()}
   function setCompleted(value){const h=ensure();h.completed=Math.max(0,Math.min(h.target,Math.floor(+value||0)));h.updatedAt=Date.now();save();return snapshot()}
-  function nextHand(){const h=ensure();if(h.completed<h.target)h.completed+=1;h.updatedAt=Date.now();access().lastActionAt=Date.now();if(typeof auditEvent==='function')auditEvent('FINAL_TABLE_HAND_COMPLETED',{levelIndex:+state.levelIndex||0,completed:h.completed,target:h.target,source:'FINAL_TABLE_HANDS',dealerId:access().dealerId,deviceId:deviceId()});save();return snapshot()}
-  function prevHand(){const h=ensure();h.completed=Math.max(0,h.completed-1);h.updatedAt=Date.now();access().lastActionAt=Date.now();if(typeof auditEvent==='function')auditEvent('FINAL_TABLE_HAND_REMOVED',{levelIndex:+state.levelIndex||0,completed:h.completed,target:h.target,source:'FINAL_TABLE_HANDS',dealerId:access().dealerId,deviceId:deviceId()});save();return snapshot()}
-  function authorizedNextHand(){if(!canControl())return{ok:false,error:'O APARELHO AINDA NÃO FOI LIBERADO PARA A FINAL TABLE.'};return{ok:true,snapshot:nextHand()}}
-  function authorizedPrevHand(){if(!canControl())return{ok:false,error:'O APARELHO AINDA NÃO FOI LIBERADO PARA A FINAL TABLE.'};return{ok:true,snapshot:prevHand()}}
+  function nextHand(){const h=ensure();if(!isManualMode())return snapshot();if(h.completed<h.target)h.completed+=1;h.updatedAt=Date.now();access().lastActionAt=Date.now();if(typeof auditEvent==='function')auditEvent('FINAL_TABLE_HAND_COMPLETED',{levelIndex:+state.levelIndex||0,completed:h.completed,target:h.target,source:'FINAL_TABLE_HANDS',dealerId:access().dealerId,deviceId:deviceId()});save();return snapshot()}
+  function prevHand(){const h=ensure();if(!isManualMode())return snapshot();h.completed=Math.max(0,h.completed-1);h.updatedAt=Date.now();access().lastActionAt=Date.now();if(typeof auditEvent==='function')auditEvent('FINAL_TABLE_HAND_REMOVED',{levelIndex:+state.levelIndex||0,completed:h.completed,target:h.target,source:'FINAL_TABLE_HANDS',dealerId:access().dealerId,deviceId:deviceId()});save();return snapshot()}
+  function authorizedNextHand(){if(!isManualMode())return{ok:false,error:'MESA FINAL CONFIGURADA COM TEMPORIZADOR.'};if(!canControl())return{ok:false,error:'O APARELHO AINDA NÃO FOI LIBERADO PARA A FINAL TABLE.'};return{ok:true,snapshot:nextHand()}}
+  function authorizedPrevHand(){if(!isManualMode())return{ok:false,error:'MESA FINAL CONFIGURADA COM TEMPORIZADOR.'};if(!canControl())return{ok:false,error:'O APARELHO AINDA NÃO FOI LIBERADO PARA A FINAL TABLE.'};return{ok:true,snapshot:prevHand()}}
   function reset(){const h=ensure();h.completed=0;h.updatedAt=Date.now();save();return snapshot()}
-  window.FinalTableHands={ensure,snapshot,setTarget,setCompleted,nextHand,prevHand,authorizedNextHand,authorizedPrevHand,reset,deviceId,access,canControl,checkIn,requestCheckIn,approve,reject,checkOut,isPrivileged};
+  window.FinalTableHands={ensure,snapshot,setTarget,setCompleted,nextHand,prevHand,authorizedNextHand,authorizedPrevHand,reset,deviceId,access,canControl,checkIn,requestCheckIn,approve,reject,checkOut,isPrivileged,isManualMode};
   ensure();
 })();
