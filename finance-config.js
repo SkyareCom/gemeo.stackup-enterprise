@@ -20,4 +20,5 @@
   function installCashPaymentControl(){const grid=document.querySelector('.payGrid');if(!grid||grid.querySelector('[data-pay="CASH"]'))return;const button=document.createElement('button');button.type='button';button.className='pay';button.dataset.pay='CASH';button.textContent='DINHEIRO';const credit=grid.querySelector('[data-pay="PLAYER_CREDIT"]');grid.insertBefore(button,credit||null)}
   window.StackupFinance={KEY,CURRENCIES,BANKS,FEE_CODES,defaults,load,save,convert,format,playerKey,playerRule,feeWaived,paymentFee,processingFee,paymentRecord};
   installCashPaymentControl();
+  if(!document.querySelector('script[data-stackup-data-entry]')){const s=document.createElement('script');s.src='data-entry-standard.js?v=b38cc7f5aab8c36085c668a1bcd0fca7d1f1650d';s.defer=true;s.dataset.stackupDataEntry='1';(document.head||document.documentElement).appendChild(s)}
 })();
