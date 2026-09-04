@@ -27,6 +27,19 @@ assert('fechamento obtém responsável da sessão',close.includes('SESSION_STAFF
 assert('fechamento não permite escolher outro responsável',close.includes('id="staff" disabled'));
 const directory=fs.readFileSync('players-directory.html','utf8');
 assert('cadastro geral integra documento IA',directory.includes('smart-registration.html?return=players-directory.html'));
+const checkin=fs.readFileSync('checkin.html','utf8');
+assert('check-in atribui operador autenticado',checkin.includes('CHECKIN_STAFF=StackupAuth.staffForSession()'));
+assert('check-in bloqueia inscrição sem torneio',checkin.includes('SELECIONE E CONFIGURE UM TORNEIO'));
+
+const authSource=fs.readFileSync('auth-engine.js','utf8');
+assert('auth não recria POKER CLUB legado',!authSource.includes("state.clubName||'POKER CLUB'"));
+assert('dealer pode acessar chip count',authSource.includes("DEALER_PAGES=new Set(['dealer.html','chip-count-ai.html'])"));
+assert('floor pode acessar cadastro inteligente',authSource.includes("'smart-registration.html'"));
+assert('TD pode acessar configuração do torneio',authSource.includes("'tournament-settings.html'"));
+const operationsSource=fs.readFileSync('operations.js','utf8');
+assert('operações não usam operador LOCAL como fallback',!operationsSource.includes("||'LOCAL'"));
+assert('operações não usam POKER CLUB como fallback',!operationsSource.includes("||'POKER CLUB'"));
+assert('operações priorizam staff autenticado',operationsSource.includes('StackupAuth?.staffForSession?.()'));
 
 const sharedSource=fs.readFileSync('shared.js','utf8');
 for(const legacy of ['MAIN EVENT - ETAPA 4','event-main-4','clubName:"POKER CLUB"','guaranteed:150000','startingStack:30000','buyin:500,fee:50']){
