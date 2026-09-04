@@ -6,40 +6,49 @@
 <title>ACESSO À FT</title>
 <link rel="stylesheet" href="app-theme.css">
 <style>
-body{margin:0;background:#020302;color:#fff}.app{max-width:980px;margin:auto;padding:18px}.ey{color:#8DFC3B;letter-spacing:.14em}.title{margin:4px 0 24px}.section{color:#8DFC3B;letter-spacing:.14em;margin:16px 2px 7px}.label{color:#AEB8B1;margin:0 0 7px}.approvalCard{display:grid;gap:8px;margin-top:8px}.infoCard{width:100%!important;height:44px!important;min-height:44px!important;padding:10px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;box-sizing:border-box!important}.infoLabel{color:#AEB8B1!important;line-height:1!important;white-space:nowrap}.infoValue{color:#fff!important;font-weight:400!important;line-height:1!important;margin-left:auto!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}.actions button{width:100%!important;min-height:44px!important;border-radius:9px!important}.status{margin-top:8px;color:#AEB8B1;min-height:18px}.empty{color:#AEB8B1;padding:12px 0}.activeText{color:#8DFC3B!important}@media(max-width:700px){.actions{grid-template-columns:1fr}}
+body{margin:0;background:#020302;color:#fff}.app{max-width:980px;margin:auto;padding:18px}.ey{color:#8DFC3B;letter-spacing:.14em}.title{margin:4px 0 24px}.section{color:#8DFC3B;letter-spacing:.14em;margin:16px 2px 7px}.label{color:#AEB8B1;margin:0 0 7px}.approvalCard{display:grid;gap:8px;margin-top:8px}.infoCard{width:100%!important;height:44px!important;min-height:44px!important;padding:10px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;box-sizing:border-box!important}.infoLabel{color:#AEB8B1!important;line-height:1!important;white-space:nowrap}.infoValue{color:#fff!important;font-weight:400!important;line-height:1!important;margin-left:auto!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.modeGrid,.dealerGrid,.confirmGrid{display:grid;gap:8px;margin-top:8px}.modeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.modeBtn{display:grid!important;grid-template-columns:24px minmax(0,1fr)!important;align-items:center!important;gap:10px!important;min-height:52px!important;text-align:left!important}.modeBtn .sq{width:20px;height:20px;border:2px solid #8DFC3B;border-radius:4px;background:#060907;box-sizing:border-box}.modeBtn.active{border-color:#8DFC3B!important}.modeBtn.active .sq{background:#8DFC3B;box-shadow:inset 0 0 0 4px #060907}.dealerGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.confirmGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}.actions button{width:100%!important;min-height:44px!important;border-radius:9px!important}.status{margin-top:8px;color:#AEB8B1;min-height:18px;line-height:1.45}.empty{color:#AEB8B1;padding:12px 0}.activeText{color:#8DFC3B!important}.hidden{display:none!important}.authorizedList{display:grid;gap:8px;margin-top:8px}.authorizedRow{padding:10px 12px;border:1px solid #27342D;border-radius:9px;background:linear-gradient(#0B100D,#060907)}.authorizedRow b{color:#8DFC3B}.hint{color:#AEB8B1;font-size:12px;line-height:1.45;margin:6px 2px 0}@media(max-width:700px){.modeGrid,.dealerGrid,.confirmGrid,.actions{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <main class="app">
 <div class="ey">STACKUP HOLD'EM ENTERPRISE</div>
 <h1 class="title">ACESSO À FT</h1>
-<div class="section">AUTORIZAÇÃO</div>
-<div class="approvalCard"><div class="infoCard"><span class="infoLabel">RESPONSÁVEL</span><span id="managerName" class="infoValue"></span></div><div class="infoCard"><span class="infoLabel">AMBIENTE</span><span id="managerClub" class="infoValue"></span></div><div class="infoCard"><span class="infoLabel">FUNÇÃO</span><span id="managerRole" class="infoValue"></span></div></div>
-<div id="requestWrap">
-  <div id="emptyState" class="empty"></div>
-  <div id="approvalCard" class="approvalCard">
-    <div class="infoCard"><span class="infoLabel">STATUS</span><span id="accessStatus" class="infoValue"></span></div>
-    <div class="infoCard"><span class="infoLabel">DEALER</span><span id="dealerName" class="infoValue"></span></div>
-    <div class="infoCard"><span class="infoLabel">CPF</span><span id="dealerCpf" class="infoValue"></span></div>
-    <div class="infoCard"><span class="infoLabel">MESA</span><span id="tableNumber" class="infoValue"></span></div>
-    <div class="infoCard"><span class="infoLabel">SOLICITADO</span><span id="requestedAt" class="infoValue"></span></div>
-    <div class="infoCard"><span class="infoLabel">APARELHO</span><span id="deviceId" class="infoValue"></span></div>
-    <div class="infoCard"><span class="infoLabel">AUTORIZADO POR</span><span id="approvedBy" class="infoValue"></span></div>
-  </div>
-  <div id="actions" class="actions"><button id="approveBtn" class="primary" type="button">LIBERAR ACESSO</button><button id="rejectBtn" type="button">RECUSAR ACESSO</button></div>
-  <div id="result" class="status"></div>
+<div class="section">RESPONSÁVEL</div>
+<div class="approvalCard"><div class="infoCard"><span class="infoLabel">NOME</span><span id="managerName" class="infoValue"></span></div><div class="infoCard"><span class="infoLabel">AMBIENTE</span><span id="managerClub" class="infoValue"></span></div><div class="infoCard"><span class="infoLabel">FUNÇÃO</span><span id="managerRole" class="infoValue"></span></div></div>
+<div class="section">STATUS DA FINAL TABLE</div>
+<div class="approvalCard">
+  <div class="infoCard"><span class="infoLabel">STATUS</span><span id="gateStatus" class="infoValue"></span></div>
+  <div class="infoCard"><span class="infoLabel">JOGADORES</span><span id="gatePlayers" class="infoValue"></span></div>
+  <div class="infoCard"><span class="infoLabel">NÍVEL</span><span id="gateLevel" class="infoValue"></span></div>
+  <div class="infoCard"><span class="infoLabel">TEMPO PRESERVADO</span><span id="gateTime" class="infoValue"></span></div>
 </div>
+<div id="waiting" class="empty"></div>
+<div id="authorizationFlow" class="hidden">
+  <div class="section">MODO FINAL TABLE</div>
+  <div class="modeGrid"><button id="timerMode" class="modeBtn" type="button"><span class="sq"></span><span>TEMPORIZADOR</span></button><button id="manualMode" class="modeBtn" type="button"><span class="sq"></span><span>SISTEMA MANUAL</span></button></div>
+  <div class="hint">TEMPORIZADOR: retoma a estrutura no mesmo nível e tempo. MANUAL: mantém o mesmo nível, blinds e histórico e passa o avanço para contagem de mãos.</div>
+  <div id="dealerAuthorization" class="hidden">
+    <div class="section">AUTORIZAR DEALER</div>
+    <div class="dealerGrid"><input id="dealer1" placeholder="DEALER 1 • CPF / CÓDIGO"><input id="dealer2" placeholder="DEALER 2 • CPF / CÓDIGO"><input id="dealer3" placeholder="DEALER 3 • CPF / CÓDIGO"></div>
+    <div class="hint">É POSSÍVEL PRÉ-AUTORIZAR ATÉ 3 DEALERS. DEPOIS DA CONFIRMAÇÃO, QUALQUER UM DELES PODERÁ ASSUMIR A FT SEM NOVA LIBERAÇÃO DO TD / FLOOR.</div>
+  </div>
+  <div class="section">CONFIRMAR TD / FLOOR</div>
+  <div class="confirmGrid"><input id="managerCpf" inputmode="numeric" placeholder="CPF DO TD / FLOOR"><input id="managerPin" inputmode="numeric" type="password" placeholder="CÓDIGO / PIN"></div>
+  <div class="actions"><button id="confirmBtn" class="primary" type="button">CONFIRMAR FINAL TABLE</button><button id="clearBtn" type="button">LIMPAR</button></div>
+</div>
+<div id="authorizedWrap" class="hidden"><div class="section">DEALERS AUTORIZADOS</div><div id="authorizedList" class="authorizedList"></div></div>
+<div id="result" class="status"></div>
 </main>
-<script src="shared.js"></script><script src="auth-engine.js"></script><script>StackupAuth.guard()</script><script src="final-table-hands.js"></script>
+<script src="shared.js"></script><script src="auth-engine.js"></script><script>StackupAuth.guard()</script><script src="timer-engine.js"></script><script src="final-table-hands.js"></script>
 <script>
+let selectedMode='';
 function selectedManager(){return StackupAuth.staffForSession()}
-function maskCpf(v){const d=String(v||'').replace(/\D/g,'');if(d.length<4)return'';return`***.***.***-${d.slice(-2)}`}
-function fmt(ts){return ts?new Date(ts).toLocaleString('pt-BR'):''}
-function shortDevice(v){const s=String(v||'');return s.length>20?s.slice(0,10)+'...'+s.slice(-6):s}
-function statusText(a){if(a.status==='PENDING')return'AGUARDANDO LIBERAÇÃO';if(a.status==='APPROVED')return'ACESSO ATIVO';if(a.status==='REJECTED')return'ACESSO RECUSADO';if(a.status==='RELEASED')return'SESSÃO ENCERRADA';return'SEM SOLICITAÇÃO'}
-function render(){const session=StackupAuth.current(),staff=selectedManager();managerName.textContent=session?.personName||staff?.name||'';managerClub.textContent=session?.clubName||'';managerRole.textContent=session?.role||staff?.role||'';const allowed=['OWNER','TD','FLOOR','GESTOR'].includes(staff?.role);const a=FinalTableHands.access(),has=a&&a.status&&a.status!=='IDLE';approvalCard.style.display=has?'grid':'none';actions.style.display=a.status==='PENDING'&&allowed?'grid':'none';emptyState.textContent=has?'':allowed?'NENHUMA SOLICITAÇÃO DE ACESSO À FINAL TABLE.':'ESTE PERFIL NÃO POSSUI PERMISSÃO PARA AUTORIZAR A FINAL TABLE.';if(!has)return;accessStatus.textContent=statusText(a);accessStatus.classList.toggle('activeText',a.status==='APPROVED');dealerName.textContent=a.dealerName||'';dealerCpf.textContent=maskCpf(a.dealerCpf);tableNumber.textContent=a.table?`MESA ${a.table}`:'';requestedAt.textContent=fmt(a.requestedAt);deviceId.textContent=shortDevice(a.deviceId);approvedBy.textContent=a.approvedByName||''}
-approveBtn.onclick=()=>{const r=FinalTableHands.approve({staff:selectedManager()});result.textContent=r.ok?`ACESSO LIBERADO PARA ${r.access.dealerName} • MESA ${r.access.table}.`:(r.error||'NÃO FOI POSSÍVEL LIBERAR O ACESSO.');render()}
-rejectBtn.onclick=()=>{const r=FinalTableHands.reject({staff:selectedManager()});result.textContent=r.ok?'ACESSO À FINAL TABLE RECUSADO.':(r.error||'NÃO FOI POSSÍVEL RECUSAR O ACESSO.');render()}
+function statusText(g){if(!g)return'AGUARDANDO BOLHA DA FT';if(g.status==='LOCKED')return'BOLHA CONCLUÍDA • AGUARDANDO AUTORIZAÇÃO';if(g.status==='RELEASED_TIMER')return'FINAL TABLE • TEMPORIZADOR';if(g.status==='AUTHORIZED_MANUAL')return state.finalTableManualActive?'FINAL TABLE • SISTEMA MANUAL ATIVO':'FINAL TABLE • AGUARDANDO DEALER AUTORIZADO';return g.status||''}
+function renderModes(){timerMode.classList.toggle('active',selectedMode==='TIMER');manualMode.classList.toggle('active',selectedMode==='MANUAL');dealerAuthorization.classList.toggle('hidden',selectedMode!=='MANUAL')}
+function render(){FinalTableHands.ensure();const session=StackupAuth.current(),staff=selectedManager(),snap=FinalTableHands.snapshot(),g=snap.gate,allowed=['OWNER','TD','FLOOR','GESTOR'].includes(staff?.role);managerName.textContent=session?.personName||staff?.name||'';managerClub.textContent=session?.clubName||'';managerRole.textContent=session?.role||staff?.role||'';gateStatus.textContent=statusText(g);gateStatus.classList.toggle('activeText',!!g&&g.status!=='LOCKED');gatePlayers.textContent=g?`${g.activePlayers} / ${g.capacity}`:`${(state.players||[]).filter(p=>p.status==='active').length} / ${Math.max(2,+state.seatsPerTable||9)}`;gateLevel.textContent=g?String((+g.levelIndex||0)+1):String((+state.levelIndex||0)+1);gateTime.textContent=fmtTime?.(g?.timerRemaining??state.remaining)||'00:00';const locked=!!g&&g.status==='LOCKED';authorizationFlow.classList.toggle('hidden',!locked||!allowed);waiting.textContent=locked?(allowed?'':'ESTE PERFIL NÃO POSSUI PERMISSÃO PARA LIBERAR A FINAL TABLE.'):(g?'':'O SISTEMA LIBERA ESTE PAINEL AUTOMATICAMENTE QUANDO A ELIMINAÇÃO QUE FORMA A MESA FINAL FOR CONFIRMADA.');authorizedWrap.classList.toggle('hidden',!(snap.authorizedDealers||[]).length);authorizedList.innerHTML=(snap.authorizedDealers||[]).map((d,i)=>`<div class="authorizedRow"><b>DEALER ${i+1}</b> • ${String(d.name||'DEALER').replace(/[<>]/g,'')} • CPF FINAL ${String(d.cpf||'').replace(/\D/g,'').slice(-2).padStart(2,'*')}</div>`).join('');if(!selectedMode&&locked)selectedMode='';renderModes()}
+timerMode.onclick=()=>{selectedMode='TIMER';renderModes()};manualMode.onclick=()=>{selectedMode='MANUAL';renderModes()};
+clearBtn.onclick=()=>{selectedMode='';dealer1.value=dealer2.value=dealer3.value=managerCpf.value=managerPin.value='';result.textContent='';renderModes()};
+confirmBtn.onclick=()=>{if(!selectedMode){result.textContent='SELECIONE O MODO FINAL TABLE.';return}const r=FinalTableHands.authorizeFinalTable({staff:selectedManager(),mode:selectedMode,managerCpf:managerCpf.value,managerPin:managerPin.value,dealerCredentials:[dealer1.value,dealer2.value,dealer3.value].filter(Boolean)});if(!r.ok){result.textContent=r.error||'NÃO FOI POSSÍVEL AUTORIZAR A FINAL TABLE.';return}result.textContent=r.mode==='TIMER'?'FINAL TABLE LIBERADA COM TEMPORIZADOR. O TORNEIO CONTINUA NO MESMO NÍVEL E TEMPO.':`${r.dealers.length} DEALER(S) AUTORIZADO(S). AGUARDANDO UM DELES ASSUMIR A MESA FINAL.`;managerCpf.value=managerPin.value='';render()};
 window.onPokerStateChange=render;FinalTableHands.ensure();render();
 </script>
 </body>
