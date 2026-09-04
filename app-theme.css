@@ -67,6 +67,17 @@ html body main.app:has(#summaryCards):has(#registerTx) .idGrid:has(>.idCard:only
 html body button,html body .primary,html body .btn,html body .button,html body a.btn,html body a.button,html body [role="button"],html body input[type="button"],html body input[type="submit"],html body input[type="reset"]{background:linear-gradient(var(--card-top),var(--card-bottom))!important;background-color:var(--card-bottom)!important;color:var(--neon)!important;border:1px solid var(--neon)!important;border-radius:var(--radius)!important;outline:none!important;box-shadow:none!important;text-decoration:none!important;font-family:'Caacupe One',system-ui,sans-serif!important;font-style:normal!important;font-weight:400!important;font-size:12px!important;letter-spacing:1px!important;text-transform:uppercase!important}
 html body button:hover,html body .primary:hover,html body .btn:hover,html body .button:hover,html body a.btn:hover,html body a.button:hover,html body [role="button"]:hover,html body input[type="button"]:hover,html body input[type="submit"]:hover,html body input[type="reset"]:hover{filter:brightness(1.08)}html body button:focus-visible,html body .primary:focus-visible,html body .btn:focus-visible,html body .button:focus-visible,html body a.btn:focus-visible,html body a.button:focus-visible,html body [role="button"]:focus-visible,html body input[type="button"]:focus-visible,html body input[type="submit"]:focus-visible,html body input[type="reset"]:focus-visible{outline:1px solid var(--neon)!important;outline-offset:2px!important}html body button:disabled,html body .primary:disabled,html body .btn:disabled,html body .button:disabled,html body [role="button"][aria-disabled="true"],html body input[type="button"]:disabled,html body input[type="submit"]:disabled,html body input[type="reset"]:disabled{opacity:.5!important;cursor:not-allowed!important}
 
+/* NAVEGAÇÃO GLOBAL — ANTERIOR / MENU PRINCIPAL */
+html:root body #stackup-global-nav button,
+html:root body #stackup-global-nav a{
+  font-family:'Caacupe One',system-ui,sans-serif!important;
+  font-style:normal!important;
+  font-weight:400!important;
+  font-size:12px!important;
+  letter-spacing:1px!important;
+  text-transform:uppercase!important;
+}
+
 /* CHECK-IN */
 html body .buyin{padding-left:2px!important;padding-right:2px!important;text-align:left!important}html body .buyin>div,html body .buyin .meta,html body .buyin .money{text-align:left!important;margin-left:0!important}
 
