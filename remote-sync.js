@@ -4,18 +4,29 @@
   const ROOM_KEY='stackup-cast-room-v1';
   const DEVICE_KEY='stackup-cast-device-v1';
 
+  const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+
   const applyGlobalFont=()=>{
     if(document.querySelector('link[data-stackup-global-font]'))return;
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='font-global.css?v=99da1bd9';
+    link.href='font-global.css?v=typography-20260904';
     link.dataset.stackupGlobalFont='1';
     (document.head||document.documentElement).appendChild(link);
   };
   applyGlobalFont();
 
+  const applyGlobalTypography=()=>{
+    if(page.startsWith('cast-')||document.querySelector('link[data-stackup-global-typography]'))return;
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='typography-global.css?v=20260904-1';
+    link.dataset.stackupGlobalTypography='1';
+    (document.head||document.documentElement).appendChild(link);
+  };
+  applyGlobalTypography();
+
   const applyOperationalUiStandard=()=>{
-    const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
     const excluded=page==='index.html'||page==='login.html'||page==='players.html'||page.startsWith('cast-');
     if(excluded||document.querySelector('link[data-stackup-ui-standard]'))return;
     const link=document.createElement('link');
