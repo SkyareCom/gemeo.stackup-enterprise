@@ -2,6 +2,7 @@
   if(!window.PokerOperations)return;
   const base=window.PokerOperations;
   function ensure(){base.ensure();state.pkoCashPercent=Number.isFinite(+state.pkoCashPercent)?Math.max(0,Math.min(100,+state.pkoCashPercent)):50}
+  function syncFinalTableGate(){try{window.FinalTableHands?.ensure?.();return window.FinalTableHands?.snapshot?.()||null}catch(_){return null}}
   function lastReentryAt(playerId){return (state.transactions||[]).filter(t=>t.eventId===state.eventId&&t.playerId===playerId&&t.type==='REENTRY').reduce((m,t)=>Math.max(m,+t.createdAt||0),0)}
   function occurrence(player){return `${player.id}:${+player.eliminatedAt||0}`}
   function allowedBountyStaff(staff){return !!staff?.id&&['OWNER','TD','FLOOR','CASHIER','DEALER'].includes(staff.role)}
@@ -49,6 +50,7 @@
     const out=base.eliminatePlayer({playerId,staff,source});
     if(!out.ok)return out;
     if(activeBounty>0&&killerId){const b=awardBounty({winnerId:killerId,eliminatedId:playerId,value:activeBounty,staff,source});if(!b.ok)return{...out,bountyError:b.error,bountyCode:b.code,ok:false,error:`ELIMINAÇÃO REGISTRADA, MAS O BOUNTY FALHOU: ${b.error}`};out.bounty=b}
+    out.finalTable=syncFinalTableGate();
     return out;
   }
   const originalReenter=base.reenterPlayer;
@@ -60,13 +62,15 @@
     if(!out.ok)return out;
     if(base.bountyEnabled())p.currentBounty=state.bountyOnReentry?(+state.bountyValue||0):0;
     auditEvent('PLAYER_BOUNTY_CHANGED',{source:args?.source||'TOURNAMENT_ENGINE',operator:args?.staff?.id||state.operator||'LOCAL',playerId:p.id,currentBounty:+p.currentBounty||0,reason:'REENTRY'});
-    saveState();return out;
+    saveState();syncFinalTableGate();return out;
   }
-  window.PokerOperations={...base,awardBounty,eliminatePlayer,reenterPlayer,currentBountyValue};
+  window.PokerOperations={...base,awardBounty,eliminatePlayer,reenterPlayer,currentBountyValue,syncFinalTableGate};
 })();
 
 (function(){
   const page=(location.pathname.split('/').pop()||'').toLowerCase();
-  if(page!=='dealer.html')return;
-  const hands=document.createElement('script');hands.src='final-table-hands.js?v=53657800a6fa517788055896f1dcce84774dd392';hands.onload=()=>{const ui=document.createElement('script');ui.src='final-table-dealer.js?v=1f97ba648605b50d58805397732b73332d18f2ee';document.head.appendChild(ui)};document.head.appendChild(hands);
+  const loadDealerUi=()=>{if(page!=='dealer.html'||document.querySelector('script[data-final-table-dealer-ui]'))return;const ui=document.createElement('script');ui.src='final-table-dealer.js?v=1f97ba648605b50d58805397732b73332d18f2ee';ui.dataset.finalTableDealerUi='1';document.head.appendChild(ui)};
+  if(window.FinalTableHands){window.FinalTableHands.ensure?.();loadDealerUi();return}
+  if(document.querySelector('script[data-final-table-hands-loader]'))return;
+  const hands=document.createElement('script');hands.src='final-table-hands.js?v=3e03cb3333f16dbdb5735343fb47edd2c2853454';hands.dataset.finalTableHandsLoader='1';hands.onload=()=>{window.FinalTableHands?.ensure?.();loadDealerUi()};document.head.appendChild(hands);
 })();
