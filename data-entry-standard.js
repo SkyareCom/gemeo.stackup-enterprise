@@ -11,6 +11,7 @@
     document.documentElement.dataset.directoryMode='1';
     const params=new URLSearchParams(location.search),view=params.get('view')||'';
     const staff=page==='staff.html';
+    if(staff&&location.hash==='#ambientes'){location.replace('environments.html');return}
     const registrationTitle=[...document.querySelectorAll('.section')].find(el=>/CADASTRO DE (STAFF|JOGADORES)/.test(el.textContent||''));
     const registration=registrationTitle?.nextElementSibling,historyBtn=$('historyBtn'),history=$('history');
     if(!registrationTitle||!registration||!historyBtn||!history)return;
@@ -25,7 +26,6 @@
       .directoryHubTag{color:#8DFC3B!important;font-size:11px!important;line-height:1.2!important;letter-spacing:1px!important;margin:0!important}
       .directoryHubName{color:#fff!important;font-size:18px!important;line-height:1.15!important;margin:0!important}
       .directoryHubDesc{color:#9CA69F!important;font-size:12px!important;line-height:1.35!important;margin-top:auto!important;margin-bottom:0!important;display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;overflow:hidden!important}
-      .directoryContentTitle{color:#8DFC3B!important;font-size:14px!important;letter-spacing:1px!important;margin:18px 2px 8px!important}
       @media(max-width:700px){.directoryHub{grid-template-columns:1fr!important}.directoryHubCard{height:136px!important;padding:16px!important}}
     `;document.head.appendChild(style);
     if(!view){
