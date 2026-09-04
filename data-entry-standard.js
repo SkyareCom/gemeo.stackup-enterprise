@@ -12,17 +12,21 @@
     const registration=registrationTitle?.nextElementSibling,historyBtn=$('historyBtn'),history=$('history');
     if(!registrationTitle||!registration||!historyBtn||!history)return;
     const style=document.createElement('style');style.dataset.directoryHubStyle='1';style.textContent=`
-      .directoryHub{display:grid;gap:10px;margin-top:14px}
-      .directoryHubCard{display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:12px;background:linear-gradient(#0B100D,#060907);border:1px solid #27342D;border-radius:14px;padding:18px;min-height:140px;box-sizing:border-box;overflow:hidden}
-      .directoryHubCard:hover{border-color:#8DFC3B}
-      .directoryHubTrigger{width:100%!important;min-height:44px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#fff!important;text-align:left!important;display:flex!important;align-items:center!important;justify-content:space-between!important;font-size:18px!important;line-height:1.15!important}
-      .directoryHubTrigger::after{content:'ABRIR';font-size:11px!important;letter-spacing:1px;color:#8DFC3B}
-      .directoryHubCard.open>.directoryHubTrigger::after{content:'FECHAR'}
-      .directoryHubBody{display:none;padding-top:8px;background:transparent;border:0}
+      .directoryHub{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+      .directoryHubCard{display:block;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;margin:0!important;min-height:0!important;box-shadow:none!important;overflow:visible!important}
+      .directoryHubTrigger{width:100%!important;height:44px!important;min-height:44px!important;margin:0!important;padding:10px 12px!important;border:1px solid #8DFC3B!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;color:#8DFC3B!important;text-align:center!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:12px!important;line-height:1.15!important}
+      .directoryHubTrigger::after{content:' • ABRIR';font-size:12px!important;color:#8DFC3B!important;margin-left:5px}
+      .directoryHubCard.open>.directoryHubTrigger::after{content:' • FECHAR'}
+      .directoryHubBody{display:none;padding:8px 0 0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
       .directoryHubCard.open>.directoryHubBody{display:block}
-      .directoryHubBody>.card,.directoryHubBody>.history{margin:0!important}
+      .directoryHubBody>.card,.directoryHubBody>.history,.directoryHubBody>div{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
       .directoryHubBody .section{margin-top:18px!important}
-      @media(max-width:760px){.directoryHubCard{min-height:136px;padding:16px;border-radius:12px}.directoryHubTrigger{font-size:17px!important}}
+      .directoryHubBody .historyRow{padding:10px 0!important;border:0!important;border-bottom:1px solid #27342D!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+      .directoryHubBody .historyRow:last-child{border-bottom:0!important}
+      .directoryHubBody .historyActions,.directoryHubBody .inlineActions{gap:8px!important}
+      .directoryHubBody input:not([type=checkbox]):not([type=radio]),.directoryHubBody select,.directoryHubBody .check{min-height:44px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important}
+      .directoryHubBody button,.directoryHubBody a.directoryBtn{min-height:44px!important;border:1px solid #8DFC3B!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;color:#8DFC3B!important}
+      @media(max-width:700px){.directoryHub{grid-template-columns:minmax(0,1fr)}}
     `;document.head.appendChild(style);
     const hub=document.createElement('div');hub.className='directoryHub';hub.dataset.directoryHub='1';
     const makeCard=(label,node)=>{const card=document.createElement('section');card.className='directoryHubCard';const trigger=document.createElement('button');trigger.type='button';trigger.className='directoryHubTrigger';trigger.textContent=label;const body=document.createElement('div');body.className='directoryHubBody';body.appendChild(node);trigger.onclick=()=>card.classList.toggle('open');card.append(trigger,body);return card};
