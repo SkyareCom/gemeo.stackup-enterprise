@@ -68,6 +68,7 @@
 })();
 
 (function(){
+  if(typeof document==='undefined'||typeof location==='undefined')return;
   const page=(location.pathname.split('/').pop()||'').toLowerCase();
   const loadDealerUi=()=>{if(page!=='dealer.html'||document.querySelector('script[data-final-table-dealer-ui]'))return;const ui=document.createElement('script');ui.src='final-table-dealer.js?v=1f97ba648605b50d58805397732b73332d18f2ee';ui.dataset.finalTableDealerUi='1';document.head.appendChild(ui)};
   if(window.FinalTableHands){window.FinalTableHands.ensure?.();loadDealerUi();return}
