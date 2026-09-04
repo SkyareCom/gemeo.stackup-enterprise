@@ -62,7 +62,7 @@ function tr(k){return(I18N[state.language]||I18N.pt)[k]||k}
   if(typeof document==='undefined')return;
   if(document.querySelector('script[data-stackup-data-entry]'))return;
   const script=document.createElement('script');
-  script.src='data-entry-standard.js?v=8925b2583740192f025983a8bdea82c78341a884';
+  script.src='data-entry-standard.js?v=b2a3b3ba4863d6afb9744ede43dd2ae0a4014129';
   script.defer=true;
   script.dataset.stackupDataEntry='1';
   (document.head||document.documentElement).appendChild(script);
