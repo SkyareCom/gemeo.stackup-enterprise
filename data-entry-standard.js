@@ -3,7 +3,8 @@
   const $=id=>document.getElementById(id);
   const lock=(els,on=true)=>els.filter(Boolean).forEach(el=>{if(el.tagName==='SELECT'||el.type==='checkbox')el.disabled=on;else el.readOnly=on});
   const addConfirm=(anchor,id,label='CONFIRMAR')=>{if(!anchor||$(id))return null;const b=document.createElement('button');b.type='button';b.id=id;b.className='primary';b.textContent=label;b.style.marginTop='8px';anchor.insertAdjacentElement('afterend',b);return b};
-  const loadInlineLists=()=>{if(document.querySelector('script[data-stackup-inline-lists]'))return;const s=document.createElement('script');s.src='in-app-lists.js?v=eb0555e9e38382ce0d685a19cad86b2ca80923e4';s.defer=true;s.dataset.stackupInlineLists='1';(document.head||document.documentElement).appendChild(s)};
+  const loadUiStandard=()=>{if(document.querySelector('script[data-stackup-ui-standard]'))return;const s=document.createElement('script');s.src='ui-standard.js?v=707265684f91c0a577ab56d2a6da22b6c2be5441';s.defer=true;s.dataset.stackupUiStandard='1';(document.head||document.documentElement).appendChild(s)};
+  const loadInlineLists=()=>{if(document.querySelector('script[data-stackup-inline-lists]'))return;const s=document.createElement('script');s.src='in-app-lists.js?v=d4aa8cf348b66dbe71f08566c3a747a55367846e';s.defer=true;s.dataset.stackupInlineLists='1';(document.head||document.documentElement).appendChild(s)};
 
   function setup(){
     if(page!=='setup.html')return;
@@ -57,6 +58,6 @@
     document.getElementById('resultBox')?.addEventListener('input',()=>{b.disabled=false;b.textContent='CONFIRMAR';lock([$('structureName'),...document.querySelectorAll('#levels input[data-k]')],false)});
   }
 
-  const boot=()=>{loadInlineLists();setup();finance();communications();simpleFilter();structureImport()};
+  const boot=()=>{loadUiStandard();loadInlineLists();setup();finance();communications();simpleFilter();structureImport()};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true});else setTimeout(boot,0);
 })();
