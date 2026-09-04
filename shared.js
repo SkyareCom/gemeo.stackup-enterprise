@@ -2,13 +2,13 @@ const STORAGE_KEY="poker-club-state-v4";
 const CHANNEL_NAME="poker-club-state-v4";
 
 const DEFAULT_STATE={
-  eventId:"event-main-4",operator:"LOCAL",tournamentName:"MAIN EVENT - ETAPA 4",clubName:"POKER CLUB",gameType:"NLH",tournamentFormat:"REGULAR",bountyValue:0,bountyOnReentry:false,
-  running:false,prepared:false,levelIndex:0,remaining:1200,elapsed:0,playersLeft:0,field:0,rebuys:0,doubleRebuys:0,reentries:0,addons:0,
-  prizePool:0,guaranteed:150000,paidPlaces:0,lateRegLevel:8,avgStack:30000,chipLeader:0,startingStack:30000,buyin:500,fee:50,
-  reentryValue:500,rebuyValue:0,doubleRebuyValue:0,addonValue:0,earlyBonusValue:0,earlyBonusChips:0,addonBonusValue:0,addonBonusChips:0,seatsPerTable:9,language:"pt",soundOn:true,autoVoice:true,currentAnnouncement:"",transition:null,startedAt:null,lastTickAt:null,
+  eventId:"",operator:"",tournamentName:"",clubName:"",gameType:"",tournamentFormat:"",bountyValue:0,bountyOnReentry:false,
+  running:false,prepared:false,levelIndex:0,remaining:0,elapsed:0,playersLeft:0,field:0,rebuys:0,doubleRebuys:0,reentries:0,addons:0,
+  prizePool:0,guaranteed:0,paidPlaces:0,lateRegLevel:0,avgStack:0,chipLeader:0,startingStack:0,buyin:0,fee:0,
+  reentryValue:0,rebuyValue:0,doubleRebuyValue:0,addonValue:0,earlyBonusValue:0,earlyBonusChips:0,addonBonusValue:0,addonBonusChips:0,seatsPerTable:"",language:"pt",soundOn:false,autoVoice:false,currentAnnouncement:"",transition:null,startedAt:null,lastTickAt:null,
   players:[],staffUsers:[],tables:[],transactions:[],auditLog:[],messageQueue:[],messageLog:[],staffContacts:{floor:"",td:""},staffAlerts:[],botCommands:[],balancePlan:[],tableMovements:[],tableButtons:{},seatCheckins:[],paymentIntents:[],walletTransactions:[],validationLog:[],
   rankings:[],loyaltyAccounts:[],campaigns:[],playerCommunications:[],cashTables:[],cashSessions:[],cashTransactions:[],
-  structure:[{type:"level",label:"NÍVEL 1",duration:1200,sb:100,bb:200,ante:200},{type:"level",label:"NÍVEL 2",duration:1200,sb:200,bb:300,ante:300},{type:"level",label:`NÍVEL ${3}`,duration:1200,sb:200,bb:400,ante:400},{type:"break",label:"BREAK",duration:900},{type:"level",label:`NÍVEL ${4}`,duration:1200,sb:300,bb:600,ante:600},{type:"level",label:`NÍVEL ${5}`,duration:1200,sb:400,bb:800,ante:800},{type:"level",label:`NÍVEL ${6}`,duration:1200,sb:500,bb:1000,ante:1000},{type:"break",label:"BREAK",duration:900},{type:"level",label:`NÍVEL ${7}`,duration:1200,sb:600,bb:1200,ante:1200},{type:"level",label:`NÍVEL ${8}`,duration:1200,sb:800,bb:1600,ante:1600},{type:"level",label:`NÍVEL ${9}`,duration:1200,sb:1000,bb:2000,ante:2000},{type:"level",label:`NÍVEL ${10}`,duration:1200,sb:1500,bb:3000,ante:3000}],
+  structure:[{type:"level",label:"NÍVEL 1",duration:0,sb:0,bb:0,ante:0}],
   announcements:{fiveMin:true,oneMin:true,tenSec:true,levelChange:true,breakStart:true,breakEnd:true,lateRegClose:true}
 };
 function clone(o){return JSON.parse(JSON.stringify(o))}
@@ -18,9 +18,9 @@ const bc=("BroadcastChannel" in window)?new BroadcastChannel(CHANNEL_NAME):null;
 function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));if(bc)bc.postMessage(state)}
 if(bc)bc.onmessage=e=>{state={...state,...e.data};if(window.onPokerStateChange)window.onPokerStateChange(state)};
 window.addEventListener("storage",e=>{if(e.key===STORAGE_KEY){state=loadState();if(window.onPokerStateChange)window.onPokerStateChange(state)}});
-function ensureOperationalState(){for(const k of ['players','staffUsers','tables','transactions','auditLog','messageQueue','messageLog','staffAlerts','botCommands','balancePlan','tableMovements','seatCheckins','paymentIntents','walletTransactions','validationLog','rankings','loyaltyAccounts','campaigns','playerCommunications','cashTables','cashSessions','cashTransactions'])if(!Array.isArray(state[k]))state[k]=[];state.staffContacts=state.staffContacts||{floor:'',td:''};state.tableButtons=state.tableButtons||{};state.eventId=state.eventId||'event-'+Date.now();state.operator=state.operator||'LOCAL';state.tournamentFormat=state.tournamentFormat||'REGULAR';state.bountyValue=+state.bountyValue||0;state.bountyOnReentry=!!state.bountyOnReentry;state.earlyBonusValue=+state.earlyBonusValue||0;state.earlyBonusChips=+state.earlyBonusChips||0;state.addonBonusValue=+state.addonBonusValue||0;state.addonBonusChips=+state.addonBonusChips||0}
+function ensureOperationalState(){for(const k of ['players','staffUsers','tables','transactions','auditLog','messageQueue','messageLog','staffAlerts','botCommands','balancePlan','tableMovements','seatCheckins','paymentIntents','walletTransactions','validationLog','rankings','loyaltyAccounts','campaigns','playerCommunications','cashTables','cashSessions','cashTransactions'])if(!Array.isArray(state[k]))state[k]=[];state.staffContacts=state.staffContacts||{floor:'',td:''};state.tableButtons=state.tableButtons||{};if(!state.eventId&&(state.prepared||state.tournamentName||state.selectedTournamentId))state.eventId='event-'+Date.now();state.operator=state.operator||'';state.tournamentFormat=state.tournamentFormat||'';state.bountyValue=+state.bountyValue||0;state.bountyOnReentry=!!state.bountyOnReentry;state.earlyBonusValue=+state.earlyBonusValue||0;state.earlyBonusChips=+state.earlyBonusChips||0;state.addonBonusValue=+state.addonBonusValue||0;state.addonBonusChips=+state.addonBonusChips||0}
 const STAFF_ROLES={OWNER:{label:'OWNER',permissions:['*']},TD:{label:'TOURNAMENT DIRECTOR',permissions:['TOURNAMENT','PLAYERS','BALANCING','MESSAGING','RESULTS']},FLOOR:{label:'FLOOR',permissions:['PLAYERS','BALANCING','MESSAGING']},CASHIER:{label:'CASHIER',permissions:['FINANCE','WALLET','PAYMENTS']},DEALER:{label:'DEALER',permissions:['REPORT_ELIMINATION','REPORT_ACTION']},VIEWER:{label:'VIEWER',permissions:['READ_ONLY']}};
-function auditEvent(type,payload={}){ensureOperationalState();const row={id:'audit-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),eventId:state.eventId,operator:payload.operator||state.operator||'LOCAL',type,source:payload.source||'APP',createdAt:Date.now(),...payload};state.auditLog.unshift(row);return row}
+function auditEvent(type,payload={}){ensureOperationalState();const row={id:'audit-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),eventId:state.eventId,operator:payload.operator||state.operator||'',type,source:payload.source||'APP',createdAt:Date.now(),...payload};state.auditLog.unshift(row);return row}
 function enqueueMessage({playerId=null,channel='WHATSAPP',kind='INFO',body='',recipient='',source='SYSTEM',dedupeKey='',category='TRANSACTIONAL'}){ensureOperationalState();if(dedupeKey&&state.messageQueue.some(m=>m.dedupeKey===dedupeKey&&['queued','opened','sent','delivered'].includes(m.status)))return null;const m={id:'mq-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),eventId:state.eventId,playerId,channel,kind,body,recipient,source,dedupeKey,category,createdAt:Date.now(),status:'queued'};state.messageQueue.unshift(m);return m}
 function ensurePlayerCRM(player){if(!player)return null;if(typeof player.marketingConsent!=='boolean')player.marketingConsent=false;if(typeof player.transactionalConsent!=='boolean')player.transactionalConsent=true;if(!player.preferredChannel)player.preferredChannel='WHATSAPP';if(!player.crmStatus)player.crmStatus='ACTIVE';let loyalty=state.loyaltyAccounts.find(x=>x.playerId===player.id);if(!loyalty){loyalty={playerId:player.id,points:0,tier:'BASE',updatedAt:Date.now()};state.loyaltyAccounts.push(loyalty)}return loyalty}
 function playerPerformance(playerId){const tx=state.transactions.filter(t=>t.playerId===playerId),invested=tx.filter(t=>t.type!=='PAYOUT').reduce((a,t)=>a+(+t.value||0),0),payout=tx.filter(t=>t.type==='PAYOUT').reduce((a,t)=>a+(+t.value||0),0),profit=payout-invested,entries=tx.filter(t=>['ENTRY','REENTRY'].includes(t.type)).length;const rank=state.rankings.find(r=>r.playerId===playerId)||{};return{invested,payout,profit,roi:invested?profit/invested*100:0,entries,rankingPoints:+rank.points||0,rankingPosition:+rank.position||0}}
@@ -55,43 +55,5 @@ function tr(k){return(I18N[state.language]||I18N.pt)[k]||k}
   script.src='app-theme.js?v=3b12bac38b2c985348bef29462f60a2583ab3e91';
   script.defer=true;
   script.dataset.stackupThemeLoader='1';
-  (document.head||document.documentElement).appendChild(script);
-})();
-
-(function ensureStackupAuthGuard(){
-  if(typeof document==='undefined'||typeof location==='undefined')return;
-  const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
-  if(page==='login.html')return;
-  const run=()=>{try{window.StackupAuth?.guard(page)}catch(e){console.error('STACKUP AUTH GUARD',e)}};
-  if(window.StackupAuth){run();return}
-  if(document.querySelector('script[data-stackup-auth-loader]'))return;
-  const script=document.createElement('script');script.src='auth-engine.js?v=0cfa2a59';script.defer=true;script.dataset.stackupAuthLoader='1';script.onload=run;(document.head||document.documentElement).appendChild(script);
-})();
-
-(function ensureTournamentBonusConfigFields(){
-  const page=(location.pathname.split('/').pop()||'').toLowerCase();
-  if(page!=='setup.html')return;
-  window.addEventListener('load',()=>{
-    ensureOperationalState();
-    const makeBlock=(title,valueKey,chipsKey)=>{
-      const titleEl=document.createElement('div');titleEl.className='itemTitle';titleEl.textContent=title;
-      const row=document.createElement('div');row.className='valueRow';
-      const grid=document.createElement('div');grid.className='valueGrid';
-      const makeInput=(key,label)=>{const input=document.createElement('input');input.type='number';input.id=key;input.placeholder=label;input.readOnly=true;input.inputMode='none';input.onclick=()=>{const current=(+state[key]||0)?String(state[key]):'';const raw=prompt(label,current);if(raw===null)return;const clean=String(raw).replace(/[^0-9.,-]/g,'').replace(',','.');const n=Number(clean);if(!Number.isFinite(n)||n<0)return alert('INFORME UM VALOR VÁLIDO.');state[key]=n;saveState();input.value=''};input.onfocus=()=>input.blur();return input};
-      grid.append(makeInput(valueKey,'VALOR'),makeInput(chipsKey,'FICHAS'));row.appendChild(grid);return{titleEl,row};
-    };
-    const buyinRow=document.getElementById('buyin')?.closest('.valueRow');
-    if(buyinRow&&!document.getElementById('earlyBonusValue')){const b=makeBlock('EARLY BONUS','earlyBonusValue','earlyBonusChips');buyinRow.after(b.titleEl,b.row)}
-    const addon2Row=document.getElementById('specialAddonValue')?.closest('.valueRow');
-    if(addon2Row&&!document.getElementById('addonBonusValue')){const b=makeBlock('ADD ON BONUS','addonBonusValue','addonBonusChips');addon2Row.after(b.titleEl,b.row)}
-  },{once:true});
-})();
-
-(function ensureStackupRemoteSync(){
-  if(typeof document==='undefined'||document.querySelector('script[data-stackup-remote-sync]'))return;
-  const script=document.createElement('script');
-  script.src='remote-sync.js?v=1a92612b';
-  script.defer=true;
-  script.dataset.stackupRemoteSync='1';
   (document.head||document.documentElement).appendChild(script);
 })();
