@@ -55,5 +55,6 @@ clearBtn.onclick=()=>{selectedMode='';dealer1.value=dealer2.value=dealer3.value=
 confirmBtn.onclick=()=>{if(!selectedMode){result.textContent='SELECIONE O MODO FINAL TABLE.';return}const r=FinalTableHands.authorizeFinalTable({staff:selectedManager(),mode:selectedMode,managerCpf:managerCpf.value,managerPin:managerPin.value,dealerCredentials:[dealer1.value,dealer2.value,dealer3.value].filter(Boolean)});if(!r.ok){result.textContent=r.error||'NÃO FOI POSSÍVEL AUTORIZAR A FINAL TABLE.';return}result.textContent=r.mode==='TIMER'?'FINAL TABLE LIBERADA COM TEMPORIZADOR.':`${r.dealers.length} DEALER(S) AUTORIZADO(S) PARA A FINAL TABLE.`;managerCpf.value=managerPin.value='';render()};
 window.onPokerStateChange=render;FinalTableHands.ensure();render();
 </script>
+<script src="floor-station-controls.js?v=d901e25b"></script>
 </body>
 </html>
