@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Caacupe+One:wght@400&display=swap');
+
+html:root body,
+html:root body *,
+html:root body button,
+html:root body input,
+html:root body select,
+html:root body textarea,
+html:root body option{
+  font-family:'Caacupe One',system-ui,sans-serif!important;
+  font-style:normal!important;
+  font-weight:400!important;
+  letter-spacing:1px!important;
+}
+
+/* ESCALA GLOBAL +100% SOBRE O PADRÃO ATUAL DO APP */
+html:root body,
+html:root body p,
+html:root body span,
+html:root body a,
+html:root body li,
+html:root body td,
+html:root body th,
+html:root body label,
+html:root body small,
+html:root body strong,
+html:root body b,
+html:root body button,
+html:root body input,
+html:root body select,
+html:root body textarea,
+html:root body option,
+html:root body .meta,
+html:root body .desc,
+html:root body .description,
+html:root body .label,
+html:root body .value,
+html:root body .badge,
+html:root body .primary{
+  font-size:24px!important;
+}
+
+html:root body h1,
+html:root body .page-title,
+html:root body .hero-title,
+html:root body .display-title,
+html:root body .brand{
+  font-size:40px!important;
+}
+
+html:root body h2,
+html:root body .title,
+html:root body .card-title,
+html:root body .sub{
+  font-size:32px!important;
+}
+
+html:root body h3,
+html:root body .section,
+html:root body .section-title,
+html:root body .subtitle{
+  font-size:28px!important;
+}
+
+html:root body .name{font-size:36px!important}
+html:root body .tag{font-size:22px!important}
+html:root body .ey{font-size:24px!important}
+html:root body .status{font-size:24px!important}
