@@ -1,54 +1,54 @@
-/* CAST / FT — +100% sobre a escala anterior */
-html:root body .brand,html:root body .event b{font-size:50px!important}
-html:root body .levelNo{font-size:70px!important}
-html:root body .stat span{font-size:36px!important}
-html:root body .stat b{font-size:clamp(44px,6.4vw,86px)!important}
-html:root body .clock{font-size:clamp(184px,42vw,460px)!important}
-html:root body .blind small{font-size:46.8px!important}
-html:root body .blind b{font-size:clamp(76px,11.44vw,150px)!important}
-html:root body .next small{font-size:36px!important}
-html:root body .next b{font-size:clamp(44px,7vw,90px)!important}
-html:root body .tickerLogo{font-size:clamp(40px,5.6vw,76px)!important}
-html:root body .castControls button{font-size:44px!important}
-html:root body .enter button{font-size:86px!important}
-html:root body .rotate b{font-size:86px!important}
+/* CAST / FT — -40% sobre a escala ampliada anterior */
+html:root body .brand,html:root body .event b{font-size:30px!important}
+html:root body .levelNo{font-size:42px!important}
+html:root body .stat span{font-size:21.6px!important}
+html:root body .stat b{font-size:clamp(26.4px,3.84vw,51.6px)!important}
+html:root body .clock{font-size:clamp(110.4px,25.2vw,276px)!important}
+html:root body .blind small{font-size:28.08px!important}
+html:root body .blind b{font-size:clamp(45.6px,6.864vw,90px)!important}
+html:root body .next small{font-size:21.6px!important}
+html:root body .next b{font-size:clamp(26.4px,4.2vw,54px)!important}
+html:root body .tickerLogo{font-size:clamp(24px,3.36vw,45.6px)!important}
+html:root body .castControls button{font-size:26.4px!important}
+html:root body .enter button{font-size:51.6px!important}
+html:root body .rotate b{font-size:51.6px!important}
 
 /* FINAL TABLE */
-html:root body .handSide b{font-size:clamp(72.8px,10.92vw,135.2px)!important}
-html:root body .count{font-size:clamp(222px,53.8vw,650px)!important}
-html:root body .tickerSlide span{font-size:clamp(32px,4.6vw,54px)!important}
+html:root body .handSide b{font-size:clamp(43.68px,6.552vw,81.12px)!important}
+html:root body .count{font-size:clamp(133.2px,32.28vw,390px)!important}
+html:root body .tickerSlide span{font-size:clamp(19.2px,2.76vw,32.4px)!important}
 
 @media(max-width:900px){
-  html:root body .brand,html:root body .event b{font-size:36px!important}
-  html:root body .levelNo{font-size:50px!important}
-  html:root body .stat span{font-size:28px!important}
-  html:root body .stat b{font-size:clamp(36px,6vw,64px)!important}
-  html:root body .clock{font-size:clamp(144px,36vw,340px)!important}
-  html:root body .blind small{font-size:36.4px!important}
-  html:root body .blind b{font-size:clamp(58px,10.4vw,110px)!important}
-  html:root body .next small{font-size:28px!important}
-  html:root body .next b{font-size:clamp(36px,6.4vw,68px)!important}
-  html:root body .tickerLogo{font-size:clamp(32px,4.8vw,54px)!important}
-  html:root body .handSide b{font-size:clamp(52px,8.32vw,88.4px)!important}
-  html:root body .count{font-size:clamp(160px,42vw,440px)!important}
-  html:root body .tickerSlide span{font-size:clamp(26px,3.8vw,44px)!important}
+  html:root body .brand,html:root body .event b{font-size:21.6px!important}
+  html:root body .levelNo{font-size:30px!important}
+  html:root body .stat span{font-size:16.8px!important}
+  html:root body .stat b{font-size:clamp(21.6px,3.6vw,38.4px)!important}
+  html:root body .clock{font-size:clamp(86.4px,21.6vw,204px)!important}
+  html:root body .blind small{font-size:21.84px!important}
+  html:root body .blind b{font-size:clamp(34.8px,6.24vw,66px)!important}
+  html:root body .next small{font-size:16.8px!important}
+  html:root body .next b{font-size:clamp(21.6px,3.84vw,40.8px)!important}
+  html:root body .tickerLogo{font-size:clamp(19.2px,2.88vw,32.4px)!important}
+  html:root body .handSide b{font-size:clamp(31.2px,4.992vw,53.04px)!important}
+  html:root body .count{font-size:clamp(96px,25.2vw,264px)!important}
+  html:root body .tickerSlide span{font-size:clamp(15.6px,2.28vw,26.4px)!important}
 }
 
 @media(max-height:520px) and (orientation:landscape){
-  html:root body .brand,html:root body .event b{font-size:24px!important}
-  html:root body .levelNo{font-size:32px!important}
-  html:root body .stat span{font-size:18px!important}
-  html:root body .stat b{font-size:clamp(24px,4vw,40px)!important}
-  html:root body .clock{font-size:clamp(100px,28vw,210px)!important}
-  html:root body .blind small{font-size:26px!important}
-  html:root body .blind b{font-size:clamp(40px,8vw,76px)!important}
-  html:root body .next small{font-size:20px!important}
-  html:root body .next b{font-size:clamp(28px,5.4vw,48px)!important}
-  html:root body .tickerLogo{font-size:clamp(20px,3.6vw,32px)!important}
-  html:root body .castControls button{font-size:26px!important}
-  html:root body .enter button{font-size:40px!important}
-  html:root body .rotate b{font-size:48px!important}
-  html:root body .handSide b{font-size:clamp(36.4px,5.72vw,57.2px)!important}
-  html:root body .count{font-size:clamp(100px,28vw,220px)!important}
-  html:root body .tickerSlide span{font-size:clamp(18px,3vw,28px)!important}
+  html:root body .brand,html:root body .event b{font-size:14.4px!important}
+  html:root body .levelNo{font-size:19.2px!important}
+  html:root body .stat span{font-size:10.8px!important}
+  html:root body .stat b{font-size:clamp(14.4px,2.4vw,24px)!important}
+  html:root body .clock{font-size:clamp(60px,16.8vw,126px)!important}
+  html:root body .blind small{font-size:15.6px!important}
+  html:root body .blind b{font-size:clamp(24px,4.8vw,45.6px)!important}
+  html:root body .next small{font-size:12px!important}
+  html:root body .next b{font-size:clamp(16.8px,3.24vw,28.8px)!important}
+  html:root body .tickerLogo{font-size:clamp(12px,2.16vw,19.2px)!important}
+  html:root body .castControls button{font-size:15.6px!important}
+  html:root body .enter button{font-size:24px!important}
+  html:root body .rotate b{font-size:28.8px!important}
+  html:root body .handSide b{font-size:clamp(21.84px,3.432vw,34.32px)!important}
+  html:root body .count{font-size:clamp(60px,16.8vw,132px)!important}
+  html:root body .tickerSlide span{font-size:clamp(10.8px,1.8vw,16.8px)!important}
 }
