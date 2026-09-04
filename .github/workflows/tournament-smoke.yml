@@ -22,3 +22,5 @@ jobs:
         run: node tests/tournament-smoke.js
       - name: Run static UI button audit
         run: node tests/ui-button-audit.js
+      - name: Run production readiness audit
+        run: node tests/production-readiness.js
