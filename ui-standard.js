@@ -34,6 +34,18 @@
       font-size:12px!important;
       line-height:1.15!important;
     }
+    button.active,button.selected,button[aria-pressed="true"],button[aria-selected="true"],
+    .toggleBtn.active,.lang.active,.stackup-select-option.active,.stackup-select-option.selected,
+    [role="button"].active,[role="button"].selected,[role="button"][aria-pressed="true"],[role="button"][aria-selected="true"]{
+      background:#8DFC3B!important;
+      color:#020302!important;
+      border-color:#8DFC3B!important;
+    }
+    button.active *,button.selected *,button[aria-pressed="true"] *,button[aria-selected="true"] *,
+    .toggleBtn.active *,.lang.active *,.stackup-select-option.active *,.stackup-select-option.selected *,
+    [role="button"].active *,[role="button"].selected *,[role="button"][aria-pressed="true"] *,[role="button"][aria-selected="true"] *{
+      color:#020302!important;
+    }
     button:disabled,.primary:disabled,.btn:disabled,.button:disabled,[role="button"][aria-disabled="true"],input[type="button"]:disabled,input[type="submit"]:disabled,input[type="reset"]:disabled{
       opacity:.5!important;cursor:not-allowed!important;
     }
