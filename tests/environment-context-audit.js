@@ -4,10 +4,13 @@ const assert=(name,cond)=>{if(cond)console.log('PASS:',name);else failures.push(
 const registered=fs.readFileSync('environment-registered.html','utf8');
 const context=fs.readFileSync('environment-context.js','utf8');
 const ui=fs.readFileSync('ui-standard.js','utf8');
-assert('Ambientes cadastrados possui SELECIONAR',registered.includes('SELECIONAR')&&registered.includes('data-select-environment'));
-assert('Ambientes cadastrados possui EDITAR',registered.includes('EDITAR')&&registered.includes('data-edit-environment'));
-assert('Ambientes cadastrados possui APAGAR',registered.includes('APAGAR')&&registered.includes('data-delete-environment'));
-assert('Ambiente selecionado é persistido',registered.includes('state.activeEnvironmentId=club.id')&&registered.includes('saveState()'));
+assert('Ambientes cadastrados possui seção AMBIENTE SELECIONADO',registered.includes('AMBIENTE SELECIONADO')&&registered.includes('activeEnvironmentName'));
+assert('Botão SELECIONAR ativa modo de seleção',registered.includes('id="selectMode"')&&registered.includes("selectionMode=!selectionMode"));
+assert('Modo de seleção usa quadrado clicável padrão',registered.includes('class="pick"')&&registered.includes('data-pick-environment')&&registered.includes('type="checkbox"'));
+assert('Ambiente marcado revela FIXAR',registered.includes('FIXAR')&&registered.includes('data-fix-environment'));
+assert('Ambiente marcado revela EDITAR',registered.includes('EDITAR')&&registered.includes('data-edit-environment'));
+assert('Ambiente marcado revela APAGAR',registered.includes('APAGAR')&&registered.includes('data-delete-environment'));
+assert('FIXAR persiste ambiente ativo',registered.includes('state.activeEnvironmentId=club.id')&&registered.includes('state.activeEnvironmentName=club.name')&&registered.includes('saveState()'));
 assert('Edição atualiza ambiente ativo',registered.includes('state.activeEnvironmentName=name')&&registered.includes('state.clubName=name'));
 assert('Exclusão limpa ambiente ativo',registered.includes("state.activeEnvironmentId=''"));
 assert('Contexto aplica ambiente no STAFF',context.includes("page!=='staff.html'")&&context.includes("club.value=active.id"));
