@@ -6,8 +6,9 @@
   style.textContent=`
     @import url('https://fonts.googleapis.com/css2?family=Caacupe+One:wght@400&display=swap');
     html,body,body *,button,input,select,textarea,option,label,a,[role="button"],input::placeholder,textarea::placeholder,
-    .stackup-select-trigger,.stackup-select-option,[data-stackup-drawer-trigger],[data-stackup-drawer-panel] *{
-      font-family:'Caacupe One',system-ui,sans-serif!important;
+    .stackup-select-trigger,.stackup-select-option,[data-stackup-drawer-trigger],[data-stackup-drawer-panel] *,
+    #stackup-global-nav,#stackup-global-nav *,#stackup-global-nav button,#stackup-global-nav a,#stackup-back,#stackup-home{
+      font-family:'Caacupe One'!important;
       font-style:normal!important;
       font-weight:400!important;
       letter-spacing:1px!important;
