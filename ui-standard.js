@@ -38,7 +38,7 @@
   (document.head||document.documentElement).appendChild(style);
   if(!document.querySelector('script[data-stackup-confirmation-standard]')){
     const s=document.createElement('script');
-    s.src='confirmation-standard.js?v=7ae6ced1c57889b534d43e57d20098c2c94f4a11';
+    s.src='confirmation-standard.js?v=c5f762edc04fd6043d7bf8ebc624a97b002643d7';
     s.defer=true;
     s.dataset.stackupConfirmationStandard='1';
     (document.head||document.documentElement).appendChild(s);
