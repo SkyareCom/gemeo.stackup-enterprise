@@ -28,3 +28,5 @@ jobs:
         run: node tests/in-app-drawer-audit.js
       - name: Run secondary screen audit
         run: node tests/secondary-screen-audit.js
+      - name: Run confirmation standard audit
+        run: node tests/confirmation-standard-audit.js
