@@ -1,6 +1,10 @@
 (function(){
   const $=id=>document.getElementById(id);
   const saveBtn=$('save');
+  const historyBtn=$('historyBtn');
+  const history=$('history');
+  if(historyBtn)historyBtn.remove();
+  if(history)history.remove();
   if(!saveBtn||typeof persist!=='function'||typeof render!=='function')return;
   const fields={
     name:$('name'),cpf:$('cpf'),birth:$('birth'),phone:$('phone'),whatsapp:$('whatsapp'),email:$('email'),instagram:$('instagram'),type:$('type'),team:$('team'),
@@ -34,7 +38,6 @@
     });
     persist();
     if(typeof clearForm==='function')clearForm();
-    render();
     show('JOGADOR CADASTRADO. O REGISTRO JÁ ESTÁ DISPONÍVEL EM JOGADORES CADASTRADOS.');
   };
 })();
