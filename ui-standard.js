@@ -43,4 +43,11 @@
     s.dataset.stackupConfirmationStandard='1';
     (document.head||document.documentElement).appendChild(s);
   }
+  if(!document.querySelector('script[data-stackup-environment-context]')){
+    const e=document.createElement('script');
+    e.src='environment-context.js?v=c201e5fbecff34df6c0bff811d05fa82cb435581';
+    e.defer=true;
+    e.dataset.stackupEnvironmentContext='1';
+    (document.head||document.documentElement).appendChild(e);
+  }
 })();
