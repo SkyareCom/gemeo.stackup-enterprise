@@ -67,3 +67,13 @@ function tr(k){return(I18N[state.language]||I18N.pt)[k]||k}
   script.dataset.stackupDataEntry='1';
   (document.head||document.documentElement).appendChild(script);
 })();
+
+(function ensureInputMasks(){
+  if(typeof document==='undefined')return;
+  if(document.querySelector('script[data-stackup-input-masks]'))return;
+  const script=document.createElement('script');
+  script.src='input-masks.js?v=f64b2b09ccdcc18737c08b5d26f85710cdcc23ae';
+  script.defer=true;
+  script.dataset.stackupInputMasks='1';
+  (document.head||document.documentElement).appendChild(script);
+})();
