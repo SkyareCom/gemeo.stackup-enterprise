@@ -19,7 +19,7 @@
   function staff(){
     if(page!=='staff.html')return;
     const active=getActive(); if(!active.id)return;
-    const apply=()=>{const club=document.getElementById('club');if(!club)return false;if([...club.options].some(o=>String(o.value)===active.id)){club.value=active.id;club.disabled=true;club.dataset.activeEnvironmentLocked='1';return true}return false};
+    const apply=()=>{const club=document.getElementById('club');if(!club)return false;if([...club.options].some(o=>String(o.value)===active.id)){club.value=active.id;club.dataset.activeEnvironmentSelected='1';return true}return false};
     badge(); if(!apply()){let n=0,t=setInterval(()=>{n++;if(apply()||n>20)clearInterval(t)},100)}
     document.addEventListener('click',e=>{if(e.target?.id==='save')setTimeout(apply,0)},true);
   }
