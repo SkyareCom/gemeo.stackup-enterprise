@@ -33,6 +33,14 @@
     button:disabled,.primary:disabled,.btn:disabled,.button:disabled,[role="button"][aria-disabled="true"],input[type="button"]:disabled,input[type="submit"]:disabled,input[type="reset"]:disabled{
       opacity:.5!important;cursor:not-allowed!important;
     }
+    [data-stackup-new-action][hidden]{display:none!important}
   `;
   (document.head||document.documentElement).appendChild(style);
+  if(!document.querySelector('script[data-stackup-confirmation-standard]')){
+    const s=document.createElement('script');
+    s.src='confirmation-standard.js?v=7ae6ced1c57889b534d43e57d20098c2c94f4a11';
+    s.defer=true;
+    s.dataset.stackupConfirmationStandard='1';
+    (document.head||document.documentElement).appendChild(s);
+  }
 })();
