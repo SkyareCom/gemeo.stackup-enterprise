@@ -44,7 +44,7 @@ function nextLevelItem(){for(let i=state.levelIndex+1;i<state.structure.length;i
 function followingLevels(limit=3){const out=[];for(let i=state.levelIndex+1;i<state.structure.length&&out.length<limit;i++)if(state.structure[i].type==="level")out.push(state.structure[i]);return out}
 function calcNextBreak(){let secs=state.remaining;for(let i=state.levelIndex+1;i<state.structure.length;i++){if(state.structure[i].type==="break")return{secs,label:state.structure[i].label,index:i};secs+=state.structure[i].duration}return null}
 function currentLevelNumber(){const c=currentItem();if(c.type!=="level")return null;return parseInt((c.label.match(/\d+/)||["0"])[0],10)||0}
-const I18N={pt:{live:"TORNEIO AO VIVO",remaining:"TEMPO RESTANTE DO NÍVEL",breakRemaining:"INTERVALO",next:"PRÓXIMO NÍVEL",players:"PLAYERS LEFT",elapsed:"TEMPO DECORRIDO",nextBreak:"PRÓXIMO BREAK",paused:"PAUSADO",running:"EM ANDAMENTO",returning:"RETORNO EM",upcoming:"PRÓXIMOS NÍVEIS"},en:{live:"LIVE TOURNAMENT",remaining:"TIME REMAINING IN LEVEL",breakRemaining:"BREAK",next:"NEXT LEVEL",players:"PLAYERS LEFT",elapsed:"ELAPSED TIME",nextBreak:"NEXT BREAK",paused:"PAUSED",running:"RUNNING",returning:"RETURN IN",upcoming:"UPCOMING LEVELS"},es:{live:"TORNEO EN VIVO",remaining:"TIEMPO RESTANTE DEL NIVEL",breakRemaining:"DESCANSO",next:"PRÓXIMO NIVEL",players:"JUGADORES",elapsed:"TIEMPO TRANSCURRIDO",nextBreak:"PRÓXIMO DESCANSO",paused:"PAUSADO",running:"EN CURSO",returning:"REGRESO EM",upcoming:"PRÓXIMOS NÍVEIS"}};
+const I18N={pt:{live:"TORNEIO AO VIVO",remaining:"TEMPO RESTANTE DO NÍVEL",breakRemaining:"INTERVALO",next:"PRÓXIMO NÍVEL",players:"PLAYERS LEFT",elapsed:"TEMPO DECORRIDO",nextBreak:"PRÓXIMO BREAK",paused:"PAUSADO",running:"EM ANDAMENTO",returning:"RETORNO EM",upcoming:"PRÓXIMOS NÍVEIS"},en:{live:"LIVE TOURNAMENT",remaining:"TIME REMAINING IN LEVEL",breakRemaining:"BREAK",next:"NEXT LEVEL",players:"PLAYERS LEFT",elapsed:"ELAPSED TIME",nextBreak:"NEXT BREAK",paused:"PAUSADO",running:"RUNNING",returning:"RETURN IN",upcoming:"UPCOMING LEVELS"},es:{live:"TORNEO EN VIVO",remaining:"TIEMPO RESTANTE DEL NIVEL",breakRemaining:"DESCANSO",next:"PRÓXIMO NIVEL",players:"JUGADORES",elapsed:"TIEMPO TRANSCURRIDO",nextBreak:"PRÓXIMO DESCANSO",paused:"PAUSADO",running:"EN CURSO",returning:"REGRESO EM",upcoming:"PRÓXIMOS NÍVEIS"}};
 function tr(k){return(I18N[state.language]||I18N.pt)[k]||k}
 
 (function ensureStackupGlobalTheme(){
@@ -62,7 +62,7 @@ function tr(k){return(I18N[state.language]||I18N.pt)[k]||k}
   if(typeof document==='undefined')return;
   if(document.querySelector('script[data-stackup-data-entry]'))return;
   const script=document.createElement('script');
-  script.src='data-entry-standard.js?v=b2a3b3ba4863d6afb9744ede43dd2ae0a4014129';
+  script.src='data-entry-standard.js?v=7c0d1e126814527832cf8c3b572d1a580e32989c';
   script.defer=true;
   script.dataset.stackupDataEntry='1';
   (document.head||document.documentElement).appendChild(script);
