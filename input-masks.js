@@ -78,3 +78,12 @@
 
   window.StackupInputMasks={formatCpf,formatPhone};
 })();
+
+(function ensureGlobalLanguage(){
+  if(typeof document==='undefined'||window.StackupAppLanguage||document.querySelector('script[data-stackup-language]'))return;
+  const script=document.createElement('script');
+  script.src='app-language.js?v=5d133449b4decfcf7e4e61dbd425bd16b057c4e1';
+  script.defer=true;
+  script.dataset.stackupLanguage='1';
+  (document.head||document.documentElement).appendChild(script);
+})();
