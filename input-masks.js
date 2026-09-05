@@ -82,7 +82,7 @@
 (function ensureGlobalLanguage(){
   if(typeof document==='undefined'||window.StackupAppLanguage||document.querySelector('script[data-stackup-language]'))return;
   const script=document.createElement('script');
-  script.src='app-language.js?v=5d133449b4decfcf7e4e61dbd425bd16b057c4e1';
+  script.src='app-language.js?v=2b5ab1e61a65597ba56b6d6b0e91b6b8c3fb9710';
   script.defer=true;
   script.dataset.stackupLanguage='1';
   (document.head||document.documentElement).appendChild(script);
