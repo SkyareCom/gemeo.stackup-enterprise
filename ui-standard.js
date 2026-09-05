@@ -13,9 +13,12 @@
       letter-spacing:1px!important;
       text-transform:uppercase!important;
     }
-    button,.primary,.btn,.button,a.btn,a.button,[role="button"],input[type="button"],input[type="submit"],input[type="reset"]{
+    button,.primary,.btn:not(.card),.button:not(.card),a.btn:not(.card),a.button:not(.card),[role="button"]:not(.card),input[type="button"],input[type="submit"],input[type="reset"]{
+      height:44px!important;
       min-height:44px!important;
-      padding:10px 12px!important;
+      max-height:44px!important;
+      box-sizing:border-box!important;
+      padding:0 12px!important;
       border:1px solid #8DFC3B!important;
       border-radius:9px!important;
       background:linear-gradient(#0B100D,#060907)!important;
