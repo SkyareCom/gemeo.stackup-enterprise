@@ -14,7 +14,20 @@ html:root body a,
 html:root body [role="button"],
 html:root body input::placeholder,
 html:root body textarea::placeholder{
-  font-family:'Caacupe One',system-ui,sans-serif!important;
+  font-family:'Caacupe One'!important;
+  font-style:normal!important;
+  font-weight:400!important;
+  letter-spacing:1px!important;
+}
+
+/* NAVEGAÇÃO GLOBAL: CAACUPE ONE É OBRIGATÓRIA */
+html:root body #stackup-global-nav,
+html:root body #stackup-global-nav *,
+html:root body #stackup-global-nav button,
+html:root body #stackup-global-nav a,
+html:root body #stackup-back,
+html:root body #stackup-home{
+  font-family:'Caacupe One'!important;
   font-style:normal!important;
   font-weight:400!important;
   letter-spacing:1px!important;
