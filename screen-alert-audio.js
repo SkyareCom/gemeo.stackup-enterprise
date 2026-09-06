@@ -2,7 +2,7 @@
 'use strict';
 const KEY='stackupScreenAlertAudio';
 const PRESETS=[
- ['airport','AEROPORTO • 2 TONS',[[660,.18],[880,.42]]],
+ ['airport','AEROPORTO • 2 TONS',[[880,.18],[660,.42]]],
  ['singleTone','1 TOM • REPETIÇÃO',[[740,.22],[0,.14],[740,.22],[0,.14],[740,.32]]],
  ['analog','DESPERTADOR • ANALÓGICO',[[1700,.09],[1250,.09],[1700,.09],[1250,.22]]],
  ['digital','DESPERTADOR • DIGITAL',[[980,.12],[0,.06],[980,.12],[0,.06],[980,.22]]],
