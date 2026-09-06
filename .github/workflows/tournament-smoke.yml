@@ -34,3 +34,5 @@ jobs:
         run: node tests/environment-context-audit.js
       - name: Run input mask audit
         run: node tests/input-mask-audit.js
+      - name: Run language coverage audit
+        run: node tests/language-audit.js
