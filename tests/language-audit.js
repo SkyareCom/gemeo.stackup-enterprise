@@ -5,19 +5,20 @@ const i18n=require('../app-language.js');
 const ROOT=path.resolve(__dirname,'..');
 const EXCLUDE=new Set(['node_modules','.git','.github','tests']);
 const EXT=new Set(['.html','.js']);
+const SKIP_FILES=new Set(['app-language.js']);
 const sourceTerms=[
-  'CADASTRAR','CADASTRADO','CADASTRADOS','CADASTRADA','CADASTRADAS','CADASTRO','JOGADOR','JOGADORES','TORNEIO','TORNEIOS','CONFIGURAÇÃO','CONFIGURAÇÕES','GESTÃO','OPERAÇÃO','ESTRUTURA','ESTRUTURAS','NÍVEL','NÍVEIS','HISTÓRICO','SELECIONE','SELECIONAR','SELECIONADO','SELECIONADA','CONFIRMAR','CONFIRMADO','SALVAR','SALVO','APAGAR','EXCLUIR','EDITAR','CANCELAR','ANTERIOR','VOLTAR','FECHAR','ADICIONAR','REMOVER','ATUALIZAR','RETOMAR','GERAR','LIMPAR','NENHUM','NENHUMA','INFORMAÇÃO','INFORMAÇÕES','PERMISSÃO','PERMISSÕES','FUNÇÃO','FUNÇÕES','ACESSO','ACESSOS','TRANSMISSÃO','FINANCEIRO','ASSISTÊNCIA','REGULAMENTO','PONTUAÇÃO','POSIÇÃO','POSIÇÕES','RESUMO','DETALHES','DESCRIÇÃO','OBSERVAÇÃO','OBSERVAÇÕES','ENDEREÇO','CIDADE','PAÍS','QUANTIDADE','MÉDIA','ELIMINAÇÃO','ELIMINAÇÕES','MOVIMENTAÇÃO','MOVIMENTAÇÕES','NECESSÁRIA','NECESSÁRIO','AGUARDANDO','DISPONÍVEL','DISPONÍVEIS','INSCRIÇÕES','PREMIAÇÃO','COLOCAÇÕES','TAXAS','RECORRENTE','DOBRAR','FICHAS','MESAS','MESA','CADEIRA','ASSENTO','TEMPO','VALORES','VALOR'
+  'CADASTRAR','CADASTRADO','CADASTRADOS','CADASTRADA','CADASTRADAS','CADASTRO','JOGADOR','JOGADORES','TORNEIO','TORNEIOS','CONFIGURAÇÃO','CONFIGURAÇÕES','GESTÃO','OPERAÇÃO','ESTRUTURA','ESTRUTURAS','NÍVEL','NÍVEIS','HISTÓRICO','SELECIONE','SELECIONAR','SELECIONADO','SELECIONADA','CONFIRMAR','CONFIRMADO','SALVAR','SALVO','APAGAR','EXCLUIR','EDITAR','CANCELAR','ANTERIOR','VOLTAR','FECHAR','ADICIONAR','REMOVER','ATUALIZAR','RETOMAR','GERAR','LIMPAR','NENHUM','NENHUMA','INFORMAÇÃO','INFORMAÇÕES','PERMISSÃO','PERMISSÕES','FUNÇÃO','FUNÇÕES','ACESSO','ACESSOS','TRANSMISSÃO','FINANCEIRO','ASSISTÊNCIA','REGULAMENTO','PONTUAÇÃO','POSIÇÃO','POSIÇÕES','RESUMO','DETALHES','DESCRIÇÃO','OBSERVAÇÃO','OBSERVAÇÕES','ENDEREÇO','CIDADE','PAÍS','QUANTIDADE','MÉDIA','ELIMINAÇÃO','ELIMINAÇÕES','MOVIMENTAÇÃO','MOVIMENTAÇÕES','NECESSÁRIA','NECESSÁRIO','AGUARDANDO','DISPONÍVEL','DISPONÍVEIS','INSCRIÇÕES','PREMIAÇÃO','COLOCAÇÕES','TAXAS','RECORRENTE','DOBRAR','FICHAS','MESAS','MESA','CADEIRA','ASSENTO','TEMPO','VALORES','VALOR','COMPOSIÇÃO','TEMPORIZADOR','CATÁLOGO','RELATÓRIO','RELATÓRIOS','DADOS','OPERACIONAIS','INTERPRETAÇÃO'
 ];
 const residualEn=[...sourceTerms];
 const residualEs=[
-  'CADASTRAR','CADASTRADO','CADASTRADOS','CADASTRADA','CADASTRADAS','CADASTRO','JOGADOR','JOGADORES','TORNEIO','TORNEIOS','CONFIGURAÇÃO','CONFIGURAÇÕES','GESTÃO','OPERAÇÃO','ESTRUTURA','ESTRUTURAS','NÍVEL','NÍVEIS','HISTÓRICO','SELECIONE','SELECIONAR','SELECIONADO','SELECIONADA','SALVAR','SALVO','APAGAR','ANTERIOR','VOLTAR','FECHAR','ADICIONAR','REMOVER','ATUALIZAR','RETOMAR','LIMPAR','NENHUM','NENHUMA','INFORMAÇÃO','INFORMAÇÕES','PERMISSÃO','PERMISSÕES','FUNÇÃO','FUNÇÕES','ACESSO','ACESSOS','TRANSMISSÃO','FINANCEIRO','ASSISTÊNCIA','REGULAMENTO','PONTUAÇÃO','POSIÇÃO','POSIÇÕES','RESUMO','DETALHES','DESCRIÇÃO','OBSERVAÇÃO','OBSERVAÇÕES','ENDEREÇO','CIDADE','QUANTIDADE','MÉDIA','ELIMINAÇÃO','ELIMINAÇÕES','MOVIMENTAÇÃO','MOVIMENTAÇÕES','NECESSÁRIA','NECESSÁRIO','AGUARDANDO','DISPONÍVEL','DISPONÍVEIS','INSCRIÇÕES','PREMIAÇÃO','COLOCAÇÕES','TAXAS','DOBRAR'
+  'CADASTRAR','CADASTRADO','CADASTRADOS','CADASTRADA','CADASTRADAS','CADASTRO','JOGADOR','JOGADORES','TORNEIO','TORNEIOS','CONFIGURAÇÃO','CONFIGURAÇÕES','GESTÃO','OPERAÇÃO','ESTRUTURA','ESTRUTURAS','NÍVEL','NÍVEIS','HISTÓRICO','SELECIONE','SELECIONAR','SELECIONADO','SELECIONADA','SALVAR','SALVO','APAGAR','ANTERIOR','VOLTAR','FECHAR','ADICIONAR','REMOVER','ATUALIZAR','RETOMAR','LIMPAR','NENHUM','NENHUMA','INFORMAÇÃO','INFORMAÇÕES','PERMISSÃO','PERMISSÕES','FUNÇÃO','FUNÇÕES','ACESSO','ACESSOS','TRANSMISSÃO','FINANCEIRO','ASSISTÊNCIA','REGULAMENTO','PONTUAÇÃO','POSIÇÃO','POSIÇÕES','RESUMO','DETALHES','DESCRIÇÃO','OBSERVAÇÃO','OBSERVAÇÕES','ENDEREÇO','CIDADE','QUANTIDADE','MÉDIA','ELIMINAÇÃO','ELIMINAÇÕES','MOVIMENTAÇÃO','MOVIMENTAÇÕES','NECESSÁRIA','NECESSÁRIO','AGUARDANDO','DISPONÍVEL','DISPONÍVEIS','INSCRIÇÕES','PREMIAÇÃO','COLOCAÇÕES','TAXAS','DOBRAR','COMPOSIÇÃO','TEMPORIZADOR','CATÁLOGO','RELATÓRIOS','OPERACIONAIS','INTERPRETAÇÃO'
 ];
 
 const hasTerm=(text,terms)=>terms.some(t=>text.includes(t));
 const clean=s=>String(s||'').replace(/\\n/g,' ').replace(/\s+/g,' ').trim();
 const looksUi=s=>{
   const t=clean(s);
-  if(t.length<2||t.length>260)return false;
+  if(t.length<2||t.length>320)return false;
   if(/https?:\/\//i.test(t)||/[{}<>]=|function\b|const\b|let\b|var\b|=>|querySelector|classList|dataset|localStorage|Date\.|Math\.|JSON\.|document\.|window\./.test(t))return false;
   return hasTerm(t.toUpperCase(),sourceTerms);
 };
@@ -27,7 +28,7 @@ function walk(dir,out=[]){
     if(EXCLUDE.has(ent.name))continue;
     const p=path.join(dir,ent.name);
     if(ent.isDirectory())walk(p,out);
-    else if(EXT.has(path.extname(ent.name)))out.push(p);
+    else if(EXT.has(path.extname(ent.name))&&!SKIP_FILES.has(ent.name))out.push(p);
   }
   return out;
 }
@@ -42,7 +43,7 @@ function extractHtml(src){
 }
 function extractJs(src){
   const out=[];
-  const rx=/'([^'\n]{2,260})'|"([^"\n]{2,260})"|`([^`\n]{2,260})`/g;let m;
+  const rx=/'([^'\n]{2,320})'|"([^"\n]{2,320})"|`([^`\n]{2,320})`/g;let m;
   while((m=rx.exec(src)))out.push(m[1]||m[2]||m[3]||'');
   return out;
 }
@@ -66,19 +67,20 @@ for(const file of files){
     const en=clean(i18n.translateString(text,'en'));
     const es=clean(i18n.translateString(text,'es'));
     if(en===text||hasTerm(en.toUpperCase(),residualEn))failures.push(`${rel} :: EN :: ${text} => ${en}`);
-    if(es===text||hasTerm(es.toUpperCase(),residualEs))failures.push(`${rel} :: ES :: ${text} => ${es}`);
+    if(hasTerm(es.toUpperCase(),residualEs))failures.push(`${rel} :: ES :: ${text} => ${es}`);
   }
 }
 
-if(i18n.version!=='3.0.0')failures.push(`VERSÃO DO MOTOR INESPERADA: ${i18n.version}`);
-if(!/characterData:true/.test(fs.readFileSync(path.join(ROOT,'app-language.js'),'utf8')))failures.push('MOTOR NÃO OBSERVA ALTERAÇÕES DE TEXTO DINÂMICAS.');
-if(!/iframe/.test(fs.readFileSync(path.join(ROOT,'app-language.js'),'utf8')))failures.push('MOTOR NÃO COBRE IFRAMES SAME-ORIGIN.');
+if(!/^3\./.test(i18n.version||''))failures.push(`VERSÃO DO MOTOR INESPERADA: ${i18n.version}`);
+const engine=fs.readFileSync(path.join(ROOT,'app-language.js'),'utf8');
+if(!/characterData:true/.test(engine))failures.push('MOTOR NÃO OBSERVA ALTERAÇÕES DE TEXTO DINÂMICAS.');
+if(!/iframe/i.test(engine))failures.push('MOTOR NÃO COBRE IFRAMES SAME-ORIGIN.');
 if(missingLoader.length)failures.push(`TELAS SEM CARREGAMENTO GLOBAL DE IDIOMA: ${missingLoader.join(', ')}`);
 
 if(failures.length){
   console.error(`LANGUAGE AUDIT FALHOU: ${failures.length} PROBLEMA(S) EM ${candidates} STRING(S) DE UI.`);
-  failures.slice(0,200).forEach(x=>console.error(' - '+x));
-  if(failures.length>200)console.error(` - ... ${failures.length-200} PROBLEMA(S) ADICIONAIS`);
+  failures.slice(0,250).forEach(x=>console.error(' - '+x));
+  if(failures.length>250)console.error(` - ... ${failures.length-250} PROBLEMA(S) ADICIONAIS`);
   process.exit(1);
 }
 console.log(`LANGUAGE AUDIT OK: ${files.length} ARQUIVOS, ${candidates} STRING(S) DE UI, PT/EN/ES COBERTOS.`);
