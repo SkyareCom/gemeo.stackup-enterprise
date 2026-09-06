@@ -52,6 +52,19 @@
     [data-stackup-new-action][hidden]{display:none!important}
   `;
   (document.head||document.documentElement).appendChild(style);
+  const loadLanguageExtra=()=>{
+    if(document.querySelector('script[data-stackup-language-extra]'))return;
+    const x=document.createElement('script');
+    x.src='app-language-extra.js?v=8ee11f0c0c8b0be7dbdb120b7a99a1d337cb2072';
+    x.defer=true;x.dataset.stackupLanguageExtra='1';
+    (document.head||document.documentElement).appendChild(x);
+  };
+  if(!window.StackupAppLanguage&&!document.querySelector('script[data-stackup-language]')){
+    const l=document.createElement('script');
+    l.src='app-language.js?v=25edfbe44d78b540013473f3275cc471ef832512';
+    l.defer=true;l.dataset.stackupLanguage='1';l.onload=loadLanguageExtra;
+    (document.head||document.documentElement).appendChild(l);
+  }else loadLanguageExtra();
   if(!document.querySelector('script[data-stackup-confirmation-standard]')){
     const s=document.createElement('script');
     s.src='confirmation-standard.js?v=c5f762edc04fd6043d7bf8ebc624a97b002643d7';
