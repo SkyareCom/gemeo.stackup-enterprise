@@ -3,7 +3,7 @@
 const KEY='stackupScreenAlertAudio';
 const PRESETS=[
  ['airport','AEROPORTO • 2 TONS',[[660,.18],[880,.42]]],
- ['airportSoft','AEROPORTO • SUAVE',[[523,.2],[784,.5]]],
+ ['singleTone','1 TOM • REPETIÇÃO',[[740,.22],[0,.14],[740,.22],[0,.14],[740,.32]]],
  ['analog','DESPERTADOR • ANALÓGICO',[[1700,.09],[1250,.09],[1700,.09],[1250,.22]]],
  ['digital','DESPERTADOR • DIGITAL',[[980,.12],[0,.06],[980,.12],[0,.06],[980,.22]]],
  ['double','ALARME • DUPLO',[[740,.18],[0,.08],[740,.28]]],
@@ -15,7 +15,7 @@ const PRESETS=[
 ];
 const defaults={preset:'airport',pitch:0,repeats:1,bass:0,treble:0,volume:70};
 let ctx=null,active=[];
-function load(){try{return Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(_){return {...defaults}}}
+function load(){try{const saved=Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'));if(saved.preset==='airportSoft')saved.preset='singleTone';return saved}catch(_){return {...defaults}}}
 function save(v){localStorage.setItem(KEY,JSON.stringify(v));window.dispatchEvent(new CustomEvent('stackup-alert-audio-change',{detail:v}))}
 function stop(){active.forEach(n=>{try{n.stop?.()}catch(_){}});active=[]}
 function context(){ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();return ctx}
