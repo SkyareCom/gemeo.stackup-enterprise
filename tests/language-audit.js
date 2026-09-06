@@ -14,7 +14,8 @@ const residualEn=[...sourceTerms];
 const residualEs=[
   'CADASTRAR','CADASTRADO','CADASTRADOS','CADASTRADA','CADASTRADAS','CADASTRO','JOGADOR','JOGADORES','TORNEIO','TORNEIOS','CONFIGURAÇÃO','CONFIGURAÇÕES','GESTÃO','OPERAÇÃO','ESTRUTURA','ESTRUTURAS','NÍVEL','NÍVEIS','HISTÓRICO','SELECIONE','SELECIONAR','SELECIONADO','SELECIONADA','SALVAR','SALVO','APAGAR','ANTERIOR','VOLTAR','FECHAR','ADICIONAR','REMOVER','ATUALIZAR','RETOMAR','LIMPAR','NENHUM','NENHUMA','INFORMAÇÃO','INFORMAÇÕES','PERMISSÃO','PERMISSÕES','FUNÇÃO','FUNÇÕES','ACESSO','ACESSOS','TRANSMISSÃO','FINANCEIRO','ASSISTÊNCIA','REGULAMENTO','PONTUAÇÃO','POSIÇÃO','POSIÇÕES','RESUMO','DETALHES','DESCRIÇÃO','OBSERVAÇÃO','OBSERVAÇÕES','ENDEREÇO','CIDADE','QUANTIDADE','MÉDIA','ELIMINAÇÃO','ELIMINAÇÕES','MOVIMENTAÇÃO','MOVIMENTAÇÕES','NECESSÁRIA','NECESSÁRIO','AGUARDANDO','DISPONÍVEL','DISPONÍVEIS','INSCRIÇÕES','PREMIAÇÃO','COLOCAÇÕES','TAXAS','DOBRAR','COMPOSIÇÃO','RELATÓRIOS','OPERACIONAIS','INTERPRETAÇÃO'
 ];
-const hasTerm=(text,terms)=>terms.some(t=>text.includes(t));
+const esc=s=>String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const hasTerm=(text,terms)=>terms.some(t=>new RegExp(`(^|[^\\p{L}\\p{N}_])${esc(t)}(?=$|[^\\p{L}\\p{N}_])`,'u').test(text));
 const clean=s=>String(s||'').replace(/\\n/g,' ').replace(/\s+/g,' ').trim();
 const looksUi=s=>{
   const t=clean(s);
