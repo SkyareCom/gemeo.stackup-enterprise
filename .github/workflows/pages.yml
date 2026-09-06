@@ -23,6 +23,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Inject final language layer
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const skip=new Set(['.git','node_modules']);
+          function walk(dir){
+            for(const ent of fs.readdirSync(dir,{withFileTypes:true})){
+              if(skip.has(ent.name))continue;
+              const p=path.join(dir,ent.name);
+              if(ent.isDirectory())walk(p);
+              else if(ent.name.endsWith('.html')){
+                let s=fs.readFileSync(p,'utf8');
+                if(s.includes('app-language-final.js'))continue;
+                const tag='<script src="app-language-final.js?v=4c31491c"></script>';
+                s=/<\/body>/i.test(s)?s.replace(/<\/body>/i,tag+'</body>'):s+tag;
+                fs.writeFileSync(p,s);
+              }
+            }
+          }
+          walk('.');
+          NODE
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
