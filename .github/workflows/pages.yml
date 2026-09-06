@@ -37,7 +37,7 @@ jobs:
               else if(ent.name.endsWith('.html')){
                 let s=fs.readFileSync(p,'utf8');
                 if(s.includes('app-language-final.js'))continue;
-                const tag='<script src="app-language-final.js?v=4c31491c"></script>';
+                const tag='<script src="app-language-final.js?v=904063e6"></script>';
                 s=/<\/body>/i.test(s)?s.replace(/<\/body>/i,tag+'</body>'):s+tag;
                 fs.writeFileSync(p,s);
               }
