@@ -55,3 +55,11 @@
   }
   window.StackupCastLive={qty,money,metrics,activePlayers,alternatePlayers,tableCount,fieldCount,totalChips,prizePool,elapsedSeconds,snapshot};
 })();
+
+(function(){
+  if(typeof document==='undefined'||document.querySelector('script[data-stackup-cast-ticker]'))return;
+  const s=document.createElement('script');
+  s.src='cast-ticker-engine.js?v=1d370975';
+  s.dataset.stackupCastTicker='1';
+  document.head.appendChild(s);
+})();
