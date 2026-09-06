@@ -1,8 +1,8 @@
-(function(){
+(function(root){
   const apply=()=>{
-    const api=window.StackupAppLanguage;
-    if(!api||window.__stackupLanguageExtra)return false;
-    window.__stackupLanguageExtra=true;
+    const api=root.StackupAppLanguage;
+    if(!api||root.__stackupLanguageExtra)return false;
+    root.__stackupLanguageExtra=true;
     Object.assign(api.exact.en,{
       'RANKING POR TORNEIO E RANKING GERAL POR LIGA, TEMPORADA, SEMESTRE OU ANO.':'TOURNAMENT RANKING AND OVERALL RANKING BY LEAGUE, SEASON, SEMESTER OR YEAR.',
       'LIGA / TEMPORADA':'LEAGUE / SEASON',
@@ -26,11 +26,12 @@
       'MOTOR DE IA OCR INDISPONÍVEL.':'MOTOR DE IA OCR NO DISPONIBLE.',
       'INFRAESTRUTURA EXTERNA':'INFRAESTRUCTURA EXTERNA'
     });
-    api.apply(api.get());
+    if(typeof document!=='undefined')api.apply(api.get());
     return true;
   };
-  if(!apply()){
+  if(!apply()&&typeof document!=='undefined'){
     let n=0;
     const timer=setInterval(()=>{n++;if(apply()||n>50)clearInterval(timer)},20);
   }
-})();
+  if(typeof module!=='undefined'&&module.exports)module.exports={apply};
+})(typeof window!=='undefined'?window:globalThis);
