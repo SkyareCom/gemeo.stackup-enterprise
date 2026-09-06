@@ -2,6 +2,7 @@
 'use strict';
 const KEY='stackupScreenMessagesV1';
 const CHANNEL='stackup-screen-messages-v1';
+const TTS_ENDPOINT='https://throbbing-voice-b4e2.celsomurakami.workers.dev/speak';
 const bc=('BroadcastChannel'in window)?new BroadcastChannel(CHANNEL):null;
 const PT=[
  ['welcome','ABERTURA','Olá jogadores, bem vindos ao [nome do evento], excelente jogo a todos !!!','manual'],
@@ -28,6 +29,18 @@ const TEXT={
  en:{welcome:'Hello players, welcome to [event name], excellent game to everyone!',level3:'Attention players, new blind level in 3 minutes.',level1:'Attention players, new blind level in 1 minute.',levelAnte:'Attention players, new level! Blinds [sb] / [bb] and ante [ante].',levelNoAnte:'Attention players, new level! Blinds [sb] / [bb].',lastRebuy:'Attention players, this is the last level for rebuys.',lastEntry:'Attention players, this is the last level for entries and re-entries.',break:'Attention players, break.',meal:'Attention players, meal break.',addon:'Attention players, add-on break.',resume:'Attention players and dealers, take your positions, the game will restart.',deal:'Attention dealers, you may deal the cards!',bubble:'Attention players, we are on the money bubble.',h4h:'Attention dealers and players, from now on we are hand for hand!',itm:'Congratulations players! Everyone is in the money!',ftBubble:'Attention players, we are on the final table bubble!',ft:'Congratulations players, final table formed!',alternate:'Attention players, we are in alternate!'},
  es:{welcome:'Hola jugadores, bienvenidos a [nombre del evento], excelente juego para todos.',level3:'Atención jugadores, nuevo nivel de ciegas en 3 minutos.',level1:'Atención jugadores, nuevo nivel de ciegas en 1 minuto.',levelAnte:'Atención jugadores, nuevo nivel. Ciegas [sb] / [bb] y ante [ante].',levelNoAnte:'Atención jugadores, nuevo nivel. Ciegas [sb] / [bb].',lastRebuy:'Atención jugadores, este es el último nivel para rebuys.',lastEntry:'Atención jugadores, este es el último nivel para entradas y reentradas.',break:'Atención jugadores, intervalo.',meal:'Atención jugadores, intervalo para comida.',addon:'Atención jugadores, intervalo para add-on.',resume:'Atención jugadores y dealers, tomen sus posiciones, el juego será reiniciado.',deal:'Atención dealers, pueden repartir las cartas.',bubble:'Atención jugadores, estamos en la burbuja de premios.',h4h:'Atención dealers y jugadores, a partir de ahora entraremos en hand for hand.',itm:'Felicitaciones jugadores. Todos en premios.',ftBubble:'Atención jugadores, estamos en la burbuja de la mesa final.',ft:'Felicitaciones jugadores, mesa final formada.',alternate:'Atención jugadores, estamos en alternate.'}
 };
+const VOICE_PROFILES={
+ m1:{label:'LOCUTOR 01 • INSTITUCIONAL',voice:'cedar',style:'radio',speed:.95},
+ m2:{label:'LOCUTOR 02 • TORNEIO',voice:'onyx',style:'tournament',speed:.98},
+ m3:{label:'LOCUTOR 03 • GRAVE',voice:'echo',style:'tournament',speed:.9},
+ m4:{label:'LOCUTOR 04 • DINÂMICO',voice:'ash',style:'radio',speed:1.06},
+ m5:{label:'LOCUTOR 05 • AEROPORTO',voice:'verse',style:'airport',speed:.92},
+ f1:{label:'LOCUTORA 01 • INSTITUCIONAL',voice:'marin',style:'radio',speed:.96},
+ f2:{label:'LOCUTORA 02 • TORNEIO',voice:'coral',style:'tournament',speed:1},
+ f3:{label:'LOCUTORA 03 • SUAVE',voice:'shimmer',style:'radio',speed:.92},
+ f4:{label:'LOCUTORA 04 • DINÂMICA',voice:'nova',style:'radio',speed:1.07},
+ f5:{label:'LOCUTORA 05 • AEROPORTO',voice:'sage',style:'airport',speed:.93}
+};
 const defaults={voiceLang:'pt',voiceProfile:'m1',voiceRepeat:1,voiceVolume:100,soundBeforeVoice:true,spoken:{},written:{},custom:[]};
 function load(){try{return Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(_){return JSON.parse(JSON.stringify(defaults))}}
 function save(c){localStorage.setItem(KEY,JSON.stringify(c));bc?.postMessage(c);window.dispatchEvent(new CustomEvent('stackup-screen-message-config',{detail:c}))}
@@ -39,13 +52,27 @@ function messageText(id,lang=officialLang()){
  const s=getState(),cur=level(),raw=(TEXT[lang]||TEXT.pt)[id]||PT.find(x=>x[0]===id)?.[2]||'';
  return raw.replaceAll('[nome do evento]',s.tournamentName||'EVENTO').replaceAll('[event name]',s.tournamentName||'EVENT').replaceAll('[nombre del evento]',s.tournamentName||'EVENTO').replaceAll('[valor de sb]',fmt(cur.sb)).replaceAll('[valor de bb]',fmt(cur.bb)).replaceAll('[valor de ante]',fmt(cur.ante)).replaceAll('[sb]',fmt(cur.sb)).replaceAll('[bb]',fmt(cur.bb)).replaceAll('[ante]',fmt(cur.ante));
 }
-function voicesFor(lang){const all=speechSynthesis.getVoices().filter(v=>String(v.lang||'').toLowerCase().startsWith(lang));return all.length?all:speechSynthesis.getVoices()}
-function profile(id){const sex=id[0]==='f'?'FEMININA':'MASCULINA',n=Math.max(1,Math.min(5,+id.slice(1)||1));return{sex,n,pitch:sex==='MASCULINA'?.78+(n-1)*.06:1.12+(n-1)*.05,rate:.92+(n-1)*.03}}
-function speak(text,{lang=officialLang(),profileId='m1',repeat=1,volume=1,broadcast=false}={}){
+function profile(id){return VOICE_PROFILES[id]||VOICE_PROFILES.m1}
+function fallbackSpeak(text,{lang='pt',repeat=1,volume=1}={}){
  if(!('speechSynthesis'in window)||!text)return false;
+ speechSynthesis.cancel();let done=0;
+ const one=()=>{const u=new SpeechSynthesisUtterance(text);u.lang=lang==='pt'?'pt-BR':lang==='es'?'es-ES':'en-US';u.rate=.96;u.pitch=1;u.volume=Math.max(0,Math.min(1,+volume||1));u.onend=()=>{done++;if(done<repeat)setTimeout(one,350)};speechSynthesis.speak(u)};one();return true;
+}
+async function speak(text,{lang=officialLang(),profileId='m1',repeat=1,volume=1,broadcast=false}={}){
+ if(!text)return false;
  if(broadcast&&lang!==officialLang())return false;
- speechSynthesis.cancel();const p=profile(profileId),vs=voicesFor(lang),idx=(p.sex==='MASCULINA'?p.n-1:p.n+4)%Math.max(1,vs.length);let done=0;
- const one=()=>{const u=new SpeechSynthesisUtterance(text);u.lang=lang==='pt'?'pt-BR':lang==='es'?'es-ES':'en-US';u.pitch=p.pitch;u.rate=p.rate;u.volume=Math.max(0,Math.min(1,+volume||1));if(vs[idx])u.voice=vs[idx];u.onend=()=>{done++;if(done<repeat)setTimeout(one,350)};speechSynthesis.speak(u)};one();return true;
+ const p=profile(profileId),reps=Math.max(1,Math.min(5,+repeat||1)),vol=Math.max(0,Math.min(1,+volume||1));
+ try{
+  for(let i=0;i<reps;i++){
+   const res=await fetch(TTS_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,voice:p.voice,language:lang,style:p.style,speed:p.speed})});
+   if(!res.ok)throw new Error(`TTS ${res.status}`);
+   const blob=await res.blob(),url=URL.createObjectURL(blob),audio=new Audio(url);audio.volume=vol;
+   await new Promise((resolve,reject)=>{audio.onended=resolve;audio.onerror=reject;audio.play().catch(reject)});
+   URL.revokeObjectURL(url);
+   if(i<reps-1)await new Promise(r=>setTimeout(r,350));
+  }
+  return true;
+ }catch(err){console.warn('STACKUP NEURAL TTS indisponível; fallback do sistema.',err);return fallbackSpeak(text,{lang,repeat:reps,volume:vol})}
 }
 function playAlertThenSpeak(text,opt={}){const c=load();const go=()=>speak(text,opt);if(c.soundBeforeVoice&&window.StackupAlertAudio){let a=window.StackupAlertAudio.load();window.StackupAlertAudio.play(a);const preset=window.StackupAlertAudio.PRESETS.find(x=>x[0]===a.preset)||window.StackupAlertAudio.PRESETS[0];const one=preset[2].reduce((t,x)=>t+x[1],0)+.18;setTimeout(go,Math.max(0,one*Math.max(1,a.repeats||1)*1000)+2000)}else go()}
 function setAnnouncement(text,ms=12000){const s=getState();if(window.state){state.currentAnnouncement=text;try{saveState()}catch(_){localStorage.setItem('poker-club-state-v4',JSON.stringify(state))}}else{const x={...s,currentAnnouncement:text};localStorage.setItem('poker-club-state-v4',JSON.stringify(x))}setTimeout(()=>{try{if(window.state&&state.currentAnnouncement===text){state.currentAnnouncement='';saveState()}}catch(_){}},ms)}
@@ -63,12 +90,12 @@ function monitor(){const s=getState(),cur=level(),left=Math.max(0,+s.playersLeft
  prev={idx:+s.levelIndex||0,type:cur.type,left,alt};checkCustom(s)}
 function interpretMoment(v){const t=String(v||'').trim().toLowerCase();let m=t.match(/restarem?\s+(\d+)\s+jogadores?/);if(m)return{type:'players',value:+m[1],label:`QUANDO RESTAREM ${m[1]} JOGADORES`};m=t.match(/n[ií]vel\s+(\d+)/);if(m)return{type:'level',value:+m[1],label:`NO INÍCIO DO NÍVEL ${m[1]}`};if(/pr[oó]ximo intervalo/.test(t))return{type:'nextBreak',label:'NO PRÓXIMO INTERVALO'};if(/itm|dinheiro/.test(t))return{type:'itm',label:'QUANDO ENTRAR NO ITM'};return null}
 function checkCustom(s){const c=load();let changed=false;(c.custom||[]).forEach(x=>{if(!x.active||x.sent)return;let ok=false;if(x.rule?.type==='players')ok=+s.playersLeft===+x.rule.value;else if(x.rule?.type==='level'){try{ok=typeof currentLevelNumber==='function'&&currentLevelNumber()===+x.rule.value}catch(_){}}else if(x.rule?.type==='nextBreak')ok=level().type==='break';else if(x.rule?.type==='itm')ok=+s.paidPlaces>0&&+s.playersLeft<=+s.paidPlaces;if(ok){setAnnouncement(x.text);x.sent=true;x.active=false;x.sentAt=Date.now();changed=true}});if(changed)save(c)}
-function renderUI(){const spoken=document.getElementById('spokenMessages'),written=document.getElementById('writtenMessages');if(!spoken||!written)return;const c=load(),lang=officialLang(),langSel=document.getElementById('voiceLang'),prof=document.getElementById('voiceProfile');if(langSel){langSel.value=c.voiceLang||lang;document.getElementById('officialLang').textContent=lang.toUpperCase();langSel.onchange=e=>{c.voiceLang=e.target.value;save(c);renderUI()}}if(prof){prof.innerHTML=['m1','m2','m3','m4','m5','f1','f2','f3','f4','f5'].map(id=>{const p=profile(id);return`<option value="${id}" ${id===c.voiceProfile?'selected':''}>${p.sex} ${p.n}</option>`}).join('');prof.onchange=e=>{c.voiceProfile=e.target.value;save(c)}}
+function renderUI(){const spoken=document.getElementById('spokenMessages'),written=document.getElementById('writtenMessages');if(!spoken||!written)return;const c=load(),lang=officialLang(),langSel=document.getElementById('voiceLang'),prof=document.getElementById('voiceProfile');if(langSel){langSel.value=c.voiceLang||lang;document.getElementById('officialLang').textContent=lang.toUpperCase();langSel.onchange=e=>{c.voiceLang=e.target.value;save(c);renderUI()}}if(prof){prof.innerHTML=Object.entries(VOICE_PROFILES).map(([id,p])=>`<option value="${id}" ${id===c.voiceProfile?'selected':''}>${p.label}</option>`).join('');prof.onchange=e=>{c.voiceProfile=e.target.value;save(c)}}
  const card=(kind,row)=>{const on=!!c[kind]?.[row[0]],txt=messageText(row[0],kind==='spoken'?(c.voiceLang||lang):lang);return`<div class="messageCard"><div class="messageHead"><b>${row[1]}</b><span class="autoBadge">${row[3]==='auto'?'AUTOMÁTICA':'MANUAL'}</span></div><div class="messageText">${txt}</div><div class="messageActions"><button data-kind="${kind}" data-id="${row[0]}" data-on="1" class="${on?'active':''}">${on?'MENSAGEM ATIVADA':'ATIVAR MENSAGEM'}</button><button data-kind="${kind}" data-id="${row[0]}" data-on="0" class="${!on?'offActive':''}">${!on?'MENSAGEM DESATIVADA':'DESATIVAR MENSAGEM'}</button>${kind==='spoken'?`<button data-test="${row[0]}">OUVIR / TESTAR</button><button data-live="${row[0]}" ${c.voiceLang!==lang?'disabled':''}>VEICULAR</button>`:`<button data-write="${row[0]}">VEICULAR AGORA</button>`}</div></div>`};spoken.innerHTML=PT.map(x=>card('spoken',x)).join('');written.innerHTML=PT.map(x=>card('written',x)).join('');document.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{toggle(b.dataset.kind,b.dataset.id,b.dataset.on==='1');renderUI()});document.querySelectorAll('[data-test]').forEach(b=>b.onclick=()=>speak(messageText(b.dataset.test,c.voiceLang||lang),{lang:c.voiceLang||lang,profileId:c.voiceProfile,repeat:c.voiceRepeat,volume:c.voiceVolume/100}));document.querySelectorAll('[data-live]').forEach(b=>b.onclick=()=>playAlertThenSpeak(messageText(b.dataset.live,lang),{lang,profileId:c.voiceProfile,repeat:c.voiceRepeat,volume:c.voiceVolume/100,broadcast:true}));document.querySelectorAll('[data-write]').forEach(b=>b.onclick=()=>setAnnouncement(messageText(b.dataset.write,lang)));
  const rr=document.getElementById('voiceRepeat'),vv=document.getElementById('voiceVolume'),sa=document.getElementById('soundBeforeVoice');if(rr){rr.value=c.voiceRepeat;rr.oninput=e=>{c.voiceRepeat=+e.target.value;document.getElementById('voiceRepeatValue').textContent=c.voiceRepeat+'X';save(c)};document.getElementById('voiceRepeatValue').textContent=c.voiceRepeat+'X'}if(vv){vv.value=c.voiceVolume;vv.oninput=e=>{c.voiceVolume=+e.target.value;document.getElementById('voiceVolumeValue').textContent=c.voiceVolume+'%';save(c)};document.getElementById('voiceVolumeValue').textContent=c.voiceVolume+'%'}if(sa){sa.checked=!!c.soundBeforeVoice;sa.onchange=e=>{c.soundBeforeVoice=e.target.checked;save(c)}}
 }
 function setupCustom(){const text=document.getElementById('customMessage'),when=document.getElementById('customWhen'),moment=document.getElementById('customMoment'),preview=document.getElementById('customInterpretation'),now=document.getElementById('customNow'),schedule=document.getElementById('customSchedule');if(!text||!when)return;const sync=()=>{moment.closest('.controlCard').style.display=when.value==='defined'?'grid':'none';const r=interpretMoment(moment.value);preview.textContent=when.value==='now'?'VEICULAÇÃO IMEDIATA':r?`INTERPRETADO COMO: ${r.label}`:'DESCREVA O MOMENTO: EX. QUANDO RESTAREM 20 JOGADORES';schedule.disabled=when.value!=='defined'||!r||!text.value.trim()};when.onchange=sync;moment.oninput=sync;text.oninput=sync;now.onclick=()=>{if(text.value.trim())setAnnouncement(text.value.trim())};schedule.onclick=()=>{const r=interpretMoment(moment.value);if(!r||!text.value.trim())return;const c=load();c.custom=c.custom||[];c.custom.push({id:'custom-'+Date.now(),text:text.value.trim(),moment:moment.value.trim(),rule:r,active:true,sent:false,createdAt:Date.now()});save(c);preview.textContent=`AGENDADA: ${r.label}`};sync()}
 function boot(){renderUI();setupCustom();setInterval(monitor,1000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.StackupScreenMessages={PT,TEXT,load,save,officialLang,messageText,speak,toggle,interpretMoment,monitor,setAnnouncement};
+window.StackupScreenMessages={PT,TEXT,VOICE_PROFILES,TTS_ENDPOINT,load,save,officialLang,messageText,speak,toggle,interpretMoment,monitor,setAnnouncement};
 })();
