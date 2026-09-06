@@ -27,3 +27,8 @@
   window.StackupCastLive={qty,money,metrics,activePlayers,alternatePlayers,tableCount,fieldCount,totalChips,prizePool,elapsedSeconds,snapshot};
 })();
 (function(){if(typeof document==='undefined'||document.querySelector('script[data-stackup-cast-ticker]'))return;const s=document.createElement('script');s.src='cast-ticker-engine.js?v=b4cd5c8';s.dataset.stackupCastTicker='1';document.head.appendChild(s)})();
+(function(){
+  if(typeof document==='undefined'||document.querySelector('script[data-stackup-screen-messages]'))return;
+  const load=(src,attr,done)=>{if(document.querySelector(`script[${attr}]`)){done?.();return}const s=document.createElement('script');s.src=src;s.setAttribute(attr,'1');s.onload=()=>done?.();document.head.appendChild(s)};
+  load('screen-alert-audio.js?v=72491ef','data-stackup-alert-audio',()=>load('screen-message-engine.js?v=fc8b611','data-stackup-screen-messages'));
+})();
