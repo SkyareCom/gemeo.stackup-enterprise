@@ -24,8 +24,15 @@ const patch=()=>{
     'CAIXA, PAGAMENTOS, CRÉDITOS E CARTEIRA.':'CAJA, PAGOS, CRÉDITOS Y CARTERA.',
     'PAGAMENTOS E CRÉDITOS':'PAGOS Y CRÉDITOS'
   });
-  if(api.words?.en){Object.assign(api.words.en,{'SALDOS':'BALANCES'});}
-  if(api.words?.es){Object.assign(api.words.es,{'CARTEIRA':'CARTERA','PAGAMENTOS':'PAGOS','PAGAMENTO':'PAGO','SALDOS':'SALDOS','CRÉDITOS':'CRÉDITOS','CRÉDITO':'CRÉDITO'});}
+  if(api.words?.en)Object.assign(api.words.en,{'SALDOS':'BALANCES'});
+  if(api.words?.es)Object.assign(api.words.es,{'CARTEIRA':'CARTERA','PAGAMENTOS':'PAGOS','PAGAMENTO':'PAGO','SALDOS':'SALDOS','CRÉDITOS':'CRÉDITOS','CRÉDITO':'CRÉDITO'});
+  const previous=api.translateString.bind(api);
+  api.translateString=(value,target)=>{
+    if(value===null||value===undefined||target==='pt')return value;
+    const raw=String(value),lead=raw.match(/^\s*/)?.[0]||'',trail=raw.match(/\s*$/)?.[0]||'',key=raw.trim().toLocaleUpperCase('pt-BR');
+    if(api.exact?.[target]?.[key]!==undefined)return lead+api.exact[target][key]+trail;
+    return previous(value,target);
+  };
   if(typeof document!=='undefined')api.apply(api.get());
   return true;
 };
