@@ -52,10 +52,19 @@
 })();
 
 (function ensureGlobalLanguage(){
-  if(typeof document==='undefined'||window.StackupAppLanguage||document.querySelector('script[data-stackup-language]'))return;
+  if(typeof document==='undefined')return;
+  const loadExtra=()=>{
+    if(document.querySelector('script[data-stackup-language-extra]'))return;
+    const extra=document.createElement('script');
+    extra.src='app-language-extra.js?v=8ee11f0c0c8b0be7dbdb120b7a99a1d337cb2072';
+    extra.defer=true;extra.dataset.stackupLanguageExtra='1';
+    (document.head||document.documentElement).appendChild(extra);
+  };
+  if(window.StackupAppLanguage){loadExtra();return}
+  const existing=document.querySelector('script[data-stackup-language]');
+  if(existing){existing.addEventListener('load',loadExtra,{once:true});return}
   const script=document.createElement('script');
   script.src='app-language.js?v=25edfbe44d78b540013473f3275cc471ef832512';
-  script.defer=true;
-  script.dataset.stackupLanguage='1';
+  script.defer=true;script.dataset.stackupLanguage='1';script.onload=loadExtra;
   (document.head||document.documentElement).appendChild(script);
 })();
