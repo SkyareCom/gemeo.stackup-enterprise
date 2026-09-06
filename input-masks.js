@@ -54,7 +54,7 @@
 (function ensureGlobalLanguage(){
   if(typeof document==='undefined'||window.StackupAppLanguage||document.querySelector('script[data-stackup-language]'))return;
   const script=document.createElement('script');
-  script.src='app-language.js?v=225112ac4d9f7c7f1a6f3e3d88285b295657d52b';
+  script.src='app-language.js?v=25edfbe44d78b540013473f3275cc471ef832512';
   script.defer=true;
   script.dataset.stackupLanguage='1';
   (document.head||document.documentElement).appendChild(script);
