@@ -59,7 +59,7 @@
 (function(){
   if(typeof document==='undefined'||document.querySelector('script[data-stackup-cast-ticker]'))return;
   const s=document.createElement('script');
-  s.src='cast-ticker-engine.js?v=80b572e';
+  s.src='cast-ticker-engine.js?v=0b6658c';
   s.dataset.stackupCastTicker='1';
   document.head.appendChild(s);
 })();
