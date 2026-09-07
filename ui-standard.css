@@ -17,7 +17,6 @@
   --su-page:980px;
 }
 
-/* PADRÃO VISUAL OFICIAL — STAFF / JOGADORES */
 html,body{background:var(--su-bg)!important;color:var(--su-white)!important}
 html:root body,
 html:root body *,
@@ -35,12 +34,11 @@ html:root body input::placeholder,
 html:root body textarea::placeholder{
   font-family:'Caacupe One',system-ui,sans-serif!important;
   font-style:normal!important;
-  font-weight:400!important;
+  font-weight:300!important;
   text-transform:uppercase!important;
 }
-body{font-size:12px!important;font-weight:400!important}
+body{font-size:14px!important;font-weight:300!important}
 
-/* SHELL DIRETO NO FUNDO — SEM BORDA ESTRUTURAL */
 main.app,main.wrap,.app,.wrap,.container,.shell,.page,.page-shell,.app-shell,.content-shell,.layout-shell,.screen-shell,.section-shell,.section-wrap,.panel-shell,.panel-wrap,.form-shell,.form-wrap{
   width:100%!important;max-width:var(--su-page)!important;margin-left:auto!important;margin-right:auto!important;
   background:transparent!important;border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important;
@@ -50,19 +48,19 @@ main.app>.card:not(a):not(button),main.wrap>.card:not(a):not(button),main.app>.p
   background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;
 }
 
-/* TIPOGRAFIA */
-h1,h2,h3,h4,h5,h6,.title,.page-title,.section,.section-title,.ey,strong,b,th,label,button,.primary,.badge{font-weight:400!important}
-h1,.page-title,.hero-title,.display-title{font-size:20px!important}h2,.title,.card-title{font-size:16px!important}h3,.section,.section-title,.subtitle{font-size:14px!important}h4,h5,h6,strong,b,th,label,button,.primary,.badge,input,select,textarea,option,p,span,a,li,td,small,.meta{font-size:12px!important}
+h1,h2,h3,h4,h5,h6,.title,.page-title,.section,.section-title,.ey,strong,b,th,label,button,.primary,.badge{font-weight:300!important}
+h1,.page-title,.hero-title,.display-title{font-size:25px!important}
+h2,.title,.card-title{font-size:18px!important}
+h3,.section,.section-title,.subtitle{font-size:16px!important}
+h4,h5,h6,strong,b,th,label,button,.primary,.badge,input,select,textarea,option,p,span,a,li,td,small,.meta,.desc,.description,.value,.name,.tag,.ey,.status{font-size:14px!important}
 
-/* CAMPOS E CONTROLES */
-input:not([type="checkbox"]):not([type="radio"]),select,textarea{min-height:var(--su-control-h)!important;border:1px solid var(--su-border)!important;border-radius:var(--su-radius)!important;background:linear-gradient(var(--su-card-top),var(--su-card-bottom))!important;color:var(--su-secondary)!important;padding:10px!important;box-shadow:none!important;outline:none!important}
-button,.btn,.button,a.btn,a.button,[role="button"],input[type="button"],input[type="submit"],input[type="reset"]{min-height:var(--su-control-h)!important;border:1px solid var(--su-green)!important;border-radius:var(--su-radius)!important;background:linear-gradient(var(--su-card-top),var(--su-card-bottom))!important;color:var(--su-green)!important;text-decoration:none!important;box-shadow:none!important;font-family:'Caacupe One',system-ui,sans-serif!important;font-weight:400!important}
+input:not([type="checkbox"]):not([type="radio"]),select,textarea{min-height:var(--su-control-h)!important;border:1px solid var(--su-border)!important;border-radius:var(--su-radius)!important;background:linear-gradient(var(--su-card-top),var(--su-card-bottom))!important;color:var(--su-secondary)!important;padding:10px!important;box-shadow:none!important;outline:none!important;font-size:14px!important;font-weight:300!important}
+button,.btn,.button,a.btn,a.button,[role="button"],input[type="button"],input[type="submit"],input[type="reset"]{min-height:var(--su-control-h)!important;border:1px solid var(--su-green)!important;border-radius:var(--su-radius)!important;background:linear-gradient(var(--su-card-top),var(--su-card-bottom))!important;color:var(--su-green)!important;text-decoration:none!important;box-shadow:none!important;font-family:'Caacupe One',system-ui,sans-serif!important;font-weight:300!important;font-size:14px!important}
 
-/* CARDS FUNCIONAIS */
 .check,.tile,[class$="-card"]{background:linear-gradient(var(--su-card-top),var(--su-card-bottom))!important;border:1px solid var(--su-border)!important;border-radius:var(--su-radius)!important;box-shadow:none!important}
-.check,.check *,.tile,.tile *,[class$="-card"],[class$="-card"] *,[class~="card"],[class~="card"] *{font-family:'Caacupe One',system-ui,sans-serif!important}
+.check,.check *,.tile,.tile *,[class$="-card"],[class$="-card"] *,[class~="card"],[class~="card"] *{font-family:'Caacupe One',system-ui,sans-serif!important;font-weight:300!important}
+.card-title,[class$="-card"] .card-title,[class~="card"] .card-title{font-size:18px!important}
 
-/* ESPAÇAMENTO */
 .grid,.grid2,.grid3,.filters,.checks,.actions,.cards,.items,.payGrid,.idGrid,.tables{gap:var(--su-gap)!important}
 .section,.section-title{margin-top:var(--su-section-gap)!important;margin-bottom:var(--su-gap)!important;color:var(--su-green)!important}
 
