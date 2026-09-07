@@ -4,10 +4,18 @@ const host=document.getElementById('alertStructure');
 const A=window.StackupAlertAudio;
 if(!host||!A)return;
 function render(){
- host.innerHTML=`<div class="soundPresetList">${A.PRESETS.map(p=>`<div class="soundPresetName">${p[1]}</div>`).join('')}</div>`;
+ const cfg=A.load();
+ host.innerHTML=`<div class="soundPresetList">${A.PRESETS.map(p=>`<button type="button" class="soundPresetName ${cfg.preset===p[0]?'selected':''}" data-preset="${p[0]}">${p[1]}</button>`).join('')}</div>`;
+ host.querySelectorAll('[data-preset]').forEach(btn=>btn.onclick=()=>{
+   const next=A.load();
+   next.preset=btn.dataset.preset;
+   A.save(next);
+   A.play(next);
+   render();
+ });
 }
 const style=document.createElement('style');
-style.textContent=`#alertStructure{display:block}.soundPresetList{display:grid;gap:7px}.soundPresetName{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #27342D;border-radius:7px;background:#020302;color:#fff}`;
+style.textContent=`#alertStructure{display:block}.soundPresetList{display:grid;gap:7px}.soundPresetName{width:100%!important;box-sizing:border-box;text-align:left!important;padding:10px 12px!important}.soundPresetName.selected{background:#8DFC3B!important;color:#020302!important;border-color:#8DFC3B!important}`;
 document.head.appendChild(style);
 render();
 })();
