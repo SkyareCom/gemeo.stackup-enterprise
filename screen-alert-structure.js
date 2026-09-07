@@ -3,22 +3,25 @@
 const host=document.getElementById('alertStructure');
 const A=window.StackupAlertAudio;
 if(!host||!A)return;
-const KEY='stackupAlertMomentAssignmentsV1';
-const MOMENTS=[
- ['levelStart','INÍCIO DOS NÍVEIS'],
- ['fiveMinutes','5 MINUTOS'],
- ['threeMinutes','3 MINUTOS'],
- ['oneMinute','1 MINUTO'],
- ['returnActivities','RETORNO DAS ATIVIDADES'],
- ['itmBubble','BOLHA DA PREMIAÇÃO'],
- ['itm','TODOS NO DINHEIRO'],
- ['ftBubble','BOLHA DA MESA FINAL']
-];
-let opened='';
-function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(_){return{}}}
-function save(v){localStorage.setItem(KEY,JSON.stringify(v));window.dispatchEvent(new CustomEvent('stackup-alert-moment-change',{detail:v}))}
-function choose(moment,preset){const v=load();v[moment]=preset;save(v);opened='';render()}
-function alertName(id){return (A.PRESETS.find(p=>p[0]===id)||[])[1]||''}
-function render(){const cfg=load();host.innerHTML=MOMENTS.map(([id,label])=>{const chosen=cfg[id]||'';return `<section class="momentSection"><div class="momentTitle">${label}</div><button type="button" class="selectMomentAlert ${chosen?'active':''}" data-open="${id}">${chosen?alertName(chosen):'SELECIONAR ALERTA'}</button>${opened===id?`<div class="momentAlertList">${A.PRESETS.map(p=>`<button type="button" class="momentAlert ${chosen===p[0]?'selected':''}" data-moment="${id}" data-preset="${p[0]}">${p[1]}</button>`).join('')}</div>`:''}</section>`}).join('');host.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{opened=opened===b.dataset.open?'':b.dataset.open;render()});host.querySelectorAll('[data-moment][data-preset]').forEach(b=>b.onclick=()=>choose(b.dataset.moment,b.dataset.preset))}
-const style=document.createElement('style');style.textContent=`#alertStructure{display:grid;gap:20px}.momentSection{display:block!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}.momentTitle{font-size:16px!important;color:#fff;margin:0 0 8px!important;padding:0!important;border:0!important;background:none!important}.selectMomentAlert{width:100%!important;display:block!important}.selectMomentAlert.active{border-color:#8DFC3B!important;color:#8DFC3B!important}.momentAlertList{display:grid;gap:7px;margin-top:8px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}.momentAlert{width:100%!important;text-align:left!important}.momentAlert.selected{background:#8DFC3B!important;color:#020302!important;border-color:#8DFC3B!important}`;document.head.appendChild(style);render();
+function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+function render(){
+ const cfg=A.load();
+ host.innerHTML=`
+   <div class="soundListTitle">LISTA DE AVISOS</div>
+   <div class="soundPresetList">
+     ${A.PRESETS.map(p=>`<button type="button" class="soundPreset ${cfg.preset===p[0]?'selected':''}" data-preset="${p[0]}">${p[1]}</button>`).join('')}
+   </div>
+   <div class="soundConfigTitle">CONFIGURAÇÕES</div>
+   <label class="soundControl"><span>PITCH</span><input id="soundPitch" type="range" min="-24" max="24" step="1" value="${clamp(+cfg.pitch||0,-24,24)}"><strong id="soundPitchValue">${clamp(+cfg.pitch||0,-24,24)}</strong></label>
+   <label class="soundControl"><span>REPETIÇÕES</span><select id="soundRepeats">${[1,2,3,4,5,6,7,8].map(n=>`<option value="${n}" ${(+cfg.repeats||1)===n?'selected':''}>${n}</option>`).join('')}</select></label>`;
+ host.querySelectorAll('[data-preset]').forEach(btn=>btn.onclick=()=>{const next=A.load();next.preset=btn.dataset.preset;A.save(next);render()});
+ const pitch=host.querySelector('#soundPitch'),pitchValue=host.querySelector('#soundPitchValue'),repeats=host.querySelector('#soundRepeats');
+ pitch.oninput=()=>{pitchValue.textContent=pitch.value};
+ pitch.onchange=()=>{const next=A.load();next.pitch=clamp(+pitch.value||0,-24,24);A.save(next)};
+ repeats.onchange=()=>{const next=A.load();next.repeats=clamp(+repeats.value||1,1,8);A.save(next)};
+}
+const style=document.createElement('style');
+style.textContent=`#alertStructure{display:grid;gap:14px}.soundListTitle,.soundConfigTitle{font-size:16px!important;color:#fff;margin:0!important}.soundPresetList{display:grid;gap:7px}.soundPreset{width:100%!important;text-align:left!important}.soundPreset.selected{background:#8DFC3B!important;color:#020302!important;border-color:#8DFC3B!important}.soundControl{display:grid;grid-template-columns:140px minmax(0,1fr) auto;gap:10px;align-items:center}.soundControl input,.soundControl select{width:100%!important}.soundControl strong{min-width:28px;text-align:right}@media(max-width:600px){.soundControl{grid-template-columns:1fr}.soundControl strong{text-align:left}}`;
+document.head.appendChild(style);
+render();
 })();
