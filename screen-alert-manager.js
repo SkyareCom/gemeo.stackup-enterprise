@@ -1,7 +1,12 @@
 (()=>{
 'use strict';
 const A=window.StackupAlertAudio;
-const host=document.getElementById('alertManager');
+let host=document.getElementById('alertManager');
+if(!host){
+ const heading=[...document.querySelectorAll('.section')].find(el=>el.textContent.trim().startsWith('1. ALERTAS SONOROS'));
+ const block=heading?.nextElementSibling;
+ if(block){block.innerHTML='<div id="alertManager"></div>';host=document.getElementById('alertManager')}
+}
 if(!A||!host)return;
 const MEM_KEY='stackupAlertPresetMemoriesV1';
 const ACTIVE_KEY='stackupAlertActiveV1';
@@ -12,11 +17,10 @@ function loadMem(){try{return JSON.parse(localStorage.getItem(MEM_KEY)||'{}')||{
 function saveMem(mem){localStorage.setItem(MEM_KEY,JSON.stringify(mem))}
 function activeId(){return localStorage.getItem(ACTIVE_KEY)||A.load().preset||''}
 function setActive(id){localStorage.setItem(ACTIVE_KEY,id)}
-function selectedPreset(){return A.PRESETS.find(p=>p[0]===selected)||A.PRESETS[0]}
 function loadDraft(){const mem=loadMem(),base=A.load(),m=mem[selected]||{};draft={pitch:Number.isFinite(+m.pitch)?+m.pitch:(base.preset===selected?+base.pitch||0:0),repeats:Number.isFinite(+m.repeats)?Math.max(1,Math.min(8,+m.repeats||1)):(base.preset===selected?Math.max(1,Math.min(8,+base.repeats||1)):1)}}
 function memorize(){const mem=loadMem();mem[selected]={pitch:+draft.pitch||0,repeats:Math.max(1,Math.min(8,+draft.repeats||1))};saveMem(mem);render('CONFIGURAÇÃO MEMORIZADA')}
 function test(){A.play({...A.load(),preset:selected,pitch:+draft.pitch||0,repeats:Math.max(1,+draft.repeats||1)})}
-function activate(){const current=A.load();A.save({...current,preset:selected,pitch:+draft.pitch||0,repeats:Math.max(1,+draft.repeats||1)});setActive(selected);memorize();render('ALERTA ATIVADO')}
+function activate(){const current=A.load();A.save({...current,preset:selected,pitch:+draft.pitch||0,repeats:Math.max(1,+draft.repeats||1)});setActive(selected);const mem=loadMem();mem[selected]={pitch:+draft.pitch||0,repeats:Math.max(1,Math.min(8,+draft.repeats||1))};saveMem(mem);render('ALERTA ATIVADO')}
 function pick(id){selected=id;loadDraft();render()}
 function row(p){const on=selected===p[0];return `<button type="button" class="alertPick ${on?'selected':''}" data-alert-id="${p[0]}" aria-pressed="${on?'true':'false'}"><span class="alertSquare">${on?'✓':''}</span><span>${p[1]}</span></button>`}
 function render(status=''){
