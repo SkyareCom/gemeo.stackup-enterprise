@@ -1,6 +1,7 @@
 (function(){
   if(typeof document==='undefined'||window.__stackupUiStandard)return;
   window.__stackupUiStandard=true;
+  const isCast=()=>{const page=(location.pathname.split('/').pop()||'').toLowerCase();return page.startsWith('cast-')||document.documentElement.dataset.stackupCastScale};
   const style=document.createElement('style');
   style.id='stackup-ui-standard-v1';
   style.textContent=`
@@ -57,6 +58,26 @@
     [data-stackup-new-action][hidden]{display:none!important}
   `;
   (document.head||document.documentElement).appendChild(style);
+
+  const enforceTypography=()=>{
+    if(isCast()||!document.body)return;
+    const all=[document.body,...document.body.querySelectorAll('*')];
+    all.forEach(el=>{
+      if(el instanceof SVGElement||['SCRIPT','STYLE','NOSCRIPT','TEMPLATE'].includes(el.tagName))return;
+      el.style.setProperty('font-family',"'Caacupe One', system-ui, sans-serif",'important');
+      el.style.setProperty('font-style','normal','important');
+      el.style.setProperty('font-weight','300','important');
+      let size='14px';
+      if(el.matches('h1,.page-title,.hero-title,.display-title'))size='25px';
+      else if(el.matches('h2,.title,.card-title'))size='18px';
+      else if(el.matches('h3,.section,.section-title,.subtitle'))size='16px';
+      else if(el.matches('button,.primary,.btn,.button,[role="button"],input[type="button"],input[type="submit"],input[type="reset"],input,select,textarea,option'))size='14px';
+      el.style.setProperty('font-size',size,'important');
+    });
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforceTypography,{once:true});else enforceTypography();
+  if(!isCast())new MutationObserver(()=>requestAnimationFrame(enforceTypography)).observe(document.documentElement,{childList:true,subtree:true});
+
   const loadLanguageExtra=()=>{
     if(document.querySelector('script[data-stackup-language-extra]'))return;
     const x=document.createElement('script');
