@@ -16,6 +16,6 @@ html:root body input::placeholder,
 html:root body textarea::placeholder{
   font-family:'Caacupe One',system-ui,sans-serif!important;
   font-style:normal!important;
-  font-weight:400!important;
+  font-weight:300!important;
   letter-spacing:1px!important;
 }
