@@ -9,6 +9,7 @@ const MOMENTS=[
  ['fiveMinutes','5 MINUTOS'],
  ['threeMinutes','3 MINUTOS'],
  ['oneMinute','1 MINUTO'],
+ ['returnActivities','RETORNO DAS ATIVIDADES'],
  ['itmBubble','BOLHA DA PREMIAÇÃO'],
  ['itm','TODOS NO DINHEIRO'],
  ['ftBubble','BOLHA DA MESA FINAL']
