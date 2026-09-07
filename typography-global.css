@@ -46,7 +46,8 @@ html:root body .primary,
 html:root body .name,
 html:root body .tag,
 html:root body .ey,
-html:root body .status{
+html:root body .status,
+html:root body .sub{
   font-size:14px!important;
 }
 
