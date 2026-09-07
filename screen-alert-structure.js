@@ -25,7 +25,7 @@ function render(){
  repeats.onchange=()=>{const next=A.load();next.repeats=clamp(+repeats.value||1,1,8);A.save(next)};
 }
 const style=document.createElement('style');
-style.textContent=`#alertStructure{display:grid;gap:14px}.soundPresetList{display:grid;gap:7px}.soundPresetName{width:100%!important;box-sizing:border-box;text-align:left!important;padding:10px 12px!important}.soundPresetName.selected{background:#8DFC3B!important;color:#020302!important;border-color:#8DFC3B!important}.soundControl{display:grid;grid-template-columns:140px minmax(0,1fr) auto;gap:10px;align-items:center}.soundControl input,.soundControl select{width:100%!important}.soundControl strong{min-width:28px;text-align:right}@media(max-width:600px){.soundControl{grid-template-columns:1fr}.soundControl strong{text-align:left}}`;
+style.textContent=`#alertStructure{display:grid;gap:14px}.soundPresetList{display:grid;gap:7px}.soundPresetName{width:100%!important;box-sizing:border-box;text-align:left!important;padding:10px 12px!important}.soundPresetName.selected{background:#8DFC3B!important;color:#020302!important;border-color:#8DFC3B!important}.soundControl{display:grid;grid-template-columns:140px minmax(0,1fr) auto;gap:10px;align-items:center}.soundControl input,.soundControl select{width:100%!important}#soundPitch{accent-color:#8DFC3B!important}.soundControl strong{min-width:28px;text-align:right}@media(max-width:600px){.soundControl{grid-template-columns:1fr}.soundControl strong{text-align:left}}`;
 document.head.appendChild(style);
 render();
 })();
