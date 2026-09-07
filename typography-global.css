@@ -14,26 +14,12 @@ html:root body a,
 html:root body [role="button"],
 html:root body input::placeholder,
 html:root body textarea::placeholder{
-  font-family:'Caacupe One'!important;
+  font-family:'Caacupe One',system-ui,sans-serif!important;
   font-style:normal!important;
-  font-weight:400!important;
+  font-weight:300!important;
   letter-spacing:1px!important;
 }
 
-/* NAVEGAÇÃO GLOBAL: CAACUPE ONE É OBRIGATÓRIA */
-html:root body #stackup-global-nav,
-html:root body #stackup-global-nav *,
-html:root body #stackup-global-nav button,
-html:root body #stackup-global-nav a,
-html:root body #stackup-back,
-html:root body #stackup-home{
-  font-family:'Caacupe One'!important;
-  font-style:normal!important;
-  font-weight:400!important;
-  letter-spacing:1px!important;
-}
-
-/* ESCALA GLOBAL: -40% SOBRE A ESCALA AMPLIADA ANTERIOR */
 html:root body,
 html:root body p,
 html:root body span,
@@ -56,8 +42,39 @@ html:root body .description,
 html:root body .label,
 html:root body .value,
 html:root body .badge,
-html:root body .primary{
-  font-size:14.4px!important;
+html:root body .primary,
+html:root body .name,
+html:root body .tag,
+html:root body .ey,
+html:root body .status{
+  font-size:14px!important;
+}
+
+html:root body button,
+html:root body .btn,
+html:root body .button,
+html:root body a.btn,
+html:root body a.button,
+html:root body [role="button"],
+html:root body input[type="button"],
+html:root body input[type="submit"],
+html:root body input[type="reset"],
+html:root body #stackup-global-nav button,
+html:root body #stackup-global-nav a{
+  font-size:14px!important;
+  font-weight:300!important;
+  font-family:'Caacupe One',system-ui,sans-serif!important;
+}
+
+html:root body input,
+html:root body select,
+html:root body textarea,
+html:root body option,
+html:root body input::placeholder,
+html:root body textarea::placeholder{
+  font-size:14px!important;
+  font-weight:300!important;
+  font-family:'Caacupe One',system-ui,sans-serif!important;
 }
 
 html:root body h1,
@@ -65,24 +82,21 @@ html:root body .page-title,
 html:root body .hero-title,
 html:root body .display-title,
 html:root body .brand{
-  font-size:24px!important;
+  font-size:25px!important;
+  font-weight:300!important;
 }
 
 html:root body h2,
 html:root body .title,
-html:root body .card-title,
-html:root body .sub{
-  font-size:19.2px!important;
+html:root body .card-title{
+  font-size:18px!important;
+  font-weight:300!important;
 }
 
 html:root body h3,
 html:root body .section,
 html:root body .section-title,
 html:root body .subtitle{
-  font-size:16.8px!important;
+  font-size:16px!important;
+  font-weight:300!important;
 }
-
-html:root body .name{font-size:21.6px!important}
-html:root body .tag{font-size:13.2px!important}
-html:root body .ey{font-size:14.4px!important}
-html:root body .status{font-size:14.4px!important}
