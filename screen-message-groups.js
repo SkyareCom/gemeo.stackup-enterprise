@@ -31,4 +31,5 @@ const style=document.createElement('style');style.textContent=`
 `;document.head.appendChild(style);
 render();
 window.addEventListener('stackup-screen-message-config',render);
+new MutationObserver(()=>{if(!host.querySelector('.msgGroup'))render()}).observe(host,{childList:true,subtree:false});
 })();
