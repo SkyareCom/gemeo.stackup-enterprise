@@ -23,10 +23,11 @@ function createManager(hostId,kind,footerId){
  const rowsFor=g=>g.ids.map(id=>api.PT.find(r=>r[0]===id)).filter(Boolean);
  const forcedNoAlert=id=>kind==='spoken'&&REGISTRATION_IDS.has(id);
  const openGroupId=()=>groups.find(g=>state.groups[g.id].open)?.id||null;
+ function closeGroup(id){if(state.groups[id])state.groups[id].open=false}
  function chooseGroup(id){const current=openGroupId();if(current&&current!==id)return;const next=!state.groups[id].open;groups.forEach(g=>{state.groups[g.id].open=false});state.groups[id].open=next;render()}
  function setMode(g,id,mode){if(forcedNoAlert(id))state.groups[g].modes[id]='noalert';else state.groups[g].modes[id]=mode;render()}
  function test(g,id){const c=cfg(),l=lang(),mode=state.groups[g].modes[id]||'alert';if(kind==='spoken'){const opt={lang:l,profileId:c.voiceProfile,repeat:c.voiceRepeat,volume:c.voiceVolume/100};if(mode==='noalert'||forcedNoAlert(id))api.speak(textFor(id),opt);else api.playAlertThenSpeak(textFor(id),opt)}else api.setAnnouncement(textFor(id))}
- function confirm(g,id){const mode=forcedNoAlert(id)?'noalert':(state.groups[g].modes[id]||'alert');api.toggle(kind,id,true);if(kind==='spoken'&&api.setSpokenNoAlert)api.setSpokenNoAlert(id,mode==='noalert');render()}
+ function confirm(g,id){const mode=forcedNoAlert(id)?'noalert':(state.groups[g].modes[id]||'alert');api.toggle(kind,id,true);if(kind==='spoken'&&api.setSpokenNoAlert)api.setSpokenNoAlert(id,mode==='noalert');closeGroup(g);render()}
  function toggleSelected(id){if(state.selectedActive.has(id))state.selectedActive.delete(id);else state.selectedActive.add(id);render()}
  function removeSelected(){const ids=[...state.selectedActive];if(!ids.length)return;ids.forEach(id=>api.toggle(kind,id,false));state.selectedActive.clear();state.editActive=false;render()}
  function messageControls(g,id){if(kind!=='spoken')return `<div class="msgPerActions textActions"><button type="button" data-action="test" data-group="${g}" data-id="${id}">TESTAR MENSAGEM</button><button type="button" data-action="confirm" data-group="${g}" data-id="${id}">CONFIRMAR ATIVAÇÃO</button></div>`;
