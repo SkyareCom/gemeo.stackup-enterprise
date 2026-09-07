@@ -8,9 +8,9 @@
     html,body,body *,button,input,select,textarea,option,label,a,[role="button"],input::placeholder,textarea::placeholder,
     .stackup-select-trigger,.stackup-select-option,[data-stackup-drawer-trigger],[data-stackup-drawer-panel] *,
     #stackup-global-nav,#stackup-global-nav *,#stackup-global-nav button,#stackup-global-nav a,#stackup-back,#stackup-home{
-      font-family:'Caacupe One'!important;
+      font-family:'Caacupe One',system-ui,sans-serif!important;
       font-style:normal!important;
-      font-weight:400!important;
+      font-weight:300!important;
       letter-spacing:1px!important;
       text-transform:uppercase!important;
     }
@@ -31,9 +31,14 @@
       align-items:center!important;
       justify-content:center!important;
       text-align:center!important;
-      font-size:12px!important;
+      font-size:14px!important;
+      font-weight:300!important;
       line-height:1.15!important;
     }
+    input,select,textarea,option,input::placeholder,textarea::placeholder{font-size:14px!important;font-weight:300!important}
+    h1,.page-title,.hero-title,.display-title{font-size:25px!important;font-weight:300!important}
+    h2,.title,.card-title{font-size:18px!important;font-weight:300!important}
+    h3,.section,.section-title,.subtitle{font-size:16px!important;font-weight:300!important}
     button.active,button.selected,button[aria-pressed="true"],button[aria-selected="true"],
     .toggleBtn.active,.lang.active,.stackup-select-option.active,.stackup-select-option.selected,
     [role="button"].active,[role="button"].selected,[role="button"][aria-pressed="true"],[role="button"][aria-selected="true"]{
