@@ -28,8 +28,8 @@ function render(){
  const pitch=host.querySelector('#soundPitch'),pitchValue=host.querySelector('#soundPitchValue');
  const speedInput=host.querySelector('#soundSpeed'),speedValue=host.querySelector('#soundSpeedValue');
  const repeats=host.querySelector('#soundRepeats');
- if(pitch){pitch.oninput=()=>{pitchValue.textContent=pitch.value};pitch.onchange=()=>{const next=A.load();next.pitch=clamp(+pitch.value||0,-24,24);A.save(next)}}
- if(speedInput){speedInput.oninput=()=>{speedValue.textContent=(+speedInput.value).toFixed(1)+'X'};speedInput.onchange=()=>{const next=A.load();next.speed=clamp(+speedInput.value||1,.5,4);A.save(next);A.play(next)}}
+ if(pitch){pitch.oninput=()=>{pitchValue.textContent=pitch.value;const next=A.load();next.pitch=clamp(+pitch.value||0,-24,24);A.save(next)}}
+ if(speedInput){speedInput.oninput=()=>{speedValue.textContent=(+speedInput.value).toFixed(1)+'X';const next=A.load();next.speed=clamp(+speedInput.value||1,.5,4);A.save(next)};speedInput.onchange=()=>A.play(A.load())}
  if(repeats)repeats.onchange=()=>{const next=A.load();next.repeats=clamp(+repeats.value||1,1,8);A.save(next)};
 }
 const style=document.createElement('style');
