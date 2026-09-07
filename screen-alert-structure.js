@@ -11,13 +11,13 @@ function setAlertEnabled(on){if(!M)return;const c=M.load();c.soundBeforeVoice=!!
 function render(){
  const cfg=A.load();
  const enabled=alertEnabled();
- const speed=clamp(+cfg.speed||1,.5,2);
+ const speed=clamp(+cfg.speed||1,.5,4);
  host.innerHTML=`
    <button type="button" id="toggleAlertList" class="selectAlertsButton">SELECIONAR ALERTAS</button>
    <div class="alertConfigPanel ${alertsOpen?'open':''}">
      <div class="soundPresetList">${A.PRESETS.map(p=>`<button type="button" class="soundPresetName ${cfg.preset===p[0]?'selected':''}" data-preset="${p[0]}">${p[1]}</button>`).join('')}</div>
      <label class="soundControl"><span>PITCH</span><input id="soundPitch" type="range" min="-24" max="24" step="1" value="${clamp(+cfg.pitch||0,-24,24)}"><strong id="soundPitchValue">${clamp(+cfg.pitch||0,-24,24)}</strong></label>
-     <label class="soundControl"><span>VELOCIDADE</span><input id="soundSpeed" type="range" min="0.5" max="2" step="0.1" value="${speed}"><strong id="soundSpeedValue">${speed.toFixed(1)}X</strong></label>
+     <label class="soundControl"><span>VELOCIDADE</span><input id="soundSpeed" type="range" min="0.5" max="4" step="0.1" value="${speed}"><strong id="soundSpeedValue">${speed.toFixed(1)}X</strong></label>
      <label class="soundControl"><span>REPETIÇÕES</span><select id="soundRepeats">${[1,2,3,4,5,6,7,8].map(n=>`<option value="${n}" ${(+cfg.repeats||1)===n?'selected':''}>${n}</option>`).join('')}</select></label>
    </div>
    <button type="button" id="toggleAlertActive" class="alertActiveButton ${enabled?'active':''}">${enabled?'DESATIVAR ALERTA':'ATIVAR ALERTA'}</button>
@@ -29,7 +29,7 @@ function render(){
  const speedInput=host.querySelector('#soundSpeed'),speedValue=host.querySelector('#soundSpeedValue');
  const repeats=host.querySelector('#soundRepeats');
  if(pitch){pitch.oninput=()=>{pitchValue.textContent=pitch.value};pitch.onchange=()=>{const next=A.load();next.pitch=clamp(+pitch.value||0,-24,24);A.save(next)}}
- if(speedInput){speedInput.oninput=()=>{speedValue.textContent=(+speedInput.value).toFixed(1)+'X'};speedInput.onchange=()=>{const next=A.load();next.speed=clamp(+speedInput.value||1,.5,2);A.save(next);A.play(next)}}
+ if(speedInput){speedInput.oninput=()=>{speedValue.textContent=(+speedInput.value).toFixed(1)+'X'};speedInput.onchange=()=>{const next=A.load();next.speed=clamp(+speedInput.value||1,.5,4);A.save(next);A.play(next)}}
  if(repeats)repeats.onchange=()=>{const next=A.load();next.repeats=clamp(+repeats.value||1,1,8);A.save(next)};
 }
 const style=document.createElement('style');
