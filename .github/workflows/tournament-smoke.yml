@@ -35,4 +35,5 @@ jobs:
       - name: Run input mask audit
         run: node tests/input-mask-audit.js
       - name: Run language coverage audit
+        if: always()
         run: node tests/language-audit.js
