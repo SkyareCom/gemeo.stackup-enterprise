@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Inject final language layer
+      - name: Inject final language layer and CAST mobile fit
         run: |
           node <<'NODE'
           const fs=require('fs');
@@ -36,8 +36,11 @@ jobs:
               if(ent.isDirectory())walk(p);
               else if(ent.name.endsWith('.html')){
                 let s=fs.readFileSync(p,'utf8');
-                if(s.includes('app-language-final.js'))continue;
-                const tag='<script src="app-language-final.js?v=904063e6"></script>';
+                const tags=[];
+                if(!s.includes('app-language-final.js'))tags.push('<script src="app-language-final.js?v=904063e6"></script>');
+                if(/^cast-.*\.html$/i.test(ent.name)&&!s.includes('cast-mobile-fit.js'))tags.push('<script src="cast-mobile-fit.js?v=1"></script>');
+                if(!tags.length)continue;
+                const tag=tags.join('');
                 s=/<\/body>/i.test(s)?s.replace(/<\/body>/i,tag+'</body>'):s+tag;
                 fs.writeFileSync(p,s);
               }
