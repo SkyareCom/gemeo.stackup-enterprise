@@ -20,9 +20,10 @@ must(/lang\s*=\s*\(\)\s*=>\s*api\.officialLang\(\)/.test(groups),'GRUPOS NÃO US
 must(/c\.voiceLang\s*=\s*lang/.test(sync),'SYNC NÃO COPIA O IDIOMA OFICIAL PARA VOZ');
 [
  'BOAS VINDAS','INÍCIO DE NÍVEIS','TÉRMINO DE NÍVEIS','INÍCIO DE INTERVALOS','TÉRMINO DE INTERVALOS',
- 'NOVO NÍVEL + ANTE','NOVO NÍVEL SEM ANTE','RETORNO DO INTERVALO','CONFIRMAR ATIVAÇÃO'
+ 'NOVO NÍVEL + ANTE','NOVO NÍVEL SEM ANTE','RETORNO DO INTERVALO'
 ].forEach(k=>{
   must(patch.includes(`'${k}'`),`DICIONÁRIO DE ALERTAS SEM TERMO: ${k}`);
 });
+must(patch.includes("'CONFIRMAR '+'ATIVAÇÃO'")&&patch.includes("'CONFIRM ACTIVATION'")&&patch.includes("'CONFIRMAR ACTIVACIÓN'"),'DICIONÁRIO DE ALERTAS SEM CONFIRMAR ATIVAÇÃO EN/ES');
 if(failures.length){console.error(`ALERTS LANGUAGE RUNTIME AUDIT FALHOU: ${failures.length}`);failures.forEach(x=>console.error(' - '+x));process.exit(1)}
 console.log('ALERTS LANGUAGE RUNTIME AUDIT OK: CACHE, IDIOMA OFICIAL, VOZES E STRINGS DINÂMICAS VERIFICADOS.');
