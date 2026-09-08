@@ -4,12 +4,13 @@ const i18n=require('../app-language.js');
 require('../app-language-extra.js');
 require('../app-language-final.js');
 require('../app-language-qa.js');
+require('../app-language-alerts-v1.js');
 
 const ROOT=path.resolve(__dirname,'..');
 const BRAND="STACKUP HOLD'EM ENTERPRISE";
 const EXCLUDE=new Set(['node_modules','.git','.github','tests','tools']);
 const EXT=new Set(['.html','.js']);
-const SKIP_FILES=new Set(['app-language.js','app-language-extra.js','app-language-final.js','app-language-qa.js']);
+const SKIP_FILES=new Set(['app-language.js','app-language-extra.js','app-language-final.js','app-language-qa.js','app-language-alerts-v1.js']);
 
 // Resíduos portugueses que não podem sobreviver no inglês. Esta lista é
 // deliberadamente ampla para bloquear traduções híbridas como ALERTS SONOROS,
