@@ -37,3 +37,6 @@ jobs:
       - name: Run language coverage audit
         if: always()
         run: node tests/language-audit.js
+      - name: Run alerts runtime language audit
+        if: always()
+        run: node tests/language-runtime-alerts-audit.js
