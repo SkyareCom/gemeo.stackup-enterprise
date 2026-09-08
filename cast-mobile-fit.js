@@ -1,5 +1,6 @@
 (()=>{
   'use strict';
+  if(document.documentElement.hasAttribute('data-stackup-native-cast'))return;
   const BASE_W=1920,BASE_H=1080;
   const isMobileLandscape=()=>matchMedia('(orientation: landscape)').matches&&Math.min(innerWidth,innerHeight)<=700;
   function resetCast(cast){
