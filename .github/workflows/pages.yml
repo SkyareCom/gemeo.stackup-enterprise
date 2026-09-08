@@ -38,7 +38,8 @@ jobs:
                 let s=fs.readFileSync(p,'utf8');
                 const tags=[];
                 if(!s.includes('app-language-final.js'))tags.push('<script src="app-language-final.js?v=904063e6"></script>');
-                if(/^cast-.*\.html$/i.test(ent.name)&&!s.includes('cast-mobile-fit.js'))tags.push('<script src="cast-mobile-fit.js?v=1"></script>');
+                const isLegacyCast=/^cast-.*\.html$/i.test(ent.name)&&ent.name.toLowerCase()!=='cast-10px.html';
+                if(isLegacyCast&&!s.includes('cast-mobile-fit.js'))tags.push('<script src="cast-mobile-fit.js?v=2"></script>');
                 if(!tags.length)continue;
                 const tag=tags.join('');
                 s=/<\/body>/i.test(s)?s.replace(/<\/body>/i,tag+'</body>'):s+tag;
