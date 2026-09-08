@@ -40,6 +40,7 @@ jobs:
                 const file=ent.name.toLowerCase();
                 const isOfficialCast=file==='cast-10px.html'||file==='cast-v2.html';
                 if(!isOfficialCast&&!s.includes('app-language-final.js'))tags.push('<script src="app-language-final.js?v=904063e6"></script>');
+                if(file==='setup.html'&&!s.includes('setup-confirm-dedupe.js'))tags.push('<script src="setup-confirm-dedupe.js?v=9e7d8a4b"></script>');
                 const isLegacyCast=/^cast-.*\.html$/i.test(ent.name)&&!isOfficialCast;
                 if(isLegacyCast&&!s.includes('cast-mobile-fit.js'))tags.push('<script src="cast-mobile-fit.js?v=2"></script>');
                 if(!tags.length)continue;
