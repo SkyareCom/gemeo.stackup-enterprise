@@ -2,40 +2,36 @@
   'use strict';
   const BASE_W=1920,BASE_H=1080;
   const isMobileLandscape=()=>matchMedia('(orientation: landscape)').matches&&Math.min(innerWidth,innerHeight)<=700;
-  const set=(selector,prop,value)=>document.querySelectorAll(selector).forEach(el=>el.style.setProperty(prop,value,'important'));
-  const px=(value,scale)=>`${Math.max(1,value*scale)}px`;
+  function resetCast(cast){
+    ['position','inset','left','top','width','height','transform','transform-origin'].forEach(p=>cast.style.removeProperty(p));
+  }
   function fitCastMobile(){
-    if(!document.querySelector('.cast')||!isMobileLandscape())return;
-    const scale=Math.min(innerWidth/BASE_W,innerHeight/BASE_H);
-    set('.leftSide','padding-left',px(10,scale));
-    set('.rightSide','padding-right',px(10,scale));
-    set('.leftSide span,.rightSide span','font-size',px(30,scale));
-    set('.leftSide b,.rightSide b','font-size',px(40,scale));
-    set('.event b','font-size',px(50,scale));
-    set('.levelTop,.levelTop b,#currentLevelHeading','font-size',px(100,scale));
-    set('.clock,#time','font-size',px(250,scale));
-    set('.currentLevelTitle','display','none');
-    set('.currentInline .sbValue,.currentInline .bbValue,.currentInline .sep','font-size',px(120,scale));
-    set('.currentInline .anteValue,.currentInline .paren','font-size',px(80,scale));
-    set('.nextLevelTitle','font-size',px(35,scale));
-    set('.nextInline .sbValue,.nextInline .bbValue,.nextInline .sep','font-size',px(45,scale));
-    set('.nextInline .anteValue,.nextInline .paren','font-size',px(25,scale));
-    set('.tickerLogo,.tickerSlide span,.tickerSlide .idleLogo','font-size',px(26,scale));
-    set('.track','height',px(6,scale));
-    set('.castControlsBox','gap',px(18,scale));
-    set('.castControlsBox','padding',px(22,scale));
-    set('.castControls button','min-width',px(280,scale));
-    set('.castControls button','min-height',px(72,scale));
-    set('.castControls button','padding',`${px(18,scale)} ${px(26,scale)}`);
-    set('.castControls button','font-size',px(22,scale));
-    set('.enter button','padding',`${px(34,scale)} ${px(52,scale)}`);
-    set('.enter button','font-size',px(43,scale));
+    const cast=document.querySelector('.cast');
+    if(!cast)return;
+    if(!isMobileLandscape()){
+      resetCast(cast);
+      return;
+    }
+    const vw=window.visualViewport?.width||innerWidth;
+    const vh=window.visualViewport?.height||innerHeight;
+    const scale=Math.min(vw/BASE_W,vh/BASE_H);
+    const left=Math.max(0,(vw-BASE_W*scale)/2);
+    const top=Math.max(0,(vh-BASE_H*scale)/2);
+    cast.style.setProperty('position','fixed','important');
+    cast.style.setProperty('inset','auto','important');
+    cast.style.setProperty('left',left+'px','important');
+    cast.style.setProperty('top',top+'px','important');
+    cast.style.setProperty('width',BASE_W+'px','important');
+    cast.style.setProperty('height',BASE_H+'px','important');
+    cast.style.setProperty('transform-origin','0 0','important');
+    cast.style.setProperty('transform',`scale(${scale})`,'important');
   }
   const schedule=()=>requestAnimationFrame(()=>requestAnimationFrame(fitCastMobile));
   addEventListener('resize',schedule,{passive:true});
   addEventListener('orientationchange',schedule,{passive:true});
   addEventListener('pageshow',schedule,{passive:true});
   document.addEventListener('fullscreenchange',schedule);
+  window.visualViewport?.addEventListener('resize',schedule,{passive:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
-  setInterval(fitCastMobile,120);
+  setInterval(fitCastMobile,250);
 })();
