@@ -32,3 +32,8 @@
   const load=(src,attr,done)=>{if(document.querySelector(`script[${attr}]`)){done?.();return}const s=document.createElement('script');s.src=src;s.setAttribute(attr,'1');s.onload=()=>done?.();document.head.appendChild(s)};
   load('screen-alert-audio.js?v=72491ef','data-stackup-alert-audio',()=>load('screen-message-engine.js?v=fc8b611','data-stackup-screen-messages'));
 })();
+(function(){
+  if(typeof document==='undefined'||document.documentElement.hasAttribute('data-stackup-ft'))return;
+  const load=(src,attr,done)=>{if(document.querySelector(`script[${attr}]`)){done?.();return}const s=document.createElement('script');s.src=src;s.setAttribute(attr,'1');s.onload=()=>done?.();document.head.appendChild(s)};
+  load('final-table-hands.js?v=0debf408','data-stackup-final-table-hands',()=>load('cast-unified-ft.js?v=1d35d86b','data-stackup-unified-ft'));
+})();
