@@ -42,7 +42,7 @@ jobs:
                 if(!isOfficialCast&&!s.includes('app-language-final.js'))tags.push('<script src="app-language-final.js?v=904063e6"></script>');
                 if(file==='setup.html'&&!s.includes('setup-confirm-dedupe.js'))tags.push('<script src="setup-confirm-dedupe.js?v=9e7d8a4b"></script>');
                 if(file==='setup.html'&&!s.includes('setup-ft-ui-fix.js'))tags.push('<script src="setup-ft-ui-fix.js?v=1a4d7862"></script>');
-                if(file==='staff.html'&&!s.includes('staff-role-list-fix.js'))tags.push('<script src="staff-role-list-fix.js?v=b50cd6f4"></script>');
+                if(file==='staff.html'&&!s.includes('staff-role-list-fix.js'))tags.push('<script src="staff-role-list-fix.js?v=334ae025"></script>');
                 const isLegacyCast=/^cast-.*\.html$/i.test(ent.name)&&!isOfficialCast;
                 if(isLegacyCast&&!s.includes('cast-mobile-fit.js'))tags.push('<script src="cast-mobile-fit.js?v=2"></script>');
                 if(!tags.length)continue;
