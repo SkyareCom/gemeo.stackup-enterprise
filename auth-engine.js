@@ -12,7 +12,7 @@
       s.onload=()=>next?.();
       document.head.appendChild(s);
     };
-    load('app-language.js?v=9864a67',()=>load('app-language-extra.js?v=2b08a68',()=>load('app-language-final.js?v=9fbc2cd')));
+    load('app-language.js?v=9864a67',()=>load('app-language-extra.js?v=2b08a68',()=>load('app-language-final.js?v=9fbc2cd',()=>load('app-language-spanish-clean-v1.js?v=1d1aee1'))));
   };
   loadLanguageStack();
   const SESSION_KEY='stackup-auth-session-v1';
