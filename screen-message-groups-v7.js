@@ -4,11 +4,11 @@ const api=window.StackupScreenMessages;if(!api)return;
 const REGISTRATION_IDS=new Set(['lastRebuy','lastEntry','lastRebuyEntry']);
 const groups=[
 {id:'welcome',title:'BOAS VINDAS',ids:['welcome']},
-{id:'levelStart',title:'INÍCIO DE NÍVEIS',ids:['levelAnte','levelNoAnte']},
-{id:'levelEnd',title:'TÉRMINO DE NÍVEIS',ids:['level3','level1']},
+{id:'levelStart',title:'INÍCIO DE NÍVEIS',ids:['levelAnte','levelNoAnte','lastEntry','lastRebuy','lastRebuyEntry']},
+{id:'levelEnd',title:'TÉRMINO DE NÍVEIS',ids:['level3','level1','lastEntry','lastRebuy','lastRebuyEntry']},
 {id:'breakStart',title:'INÍCIO DE INTERVALOS',ids:['break','meal','addon']},
 {id:'breakEnd',title:'TÉRMINO DE INTERVALOS',ids:['resume']},
-{id:'extrasAuto',title:'EXTRAS AUTOMÁTICAS',ids:['lastRebuy','lastEntry','lastRebuyEntry','bubble','h4h','itm','ftBubble','ft','alternate']},
+{id:'extrasAuto',title:'EXTRAS AUTOMÁTICAS',ids:['bubble','h4h','itm','ftBubble','ft','alternate']},
 {id:'extrasManual',title:'EXTRAS NÃO AUTOMÁTICAS',ids:['deal']}
 ];
 function createManager(hostId,kind,footerId){
@@ -36,7 +36,7 @@ function createManager(hostId,kind,footerId){
  function messageBlock(r,g,c){const id=r[0],active=!!c[kind]?.[id];return `<div class="msgItem"><div class="msgText"><b>${labelFor(id)}</b><small>${textFor(id)}</small>${forcedNoAlert(id)?'<em>SEMPRE SEM ALERTA</em>':''}${active?'<em>ATIVA</em>':''}</div>${messageControls(g.id,id)}</div>`}
  function block(g){const s=state.groups[g.id],c=cfg(),rows=rowsFor(g),activeCount=rows.filter(r=>!!c[kind]?.[r[0]]).length,current=openGroupId(),locked=!!current&&current!==g.id;if(!s.open)return `<button type="button" class="msgCategoryButton${locked?' locked':''}" data-category="${g.id}" ${locked?'disabled aria-disabled="true"':''}>${g.title}${activeCount?` • ${activeCount}`:''}</button>`;
  return `<section class="msgGroup"><button type="button" class="msgCategoryButton active" data-category="${g.id}">${g.title}</button><div class="msgCategoryBody"><div class="msgList">${rows.map(r=>messageBlock(r,g,c)).join('')}</div></div></section>`}
- function allActiveRows(c){return groups.flatMap(g=>rowsFor(g)).filter(r=>!!c[kind]?.[r[0]])}
+ function allActiveRows(c){const seen=new Set();return groups.flatMap(g=>rowsFor(g)).filter(r=>{const id=r[0];if(seen.has(id)||!c[kind]?.[id])return false;seen.add(id);return true})}
  function activeFooter(c){const rows=allActiveRows(c),count=rows.length;if(!state.showActive)return `<div class="activeFooter"><button type="button" class="activeMessagesButton" data-action="toggleActive">MENSAGENS ATIVAS${count?` • ${count}`:''}</button></div>`;
  const list=count?rows.map(r=>{const id=r[0],checked=state.selectedActive.has(id);return `<div class="activeRow ${state.editActive?'editing':''}">${state.editActive?`<label class="activeSelect" aria-label="SELECIONAR ${labelFor(id)}"><input type="checkbox" data-action="toggleSelected" data-id="${id}" ${checked?'checked':''}><span></span></label>`:''}<div class="msgText"><b>${labelFor(id)}</b><small>${textFor(id)}</small></div></div>`}).join(''):'<div class="msgEmpty">NENHUMA MENSAGEM ATIVA.</div>';
  const selectedCount=state.selectedActive.size;
