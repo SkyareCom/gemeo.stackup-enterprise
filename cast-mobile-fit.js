@@ -37,4 +37,5 @@
   addEventListener('pageshow',schedule,{passive:true});
   document.addEventListener('fullscreenchange',schedule);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
+  setInterval(fitCastMobile,120);
 })();
