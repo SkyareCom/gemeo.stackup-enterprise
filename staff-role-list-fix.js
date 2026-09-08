@@ -8,70 +8,76 @@
     if(!select)return null;
     select.setAttribute('aria-label','FUNÇÃO');
     const current=select.value||'DEALER';
-    select.innerHTML='';
-    ROLES.forEach(([value,label])=>{
-      const option=document.createElement('option');
-      option.value=value;
-      option.textContent=label;
-      select.appendChild(option);
-    });
+    const values=[...select.options].map(o=>o.value);
+    if(select.options.length!==ROLES.length||ROLES.some(([v])=>!values.includes(v))){
+      select.innerHTML='';
+      ROLES.forEach(([value,label])=>{
+        const option=document.createElement('option');
+        option.value=value;
+        option.textContent=label;
+        select.appendChild(option);
+      });
+    }
     select.value=ROLES.some(([v])=>v===current)?current:'DEALER';
     return select;
   }
 
-  function build(){
+  function removeDuplicate(){
+    document.getElementById('staffRoleSelector')?.remove();
+  }
+
+  function repairExistingSelector(){
+    removeDuplicate();
     const select=ensureNative();
     if(!select)return;
+    const wrap=select.__stackupListWrap||(select.nextElementSibling?.classList?.contains('stackup-select')?select.nextElementSibling:null);
+    if(!wrap)return;
 
-    const generated=select.__stackupListWrap||select.nextElementSibling?.classList?.contains('stackup-select')&&select.nextElementSibling;
-    if(generated)generated.style.display='none';
+    wrap.style.display='block';
+    const trigger=wrap.querySelector('.stackup-select-trigger');
+    const list=wrap.querySelector('.stackup-select-list');
+    if(!trigger||!list)return;
 
-    let wrap=document.getElementById('staffRoleSelector');
-    if(!wrap){
-      wrap=document.createElement('div');
-      wrap.id='staffRoleSelector';
-      wrap.style.cssText='width:100%;min-width:0;';
-      wrap.innerHTML='<button type="button" id="staffRoleTrigger" style="width:100%;min-height:44px;text-align:left">FUNÇÃO</button><div id="staffRoleList" style="display:none;margin-top:4px"></div>';
-      (generated||select).insertAdjacentElement('afterend',wrap);
-    }
-
-    const trigger=document.getElementById('staffRoleTrigger');
-    const list=document.getElementById('staffRoleList');
     const selected=select.options[select.selectedIndex];
-    trigger.textContent=selected?.textContent||'FUNÇÃO';
+    if(trigger.firstChild)trigger.firstChild.nodeValue=(selected?.textContent||'SELECIONAR FUNÇÃO')+' ';
 
-    list.innerHTML='';
-    ROLES.forEach(([value,label])=>{
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.textContent=label;
-      btn.style.cssText='display:block;width:100%;min-height:40px;margin:0;padding:9px 4px;border:0;border-bottom:1px solid #27342D;border-radius:0;background:transparent;color:#AEB8B1;text-align:left';
-      if(select.value===value)btn.style.color='#8DFC3B';
-      btn.onclick=()=>{
-        select.value=value;
-        select.dispatchEvent(new Event('input',{bubbles:true}));
-        select.dispatchEvent(new Event('change',{bubbles:true}));
-        trigger.textContent=label;
-        list.style.display='none';
-        build();
-      };
-      list.appendChild(btn);
-    });
+    const rebuild=()=>{
+      list.innerHTML='';
+      ROLES.forEach(([value,label],index)=>{
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.className='stackup-select-option'+(select.value===value?' selected':'');
+        btn.textContent=label;
+        btn.onclick=e=>{
+          e.preventDefault();
+          e.stopPropagation();
+          select.selectedIndex=index;
+          select.value=value;
+          select.dispatchEvent(new Event('input',{bubbles:true}));
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+          if(trigger.firstChild)trigger.firstChild.nodeValue=label+' ';
+          wrap.classList.remove('open');
+          trigger.setAttribute('aria-expanded','false');
+          rebuild();
+        };
+        list.appendChild(btn);
+      });
+    };
 
-    if(!trigger.dataset.bound){
-      trigger.dataset.bound='1';
-      trigger.onclick=()=>{
-        const opening=list.style.display==='none';
-        list.style.display=opening?'block':'none';
-      };
+    rebuild();
+    if(!trigger.dataset.staffRoleFixed){
+      trigger.dataset.staffRoleFixed='1';
+      trigger.addEventListener('click',()=>setTimeout(rebuild,0));
     }
   }
 
   function boot(){
-    build();
+    ensureNative();
+    removeDuplicate();
+    repairExistingSelector();
     const root=document.body||document.documentElement;
-    if(root)new MutationObserver(()=>build()).observe(root,{childList:true,subtree:true});
-    setInterval(build,1000);
+    if(root)new MutationObserver(()=>{removeDuplicate();repairExistingSelector()}).observe(root,{childList:true,subtree:true});
+    setInterval(repairExistingSelector,700);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
