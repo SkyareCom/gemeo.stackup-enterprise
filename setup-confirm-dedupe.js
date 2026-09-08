@@ -20,8 +20,26 @@
     }
   }
 
+  function fixStructureButtons(){
+    if(window.__stackupStructureButtonsFixed)return;
+    window.__stackupStructureButtonsFixed=true;
+    window.addEventListener('click',e=>{
+      const btn=e.target.closest?.('#newStructure,#historyStructure');
+      if(!btn)return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      try{
+        if(typeof btn.onclick==='function')btn.onclick.call(btn,e);
+      }catch(err){
+        console.error('STACKUP_STRUCTURE_BUTTON',err);
+      }
+    },true);
+  }
+
   const boot=()=>{
     normalizeConfirm();
+    fixStructureButtons();
     const root=document.body||document.documentElement;
     if(!root)return;
     new MutationObserver(normalizeConfirm).observe(root,{childList:true,subtree:true});
