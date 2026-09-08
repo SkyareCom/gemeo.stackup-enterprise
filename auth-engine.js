@@ -1,4 +1,20 @@
 (function(){
+  const loadLanguageStack=()=>{
+    if(typeof document==='undefined')return;
+    const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+    if(['cast-10px.html','cast-ft-live.html'].includes(page))return;
+    if(page==='language-settings.html')return;
+    const has=name=>[...document.scripts].some(s=>(s.getAttribute('src')||'').split('?')[0].endsWith(name));
+    const load=(src,next)=>{
+      if(has(src)){next?.();return}
+      const s=document.createElement('script');
+      s.src=src;
+      s.onload=()=>next?.();
+      document.head.appendChild(s);
+    };
+    load('app-language.js?v=9864a67',()=>load('app-language-extra.js?v=2b08a68',()=>load('app-language-final.js?v=9fbc2cd')));
+  };
+  loadLanguageStack();
   const SESSION_KEY='stackup-auth-session-v1';
   const LOGIN_KEY='stackup-auth-login-v1';
   const DEVICE_KEY='stackup-auth-device-v1';
