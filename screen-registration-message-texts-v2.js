@@ -3,6 +3,12 @@
 const api=window.StackupScreenMessages;if(!api)return;
 
 const updates={
+  lastRegistration:{
+    title:'ÚLTIMO NÍVEL PARA REGISTRO NO TORNEIO',
+    pt:'ATENÇÃO JOGADORES, ESTE É O ÚLTIMO NÍVEL PARA REGISTRO NO TORNEIO.',
+    en:'ATTENTION PLAYERS, THIS IS THE LAST LEVEL FOR TOURNAMENT REGISTRATION.',
+    es:'ATENCIÓN JUGADORES, ESTE ES EL ÚLTIMO NIVEL PARA REGISTRARSE EN EL TORNEO.'
+  },
   lastRebuy:{
     title:'ÚLTIMO NÍVEL PARA REBUYS',
     pt:'AVISO IMPORTANTE: ESTE É O ÚLTIMO NÍVEL PARA REBUYS.',
@@ -24,7 +30,8 @@ const updates={
 };
 
 Object.entries(updates).forEach(([id,u])=>{
-  const row=api.PT?.find(r=>r[0]===id);
+  let row=api.PT?.find(r=>r[0]===id);
+  if(!row&&api.PT){row=[id,u.title,u.pt,'auto'];api.PT.push(row)}
   if(row){row[1]=u.title;row[2]=u.pt}
   if(api.TEXT?.pt)api.TEXT.pt[id]=u.pt;
   if(api.TEXT?.en)api.TEXT.en[id]=u.en;
