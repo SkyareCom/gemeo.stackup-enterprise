@@ -1,0 +1,40 @@
+(()=>{
+  'use strict';
+  const BASE_W=1920,BASE_H=1080;
+  const isMobileLandscape=()=>matchMedia('(orientation: landscape)').matches&&Math.min(innerWidth,innerHeight)<=700;
+  const set=(selector,prop,value)=>document.querySelectorAll(selector).forEach(el=>el.style.setProperty(prop,value,'important'));
+  const px=(value,scale)=>`${Math.max(1,value*scale)}px`;
+  function fitCastMobile(){
+    if(!document.querySelector('.cast')||!isMobileLandscape())return;
+    const scale=Math.min(innerWidth/BASE_W,innerHeight/BASE_H);
+    set('.leftSide','padding-left',px(10,scale));
+    set('.rightSide','padding-right',px(10,scale));
+    set('.leftSide span,.rightSide span','font-size',px(30,scale));
+    set('.leftSide b,.rightSide b','font-size',px(40,scale));
+    set('.event b','font-size',px(50,scale));
+    set('.levelTop,.levelTop b,#currentLevelHeading','font-size',px(100,scale));
+    set('.clock,#time','font-size',px(250,scale));
+    set('.currentLevelTitle','display','none');
+    set('.currentInline .sbValue,.currentInline .bbValue,.currentInline .sep','font-size',px(120,scale));
+    set('.currentInline .anteValue,.currentInline .paren','font-size',px(80,scale));
+    set('.nextLevelTitle','font-size',px(35,scale));
+    set('.nextInline .sbValue,.nextInline .bbValue,.nextInline .sep','font-size',px(45,scale));
+    set('.nextInline .anteValue,.nextInline .paren','font-size',px(25,scale));
+    set('.tickerLogo,.tickerSlide span,.tickerSlide .idleLogo','font-size',px(26,scale));
+    set('.track','height',px(6,scale));
+    set('.castControlsBox','gap',px(18,scale));
+    set('.castControlsBox','padding',px(22,scale));
+    set('.castControls button','min-width',px(280,scale));
+    set('.castControls button','min-height',px(72,scale));
+    set('.castControls button','padding',`${px(18,scale)} ${px(26,scale)}`);
+    set('.castControls button','font-size',px(22,scale));
+    set('.enter button','padding',`${px(34,scale)} ${px(52,scale)}`);
+    set('.enter button','font-size',px(43,scale));
+  }
+  const schedule=()=>requestAnimationFrame(()=>requestAnimationFrame(fitCastMobile));
+  addEventListener('resize',schedule,{passive:true});
+  addEventListener('orientationchange',schedule,{passive:true});
+  addEventListener('pageshow',schedule,{passive:true});
+  document.addEventListener('fullscreenchange',schedule);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
+})();
