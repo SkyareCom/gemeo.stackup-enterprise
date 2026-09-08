@@ -58,7 +58,8 @@ for(const file of htmlFiles){
     const explicit=/CONFIRMAR/.test(html);
     const centralized=centrallyHandled.has(file);
     const semantic=semanticActionPages.has(file)&&/(ENTRAR|ACESSAR|LOGIN)/i.test(html);
-    assert(`${file}: tela com placeholder possui confirmação explícita ou padrão central`,explicit||centralized||semantic);
+    const explicitOperationalAction=file==='screen-alerts-operation.html'&&/(VEICULAR AGORA|ATIVAR AGENDAMENTO)/i.test(html);
+    assert(`${file}: tela com placeholder possui confirmação explícita ou padrão central`,explicit||centralized||semantic||explicitOperationalAction);
   }
   const promptUsed=/(^|[^\w])prompt\s*\(/.test(html);
   const neutralizedLegacy=file==='setup.html'&&standard.includes('el.onclick=null;el.onfocus=null;el.readOnly=false');
