@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
 if((location.pathname.split('/').pop()||'').toLowerCase()!=='setup.html')return;
-const TYPES=[['','IDENTIFICADOR DO NÍVEL'],['NORMAL','NORMAL'],['REBUYS_END','TÉRMINO DE REBUYS'],['ENTRIES_END','TÉRMINO DE ENTRADAS'],['ENTRIES_REENTRIES_END','TÉRMINO DE ENTRADAS E REENTRADAS'],['REENTRIES_END','TÉRMINO DE REENTRADAS'],['ADDON_BREAK','INTERVALO PARA ADD ON'],['BREAK','INTERVALO'],['MEAL_BREAK','INTERVALO PARA REFEIÇÃO'],['BAGGING','BAGGING']];
+const TYPES=[['','IDENTIFICADOR DO NÍVEL'],['NORMAL','NORMAL'],['REBUYS_END','TÉRMINO DE REBUYS'],['ENTRIES_END','TÉRMINO DE ENTRADAS'],['ENTRIES_REENTRIES_END','TÉRMINO DE ENTRADAS E REENTRADAS'],['ENTRIES_REENTRIES_REBUYS_END','TÉRMINO DE ENTRADAS, REENTRADAS E REBUYS'],['REENTRIES_END','TÉRMINO DE REENTRADAS'],['ADDON_BREAK','INTERVALO PARA ADD ON'],['BREAK','INTERVALO'],['MEAL_BREAK','INTERVALO PARA REFEIÇÃO'],['BAGGING','BAGGING']];
 let rows=[{level:1,identifier:'',time:0,sb:0,bb:0,ante:0,locked:false}],bbAnte=false,bbMode=0,noAnte=false,editingId=null;
 const $=id=>document.getElementById(id),cleanInt=v=>Math.max(0,Math.min(999999,parseInt(String(v).replace(/\D/g,''),10)||0));
 const save=()=>{try{if(typeof saveState==='function')saveState()}catch(_){}};
