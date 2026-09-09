@@ -30,6 +30,8 @@ function installStyle(){
   const s=document.createElement('style');
   s.id='stackupButtonLayoutStandardV1';
   s.textContent=`
+    html body button:not(:disabled):not([aria-disabled="true"]),html body .btn:not([aria-disabled="true"]),html body .button:not([aria-disabled="true"]),html body [role="button"]:not([aria-disabled="true"]){pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important}
+    html body button:disabled,html body [aria-disabled="true"]{pointer-events:none!important;cursor:not-allowed!important}
     html body .stackup-page-actions{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;width:100%!important;align-items:stretch!important}
     html body .stackup-page-actions>a,html body .stackup-page-actions>button,html body .stackup-page-actions>.btn,html body .stackup-page-actions>.button{width:100%!important;max-width:100%!important;display:flex!important}
     html body .stackup-page-action,html body .stackup-page-link{width:100%!important;max-width:100%!important}
