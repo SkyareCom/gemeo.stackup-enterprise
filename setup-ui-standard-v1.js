@@ -17,7 +17,7 @@ button{min-height:var(--setup-control-h)!important;height:auto!important;padding
 #structureEditor{margin-top:14px!important}.blindModeRow{margin:0 0 12px!important}.blindModeRow button{height:var(--setup-control-h)!important}
 .timeButtons{margin:0 0 14px!important}.timeButtons>button{height:var(--setup-control-h)!important}
 .customTime input,.customTime button{height:var(--setup-control-h)!important;min-height:var(--setup-control-h)!important}
-.levelsWrap{margin-top:14px!important;padding:2px 0 8px!important}.levelsHead{margin:0 0 8px!important}.levelRow{margin-bottom:10px!important}.levelRow input,.levelRow select{height:44px!important;min-height:44px!important}.levelRow button{height:44px!important;min-height:44px!important;padding:7px 4px!important}
+.levelsWrap{margin-top:14px!important;padding:2px 0 8px!important;position:relative!important;overflow-x:auto!important;overflow-y:visible!important}.levelsHead{margin:0 0 8px!important}.levelRow{margin-bottom:10px!important;position:relative!important}.levelRow input,.levelRow select{height:44px!important;min-height:44px!important}.levelRow select.levelIdentifier{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:20!important;appearance:auto!important;-webkit-appearance:menulist!important;cursor:pointer!important}.levelRow select.levelIdentifier option{display:block!important;color:#fff!important;background:#060907!important}.levelRow button{height:44px!important;min-height:44px!important;padding:7px 4px!important;position:relative!important;z-index:1!important}
 .editorActions{margin-top:16px!important}.editorActions button{min-height:var(--setup-control-h)!important}
 #saveNameRow{margin-top:10px!important}.historyList{gap:10px!important}.historyItem{padding:12px 0!important}
 .summary{padding-top:2px!important}.cta{margin-top:20px!important}.cta button{min-height:52px!important}
@@ -26,6 +26,8 @@ button{min-height:var(--setup-control-h)!important;height:auto!important;padding
 @media(max-width:390px){.wrap{padding:12px!important}.structureMenu{grid-template-columns:1fr!important}.cta{grid-template-columns:1fr!important}.editorActions{grid-template-columns:1fr!important}.editorActions button{font-size:13px!important}}
 `;
  document.head.appendChild(s);
+ document.addEventListener('pointerdown',e=>{const sel=e.target.closest('select.levelIdentifier');if(!sel)return;e.stopPropagation();},true);
+ document.addEventListener('click',e=>{const sel=e.target.closest('select.levelIdentifier');if(!sel)return;e.stopPropagation();},true);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
