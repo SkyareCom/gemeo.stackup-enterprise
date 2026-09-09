@@ -32,6 +32,7 @@ function installStyle(){
   s.textContent=`
     html body button:not(:disabled):not([aria-disabled="true"]),html body .btn:not([aria-disabled="true"]),html body .button:not([aria-disabled="true"]),html body [role="button"]:not([aria-disabled="true"]){pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important}
     html body button:disabled,html body [aria-disabled="true"]{pointer-events:none!important;cursor:not-allowed!important}
+    html body a.stackup-normalized-anchor-button{box-sizing:border-box!important;min-height:44px!important;padding:0 12px!important;background:linear-gradient(#0B100D,#060907)!important;background-color:#060907!important;color:#8DFC3B!important;border:1px solid #8DFC3B!important;border-radius:9px!important;outline:none!important;box-shadow:none!important;text-decoration:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important;touch-action:manipulation!important;cursor:pointer!important}
     html body .stackup-page-actions{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;width:100%!important;align-items:stretch!important}
     html body .stackup-page-actions>a,html body .stackup-page-actions>button,html body .stackup-page-actions>.btn,html body .stackup-page-actions>.button{width:100%!important;max-width:100%!important;display:flex!important}
     html body .stackup-page-action,html body .stackup-page-link{width:100%!important;max-width:100%!important}
@@ -41,6 +42,23 @@ function installStyle(){
     html body .timeGrid>button{width:100%!important}
   `;
   document.head.appendChild(s);
+}
+function normalizeNestedAnchorButtons(){
+  document.querySelectorAll('a[href] > button:only-child').forEach(btn=>{
+    if(isInternal(btn)||btn.disabled||btn.getAttribute('aria-disabled')==='true'||btn.hasAttribute('onclick'))return;
+    const a=btn.parentElement;
+    if(!a||a.dataset.stackupNestedNormalized==='1')return;
+    if(btn.id&&!a.id)a.id=btn.id;
+    for(const c of btn.classList)a.classList.add(c);
+    for(const attr of [...btn.attributes]){
+      const name=attr.name.toLowerCase();
+      if(['id','class','type','style','disabled'].includes(name)||name.startsWith('on'))continue;
+      if(!a.hasAttribute(attr.name))a.setAttribute(attr.name,attr.value);
+    }
+    a.innerHTML=btn.innerHTML;
+    a.classList.add('button','stackup-normalized-anchor-button');
+    a.dataset.stackupNestedNormalized='1';
+  });
 }
 function markAction(el){
   if(!el||isInternal(el))return;
@@ -82,9 +100,8 @@ function normalizePageButtons(){
   normalizeKnownPageContainers();
   document.querySelectorAll('main > button,main > a[href],.app > button,.app > a[href]').forEach(markAction);
   document.querySelectorAll('#openGameTournamentList,#confirmGameTournament').forEach(markAction);
-  document.querySelectorAll('a[href$=".html"] > button,a[href*=".html?"] > button').forEach(btn=>{if(!isInternal(btn)){const a=btn.closest('a[href]');if(a){a.classList.add('stackup-page-link');btn.classList.add('stackup-page-action')}}});
 }
-function apply(){installStyle();normalizeCardLists();normalizePageButtons()}
+function apply(){installStyle();normalizeNestedAnchorButtons();normalizeCardLists();normalizePageButtons()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply()})});
 if(document.documentElement)obs.observe(document.documentElement,{childList:true,subtree:true});
