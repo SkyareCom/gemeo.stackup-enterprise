@@ -43,15 +43,21 @@ function likelyBound(attrs, code){
   const dataAttrs=[...attrs.matchAll(/\bdata-([\w-]+)=/gi)].map(m=>m[1]);
   if(id){
     const e=esc(id);
-    const patterns=[
-      new RegExp(`\\b${e}\\s*\\.\\s*onclick\\s*=`),
-      new RegExp(`\\b${e}\\s*\\.\\s*addEventListener\\(`),
-      new RegExp(`getElementById\\(\\s*['\"]${e}['\"]\\s*\\)[\\s\\S]{0,180}?(?:onclick\\s*=|addEventListener\\()`),
-      new RegExp(`querySelector\\(\\s*['\"]#${e}['\"]\\s*\\)[\\s\\S]{0,180}?(?:onclick\\s*=|addEventListener\\()`),
-      new RegExp(`['\"]#${e}['\"]`),
-      new RegExp(`['\"]${e}['\"]`)
+    const direct=[
+      new RegExp(`\\b${e}\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
+      new RegExp(`\\$\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
+      new RegExp(`\\bbyId\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
+      new RegExp(`getElementById\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
+      new RegExp(`querySelector\\(\\s*['\"]#${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
+      new RegExp(`\\.id\\s*={2,3}\\s*['\"]${e}['\"]`),
+      new RegExp(`['\"]${e}['\"]\\s*={2,3}\\s*[^;\\n]{0,100}\\.id`)
     ];
-    if(patterns.some(r=>r.test(code)))return true;
+    if(direct.some(r=>r.test(code)))return true;
+    const aliasRx=new RegExp(`([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.getElementById\\(\\s*['\"]${e}['\"]\\s*\\)`,'g');
+    for(const m of code.matchAll(aliasRx)){
+      const a=esc(m[1]);
+      if(new RegExp(`\\b${a}\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`).test(code))return true;
+    }
   }
   for(const c of cls.split(/\s+/).filter(Boolean)){
     const e=esc(c);
@@ -101,8 +107,15 @@ for(const file of htmlFiles){
   }
 }
 
+const theme=fs.readFileSync(path.join(root,'app-theme.js'),'utf8');
+if(!/id=\"stackup-home\">MENU PRINCIPAL<\/button>/.test(theme))failures.push('NAVEGAÇÃO GLOBAL: MENU PRINCIPAL PRECISA SER BOTÃO REAL.');
+if(!/grid-template-columns:minmax\(0,1fr\)!important/.test(theme)||!/#stackup-global-nav #stackup-back[\s\S]*width:100%!important/.test(theme))failures.push('NAVEGAÇÃO GLOBAL: ANTERIOR E MENU PRINCIPAL PRECISAM OCUPAR A LINHA INTEIRA.');
+if(!/document\.getElementById\('stackup-home'\)\.onclick=/.test(theme))failures.push('NAVEGAÇÃO GLOBAL: MENU PRINCIPAL SEM AÇÃO EXPLÍCITA.');
+const environments=fs.readFileSync(path.join(root,'environment-registered.html'),'utf8');
+if(!/CADASTRAR AMBIENTE/.test(environments)||!/location\.href='environment-register\.html'/.test(environments))failures.push('AMBIENTES CADASTRADOS: ESTADO VAZIO DEVE LEVAR AO CADASTRO, NÃO TER BOTÃO SEM EFEITO.');
+
 console.log(`UI AUDIT: ${htmlFiles.length} páginas, ${buttonCount} botões, ${linkCount} links, ${inlineScriptCount} scripts inline verificados.`);
 for(const w of warnings)console.log('WARN:',w);
 if(failures.length){for(const f of failures)console.error('FAIL:',f);process.exit(1)}
 if(warnings.length){for(const w of warnings)console.error('FAIL:',w);process.exit(1)}
-console.log('UI AUDIT PASS: botões têm ação/navegação identificável, scripts inline compilam e alvos locais existem.');
+console.log('UI AUDIT PASS: botões têm vínculo explícito/delegado, scripts inline compilam, alvos locais existem e a navegação global segue o padrão.');
