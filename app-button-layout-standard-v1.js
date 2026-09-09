@@ -39,6 +39,7 @@ function markAction(el){
     el.classList.add('stackup-page-link');
     const btn=el.querySelector?.(':scope > button,:scope > .btn,:scope > .button,:scope > [role="button"]');
     if(btn&&!isInternal(btn))btn.classList.add('stackup-page-action');
+    else if(el.matches('.btn,.button,[role="button"]'))el.classList.add('stackup-page-action');
     return;
   }
   const btn=el.matches?.('button,.btn,.button,[role="button"]')?el:el.querySelector?.(':scope > button,:scope > .btn,:scope > .button,:scope > [role="button"]');
@@ -49,8 +50,10 @@ function markContainer(c){
   c.classList.add('stackup-page-actions');
   [...c.children].forEach(markAction);
 }
+function actionChild(ch){return !!ch?.matches?.('button,a[href],.btn,.button,[role="button"]')}
+function allDirectActions(c){const kids=[...c.children].filter(x=>x.nodeType===1);return kids.length>=2&&kids.every(actionChild)}
 function directButtonCount(c){
-  return [...c.children].filter(ch=>ch.matches?.('button,.btn,.button,[role="button"]')||(ch.matches?.('a[href]')&&ch.querySelector?.(':scope > button,:scope > .btn,:scope > .button,:scope > [role="button"]'))).length;
+  return [...c.children].filter(ch=>ch.matches?.('button,.btn,.button,[role="button"]')||(ch.matches?.('a[href]')&&(ch.matches('.btn,.button,[role="button"]')||ch.querySelector?.(':scope > button,:scope > .btn,:scope > .button,:scope > [role="button"]')))).length;
 }
 function normalizeCardLists(){
   document.querySelectorAll('.grid,.cards,.modules,.moduleGrid,.cardGrid').forEach(c=>{
@@ -63,6 +66,7 @@ function normalizePageButtons(){
   document.querySelectorAll('main > .actions,.app > .actions').forEach(c=>{if(!isInternal(c))markContainer(c)});
   if(file==='tournament-manager.html')document.querySelectorAll('#selectedActions .actions').forEach(markContainer);
   if(PAGE_GRID_FILES.has(file))document.querySelectorAll('.grid').forEach(c=>{if(!isInternal(c)&&directButtonCount(c)>=2)markContainer(c)});
+  document.querySelectorAll('main > .grid,main > .grid2,main > .grid3,main > .grid4,.app > .grid,.app > .grid2,.app > .grid3,.app > .grid4').forEach(c=>{if(!isInternal(c)&&allDirectActions(c))markContainer(c)});
   document.querySelectorAll('main > button,main > a[href],.app > button,.app > a[href]').forEach(markAction);
   document.querySelectorAll('#openGameTournamentList,#confirmGameTournament').forEach(markAction);
   document.querySelectorAll('a[href$=".html"] > button,a[href*=".html?"] > button').forEach(btn=>{if(!isInternal(btn)){const a=btn.closest('a[href]');if(a){a.classList.add('stackup-page-link');btn.classList.add('stackup-page-action')}}});
