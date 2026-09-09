@@ -9,6 +9,7 @@ const htmlFiles=fs.readdirSync(root).filter(f=>f.endsWith('.html')).sort();
 const allFiles=new Set(fs.readdirSync(root));
 const protectedFiles=new Set(['cast-10px.html','cast-v2.html','cast-ft-live.html','cast-connect.html','tv.html','tv-connect.html','dealer-access.html']);
 let buttonCount=0,nestedInteractive=0,overlayCandidates=0;
+const nestedByFile=new Map(),overlayByFile=new Map();
 
 const stripQuery=s=>String(s||'').split('#')[0].split('?')[0];
 const external=s=>/^(?:https?:|mailto:|tel:|data:|javascript:|#)/i.test(String(s||''));
@@ -45,7 +46,7 @@ for(const file of htmlFiles){
     const attrs=m[1]||'',label=textOf(m[2]);
     const accessible=/\baria-label=["'][^"']+["']/i.test(attrs)||/\btitle=["'][^"']+["']/i.test(attrs);
     if(!label&&!accessible)failures.push(`${file}: BOTÃO SEM RÓTULO ACESSÍVEL -> ${(attrs.match(/\bid=["']([^"']+)["']/i)||[])[1]||'(sem id)'}`);
-    if(insideTag(markup,m.index||0,'a'))nestedInteractive++;
+    if(insideTag(markup,m.index||0,'a')){nestedInteractive++;nestedByFile.set(file,(nestedByFile.get(file)||0)+1)}
     if(/\bstyle=["'][^"']*pointer-events\s*:\s*none/i.test(attrs)&&!/\bdisabled\b|aria-disabled=["']true/i.test(attrs))failures.push(`${file}: BOTÃO HABILITADO COM POINTER-EVENTS NONE -> ${label||'(sem rótulo)'}`);
   }
 
@@ -81,7 +82,7 @@ for(const file of textFiles){
   }
   for(const m of src.matchAll(/position\s*:\s*fixed/gi)){
     const ctx=src.slice(m.index,Math.min(src.length,m.index+500));
-    if(/(?:inset\s*:\s*0|top\s*:\s*0)[\s\S]{0,300}z-index\s*:\s*\d+/i.test(ctx))overlayCandidates++;
+    if(/(?:inset\s*:\s*0|top\s*:\s*0)[\s\S]{0,300}z-index\s*:\s*\d+/i.test(ctx)){overlayCandidates++;overlayByFile.set(file,(overlayByFile.get(file)||0)+1)}
   }
 }
 
@@ -106,8 +107,8 @@ for(const required of ['.timeGrid','.blindModeRow','.editorActions','.payGrid','
 const pages=fs.readFileSync(path.join(root,'.github/workflows/pages.yml'),'utf8');
 for(const required of ['app-theme.js?v=navfull0913','app-button-layout-standard-v1.js?v=fullrow0912',"['tv.html','tv-connect.html','dealer-access.html']",'isOfficialCast','isLegacyCast'])if(!pages.includes(required))failures.push(`pages.yml: REGRA DE PUBLICAÇÃO AUSENTE -> ${required}`);
 
-if(nestedInteractive)warnings.push(`PADRÃO LEGADO: ${nestedInteractive} botão(ões) está(ão) dentro de <a>. O clique possui destino, mas é HTML interativo aninhado e deve ser eliminado gradualmente.`);
-if(overlayCandidates)warnings.push(`MAPEAMENTO: ${overlayCandidates} ocorrência(s) de overlay fixo potencial foram encontradas; nenhuma regra genérica de bloqueio de botão foi detectada por esta auditoria.`);
+if(nestedInteractive){warnings.push(`PADRÃO LEGADO: ${nestedInteractive} botão(ões) está(ão) dentro de <a>. O clique possui destino, mas é HTML interativo aninhado.`);for(const [file,n] of nestedByFile)warnings.push(`ANINHAMENTO INTERATIVO: ${file} -> ${n}`)}
+if(overlayCandidates){warnings.push(`MAPEAMENTO: ${overlayCandidates} ocorrência(s) de overlay fixo potencial; nenhuma regra genérica de bloqueio de botão foi detectada.`);for(const [file,n] of overlayByFile)warnings.push(`OVERLAY POTENCIAL: ${file} -> ${n}`)}
 
 console.log(`FINAL INTERACTION AUDIT: modo=${deploy?'ARTEFATO PUBLICADO':'FONTE'}, ${htmlFiles.length} páginas, ${buttonCount} botões estáticos.`);
 for(const w of warnings)console.log('WARN:',w);
