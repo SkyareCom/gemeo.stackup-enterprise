@@ -16,7 +16,7 @@ const PAGE_CONTAINERS=[
   '.actionGrid','.utilityRow','.queryGrid','.teamGrid','.topActions','.bottomActions',
   '.cta','.pageActions','.page-actions','.mainActions','.main-actions','.navActions','.navigationActions','.links'
 ].join(',');
-const PAGE_GRID_FILES=new Set(['tournament-smoke-test.html','tournament-manager.html','recognition.html','wallet.html','balancing.html']);
+const PAGE_GRID_FILES=new Set(['tournament-smoke-test.html','tournament-manager.html','wallet.html','balancing.html']);
 function isInternal(el){return !!el?.closest?.(INTERNAL)}
 function installStyle(){
   if(document.getElementById('stackupButtonLayoutStandardV1'))return;
@@ -25,7 +25,8 @@ function installStyle(){
   s.textContent=`
     html body .stackup-page-actions{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;width:100%!important;align-items:stretch!important}
     html body .stackup-page-actions>a,html body .stackup-page-actions>button,html body .stackup-page-actions>.btn,html body .stackup-page-actions>.button{width:100%!important;max-width:100%!important;display:flex!important}
-    html body .stackup-page-action{width:100%!important;max-width:100%!important;height:44px!important;min-height:44px!important;max-height:44px!important}
+    html body .stackup-page-action,html body .stackup-page-link{width:100%!important;max-width:100%!important}
+    html body .stackup-page-action{height:44px!important;min-height:44px!important;max-height:44px!important}
     html body .stackup-card-list{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important}
     html body .timeGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
     html body .timeGrid>button{width:100%!important}
@@ -34,9 +35,14 @@ function installStyle(){
 }
 function markAction(el){
   if(!el||isInternal(el))return;
+  if(el.matches?.('a[href]')){
+    el.classList.add('stackup-page-link');
+    const btn=el.querySelector?.(':scope > button,:scope > .btn,:scope > .button,:scope > [role="button"]');
+    if(btn&&!isInternal(btn))btn.classList.add('stackup-page-action');
+    return;
+  }
   const btn=el.matches?.('button,.btn,.button,[role="button"]')?el:el.querySelector?.(':scope > button,:scope > .btn,:scope > .button,:scope > [role="button"]');
   if(btn&&!isInternal(btn))btn.classList.add('stackup-page-action');
-  if(el.matches?.('a[href]'))el.style.width='100%';
 }
 function markContainer(c){
   if(!c||isInternal(c))return;
@@ -49,16 +55,17 @@ function directButtonCount(c){
 function normalizeCardLists(){
   document.querySelectorAll('.grid,.cards,.modules,.moduleGrid,.cardGrid').forEach(c=>{
     const direct=[...c.children].filter(x=>x.matches?.('a.card,.module-card,[data-module-card]'));
-    if(direct.length)c.classList.add('stackup-card-list');
+    if(direct.length){c.classList.add('stackup-card-list');direct.forEach(markAction)}
   });
 }
 function normalizePageButtons(){
   document.querySelectorAll(PAGE_CONTAINERS).forEach(markContainer);
-  document.querySelectorAll('.actions').forEach(c=>{if(!isInternal(c))markContainer(c)});
+  document.querySelectorAll('main > .actions,.app > .actions').forEach(c=>{if(!isInternal(c))markContainer(c)});
+  if(file==='tournament-manager.html')document.querySelectorAll('#selectedActions .actions').forEach(markContainer);
   if(PAGE_GRID_FILES.has(file))document.querySelectorAll('.grid').forEach(c=>{if(!isInternal(c)&&directButtonCount(c)>=2)markContainer(c)});
-  document.querySelectorAll('main > button,main > a[href] > button,main > a[href].btn,main > a[href].button').forEach(markAction);
+  document.querySelectorAll('main > button,main > a[href],.app > button,.app > a[href]').forEach(markAction);
   document.querySelectorAll('#openGameTournamentList,#confirmGameTournament').forEach(markAction);
-  document.querySelectorAll('a[href$=".html"] > button,a[href*=".html?"] > button').forEach(btn=>{if(!isInternal(btn)){const a=btn.closest('a[href]');a?.parentElement&&markContainer(a.parentElement);markAction(btn)}});
+  document.querySelectorAll('a[href$=".html"] > button,a[href*=".html?"] > button').forEach(btn=>{if(!isInternal(btn)){const a=btn.closest('a[href]');if(a){a.classList.add('stackup-page-link');btn.classList.add('stackup-page-action')}}});
 }
 function apply(){installStyle();normalizeCardLists();normalizePageButtons()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
