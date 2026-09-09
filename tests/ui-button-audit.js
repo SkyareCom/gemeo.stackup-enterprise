@@ -36,6 +36,10 @@ function localScripts(html,file){
   return out.join('\n');
 }
 
+function genericButtonDelegation(code){
+  return /addEventListener\(\s*['"](?:click|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['"][\s\S]{0,5000}?closest\(\s*['"]button['"]\s*\)/.test(code);
+}
+
 function directIdBinding(id,code){
   const e=esc(id);
   const direct=[
@@ -57,6 +61,14 @@ function directIdBinding(id,code){
       if(new RegExp(`\\b${a}\\s*\\.\\s*(?:onclick|onchange|onpointerdown|onpointerup|ontouchstart|ontouchend|onmousedown|onmouseup|addEventListener)\\b`).test(code))return true;
     }
   }
+
+  if(genericButtonDelegation(code)){
+    const idChecks=[
+      new RegExp(`\\.id\\s*={2,3}\\s*['\"]${e}['\"]`),
+      new RegExp(`['\"]${e}['\"]\\s*={2,3}\\s*[^;\\n]{0,120}\\.id`)
+    ];
+    if(idChecks.some(r=>r.test(code)))return true;
+  }
   return false;
 }
 
@@ -64,8 +76,8 @@ function delegatedBinding(selectorFragment,code){
   const s=esc(selectorFragment);
   const selector=`['\"][^'\"]*${s}[^'\"]*['\"]`;
   const clickDelegation=[
-    new RegExp(`(?:document|window|[A-Za-z_$][\\w$]*)\\s*\\.\\s*addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"][\\s\\S]{0,2400}?(?:closest|matches)\\(\\s*${selector}\\s*\\)`),
-    new RegExp(`(?:document|window)\\s*\\.\\s*(?:onclick|onchange|onpointerdown|onpointerup|ontouchstart|ontouchend|onmousedown|onmouseup)\\s*=[\\s\\S]{0,2400}?(?:closest|matches)\\(\\s*${selector}\\s*\\)`)
+    new RegExp(`(?:document|window|[A-Za-z_$][\\w$]*)\\s*\\.\\s*addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"][\\s\\S]{0,4000}?(?:closest|matches)\\(\\s*${selector}\\s*\\)`),
+    new RegExp(`(?:document|window|[A-Za-z_$][\\w$]*)\\s*\\.\\s*(?:onclick|onchange|onpointerdown|onpointerup|ontouchstart|ontouchend|onmousedown|onmouseup)\\s*=[\\s\\S]{0,4000}?(?:closest|matches)\\(\\s*${selector}\\s*\\)`)
   ];
   return clickDelegation.some(r=>r.test(code));
 }
@@ -73,13 +85,14 @@ function delegatedBinding(selectorFragment,code){
 function selectorCollectionBinding(selectorFragment,code){
   const s=esc(selectorFragment);
   const selector=`['\"][^'\"]*${s}[^'\"]*['\"]`;
+  const scope=`(?:document|[A-Za-z_$][\\w$]*)`;
   const patterns=[
-    new RegExp(`querySelectorAll\\(\\s*${selector}\\s*\\)[\\s\\S]{0,1800}?(?:forEach|for\\s*\\()[\\s\\S]{0,1200}?(?:\\.onclick\\s*=|\\.onchange\\s*=|\\.onpointerdown\\s*=|\\.onpointerup\\s*=|\\.ontouchstart\\s*=|\\.ontouchend\\s*=|\\.onmousedown\\s*=|\\.onmouseup\\s*=|\\.addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"])`),
-    new RegExp(`querySelector\\(\\s*${selector}\\s*\\)[\\s\\S]{0,600}?(?:\\.onclick\\s*=|\\.onchange\\s*=|\\.onpointerdown\\s*=|\\.onpointerup\\s*=|\\.ontouchstart\\s*=|\\.ontouchend\\s*=|\\.onmousedown\\s*=|\\.onmouseup\\s*=|\\.addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"])`)
+    new RegExp(`${scope}\\.querySelectorAll\\(\\s*${selector}\\s*\\)[\\s\\S]{0,1800}?(?:forEach|for\\s*\\()[\\s\\S]{0,1200}?(?:\\.onclick\\s*=|\\.onchange\\s*=|\\.onpointerdown\\s*=|\\.onpointerup\\s*=|\\.ontouchstart\\s*=|\\.ontouchend\\s*=|\\.onmousedown\\s*=|\\.onmouseup\\s*=|\\.addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"])`),
+    new RegExp(`${scope}\\.querySelector\\(\\s*${selector}\\s*\\)[\\s\\S]{0,600}?(?:\\.onclick\\s*=|\\.onchange\\s*=|\\.onpointerdown\\s*=|\\.onpointerup\\s*=|\\.ontouchstart\\s*=|\\.ontouchend\\s*=|\\.onmousedown\\s*=|\\.onmouseup\\s*=|\\.addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"])`)
   ];
   if(patterns.some(r=>r.test(code)))return true;
 
-  const aliasRx=new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.querySelector\\(\\s*${selector}\\s*\\)`,'g');
+  const aliasRx=new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*${scope}\\.querySelector\\(\\s*${selector}\\s*\\)`,'g');
   for(const m of code.matchAll(aliasRx)){
     const a=esc(m[1]);
     if(new RegExp(`\\b${a}\\s*\\.\\s*(?:onclick|onchange|onpointerdown|onpointerup|ontouchstart|ontouchend|onmousedown|onmouseup|addEventListener)\\b`).test(code))return true;
@@ -104,7 +117,9 @@ function likelyBound(attrs, code){
     const fragment=`[data-${d}`;
     if(selectorCollectionBinding(fragment,code)||delegatedBinding(fragment,code))return true;
     const prop=esc(camel(d));
-    if(new RegExp(`dataset\\.${prop}\\b[\\s\\S]{0,1200}?(?:onclick|addEventListener\\(\\s*['\"]click)`).test(code)&&/addEventListener\(\s*['"]click['"]/i.test(code))return true;
+    if(genericButtonDelegation(code)){
+      if(new RegExp(`\\.dataset\\.${prop}\\b`).test(code)||new RegExp(`\\.dataset\\[['\"]${esc(d)}['\"]\\]`).test(code))return true;
+    }
   }
   return false;
 }
@@ -150,6 +165,8 @@ if(!/isProtectedDisplay\(\)/.test(theme)||!/cast-10px\.html/.test(theme)||!/deal
 
 const buttonStandard=fs.readFileSync(path.join(root,'app-button-layout-standard-v1.js'),'utf8');
 if(!/\.stackup-page-actions\{display:grid!important;grid-template-columns:minmax\(0,1fr\)!important/.test(buttonStandard)||!/\.stackup-page-action\{height:44px!important;min-height:44px!important;max-height:44px!important\}/.test(buttonStandard))failures.push('PADRÃO DE BOTÕES: AÇÕES PRINCIPAIS PRECISAM OCUPAR LINHA INTEIRA E ALTURA PADRÃO.');
+if(!/pointer-events:auto!important/.test(buttonStandard)||!/touch-action:manipulation!important/.test(buttonStandard))failures.push('INTERAÇÃO DE BOTÕES: CONTROLES HABILITADOS PRECISAM RECEBER CLIQUE/TOQUE EXPLICITAMENTE.');
+if(!/button:disabled[\s\S]*pointer-events:none!important/.test(buttonStandard))failures.push('INTERAÇÃO DE BOTÕES: CONTROLES DESABILITADOS DEVEM CONTINUAR SEM CLIQUE.');
 for(const required of ['.timeGrid','.blindModeRow','.editorActions','.payGrid','.dealerGrid','.dealerActions','.finalTableActions','.roundControls','.tabs','.pagination','.keypad','.keyboard']){
   if(!buttonStandard.includes(required))failures.push(`PADRÃO DE BOTÕES: EXCEÇÃO INTERNA AUSENTE -> ${required}`);
 }
