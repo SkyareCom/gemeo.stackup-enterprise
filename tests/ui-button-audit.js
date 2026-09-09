@@ -36,42 +36,75 @@ function localScripts(html,file){
   return out.join('\n');
 }
 
+function directIdBinding(id,code){
+  const e=esc(id);
+  const direct=[
+    new RegExp(`\\b${e}\\s*\\.\\s*(?:onclick|onchange|onpointerdown|onpointerup|ontouchstart|ontouchend|onmousedown|onmouseup|addEventListener)\\b`),
+    new RegExp(`\\$\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
+    new RegExp(`\\bbyId\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
+    new RegExp(`getElementById\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
+    new RegExp(`querySelector\\(\\s*['\"]#${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`)
+  ];
+  if(direct.some(r=>r.test(code)))return true;
+
+  const aliases=[
+    new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.getElementById\\(\\s*['\"]${e}['\"]\\s*\\)`,'g'),
+    new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.querySelector\\(\\s*['\"]#${e}['\"]\\s*\\)`,'g')
+  ];
+  for(const rx of aliases){
+    for(const m of code.matchAll(rx)){
+      const a=esc(m[1]);
+      if(new RegExp(`\\b${a}\\s*\\.\\s*(?:onclick|onchange|onpointerdown|onpointerup|ontouchstart|ontouchend|onmousedown|onmouseup|addEventListener)\\b`).test(code))return true;
+    }
+  }
+  return false;
+}
+
+function delegatedBinding(selectorFragment,code){
+  const s=esc(selectorFragment);
+  const selector=`['\"][^'\"]*${s}[^'\"]*['\"]`;
+  const clickDelegation=[
+    new RegExp(`(?:document|window|[A-Za-z_$][\\w$]*)\\s*\\.\\s*addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"][\\s\\S]{0,2400}?(?:closest|matches)\\(\\s*${selector}\\s*\\)`),
+    new RegExp(`(?:document|window)\\s*\\.\\s*(?:onclick|onchange|onpointerdown|onpointerup|ontouchstart|ontouchend|onmousedown|onmouseup)\\s*=[\\s\\S]{0,2400}?(?:closest|matches)\\(\\s*${selector}\\s*\\)`)
+  ];
+  return clickDelegation.some(r=>r.test(code));
+}
+
+function selectorCollectionBinding(selectorFragment,code){
+  const s=esc(selectorFragment);
+  const selector=`['\"][^'\"]*${s}[^'\"]*['\"]`;
+  const patterns=[
+    new RegExp(`querySelectorAll\\(\\s*${selector}\\s*\\)[\\s\\S]{0,1800}?(?:forEach|for\\s*\\()[\\s\\S]{0,1200}?(?:\\.onclick\\s*=|\\.onchange\\s*=|\\.onpointerdown\\s*=|\\.onpointerup\\s*=|\\.ontouchstart\\s*=|\\.ontouchend\\s*=|\\.onmousedown\\s*=|\\.onmouseup\\s*=|\\.addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"])`),
+    new RegExp(`querySelector\\(\\s*${selector}\\s*\\)[\\s\\S]{0,600}?(?:\\.onclick\\s*=|\\.onchange\\s*=|\\.onpointerdown\\s*=|\\.onpointerup\\s*=|\\.ontouchstart\\s*=|\\.ontouchend\\s*=|\\.onmousedown\\s*=|\\.onmouseup\\s*=|\\.addEventListener\\(\\s*['\"](?:click|change|pointerdown|pointerup|touchstart|touchend|mousedown|mouseup)['\"])`)
+  ];
+  if(patterns.some(r=>r.test(code)))return true;
+
+  const aliasRx=new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.querySelector\\(\\s*${selector}\\s*\\)`,'g');
+  for(const m of code.matchAll(aliasRx)){
+    const a=esc(m[1]);
+    if(new RegExp(`\\b${a}\\s*\\.\\s*(?:onclick|onchange|onpointerdown|onpointerup|ontouchstart|ontouchend|onmousedown|onmouseup|addEventListener)\\b`).test(code))return true;
+  }
+  return false;
+}
+
 function likelyBound(attrs, code){
-  if(/\bonclick\s*=|\bonchange\s*=|\bonpointer|\bontouch|\bonmousedown|\bonmouseup/i.test(attrs))return true;
+  if(/\bonclick\s*=|\bonchange\s*=|\bonpointer(?:down|up)\s*=|\bontouch(?:start|end)\s*=|\bonmouse(?:down|up)\s*=/i.test(attrs))return true;
   const id=(attrs.match(/\bid=["']([^"']+)["']/i)||[])[1];
   const cls=(attrs.match(/\bclass=["']([^"']+)["']/i)||[])[1]||'';
   const dataAttrs=[...attrs.matchAll(/\bdata-([\w-]+)=/gi)].map(m=>m[1]);
-  if(id){
-    const e=esc(id);
-    const direct=[
-      new RegExp(`\\b${e}\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
-      new RegExp(`\\$\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
-      new RegExp(`\\bbyId\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
-      new RegExp(`getElementById\\(\\s*['\"]${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
-      new RegExp(`querySelector\\(\\s*['\"]#${e}['\"]\\s*\\)\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`),
-      new RegExp(`\\.id\\s*={2,3}\\s*['\"]${e}['\"]`),
-      new RegExp(`['\"]${e}['\"]\\s*={2,3}\\s*[^;\\n]{0,100}\\.id`)
-    ];
-    if(direct.some(r=>r.test(code)))return true;
-    const aliasRx=new RegExp(`([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.getElementById\\(\\s*['\"]${e}['\"]\\s*\\)`,'g');
-    for(const m of code.matchAll(aliasRx)){
-      const a=esc(m[1]);
-      if(new RegExp(`\\b${a}\\s*\\.\\s*(?:onclick|onchange|addEventListener)\\b`).test(code))return true;
-    }
-  }
+
+  if(id&&directIdBinding(id,code))return true;
+
   for(const c of cls.split(/\s+/).filter(Boolean)){
-    const e=esc(c);
-    if(new RegExp(`querySelectorAll\\(\\s*['\"][^'\"]*\\.${e}`).test(code)||new RegExp(`closest\\(\\s*['\"][^'\"]*\\.${e}`).test(code))return true;
+    const fragment=`.${c}`;
+    if(selectorCollectionBinding(fragment,code)||delegatedBinding(fragment,code))return true;
   }
+
   for(const d of dataAttrs){
-    const e=esc(d),prop=esc(camel(d));
-    const patterns=[
-      new RegExp(`data-${e}`),
-      new RegExp(`dataset\\.${prop}\\b`),
-      new RegExp(`dataset\\[['\"]${e}['\"]\\]`),
-      new RegExp(`\\[data-${e}(?:=|\\])`)
-    ];
-    if(patterns.some(r=>r.test(code)))return true;
+    const fragment=`[data-${d}`;
+    if(selectorCollectionBinding(fragment,code)||delegatedBinding(fragment,code))return true;
+    const prop=esc(camel(d));
+    if(new RegExp(`dataset\\.${prop}\\b[\\s\\S]{0,1200}?(?:onclick|addEventListener\\(\\s*['\"]click)`).test(code)&&/addEventListener\(\s*['"]click['"]/i.test(code))return true;
   }
   return false;
 }
@@ -97,12 +130,14 @@ for(const file of htmlFiles){
     buttonCount++;
     const attrs=m[1]||'';
     if(/\bdisabled\b/i.test(attrs))continue;
+    if(/\baria-disabled=["']true["']/i.test(attrs))continue;
     if(insideAnchor(html,m.index||0))continue;
     const type=(attrs.match(/\btype=["']([^"']+)["']/i)||[])[1]||'submit';
     if(type.toLowerCase()==='submit'&&/<form\b/i.test(html))continue;
     if(!likelyBound(attrs,code)){
       const id=(attrs.match(/\bid=["']([^"']+)["']/i)||[])[1]||'(sem id)';
-      warnings.push(`${file}: BOTÃO SEM VÍNCULO ESTÁTICO EVIDENTE -> ${id}`);
+      const label=((html.slice((m.index||0)+m[0].length).match(/^\s*([^<]{1,80})</)||[])[1]||'').trim();
+      warnings.push(`${file}: BOTÃO SEM VÍNCULO DE CLIQUE EVIDENTE -> ${id}${label?` [${label}]`:''}`);
     }
   }
 }
@@ -111,6 +146,14 @@ const theme=fs.readFileSync(path.join(root,'app-theme.js'),'utf8');
 if(!/id=\"stackup-home\">MENU PRINCIPAL<\/button>/.test(theme))failures.push('NAVEGAÇÃO GLOBAL: MENU PRINCIPAL PRECISA SER BOTÃO REAL.');
 if(!/grid-template-columns:minmax\(0,1fr\)!important/.test(theme)||!/#stackup-global-nav #stackup-back[\s\S]*width:100%!important/.test(theme))failures.push('NAVEGAÇÃO GLOBAL: ANTERIOR E MENU PRINCIPAL PRECISAM OCUPAR A LINHA INTEIRA.');
 if(!/document\.getElementById\('stackup-home'\)\.onclick=/.test(theme))failures.push('NAVEGAÇÃO GLOBAL: MENU PRINCIPAL SEM AÇÃO EXPLÍCITA.');
+if(!/isProtectedDisplay\(\)/.test(theme)||!/cast-10px\.html/.test(theme)||!/dealer-access\.html/.test(theme))failures.push('NAVEGAÇÃO GLOBAL: TELAS PROTEGIDAS/EXCEÇÕES NÃO ESTÃO PRESERVADAS.');
+
+const buttonStandard=fs.readFileSync(path.join(root,'app-button-layout-standard-v1.js'),'utf8');
+if(!/\.stackup-page-actions\{display:grid!important;grid-template-columns:minmax\(0,1fr\)!important/.test(buttonStandard)||!/\.stackup-page-action\{height:44px!important;min-height:44px!important;max-height:44px!important\}/.test(buttonStandard))failures.push('PADRÃO DE BOTÕES: AÇÕES PRINCIPAIS PRECISAM OCUPAR LINHA INTEIRA E ALTURA PADRÃO.');
+for(const required of ['.timeGrid','.blindModeRow','.editorActions','.payGrid','.dealerGrid','.dealerActions','.finalTableActions','.roundControls','.tabs','.pagination','.keypad','.keyboard']){
+  if(!buttonStandard.includes(required))failures.push(`PADRÃO DE BOTÕES: EXCEÇÃO INTERNA AUSENTE -> ${required}`);
+}
+
 const environments=fs.readFileSync(path.join(root,'environment-registered.html'),'utf8');
 if(!/CADASTRAR AMBIENTE/.test(environments)||!/location\.href='environment-register\.html'/.test(environments))failures.push('AMBIENTES CADASTRADOS: ESTADO VAZIO DEVE LEVAR AO CADASTRO, NÃO TER BOTÃO SEM EFEITO.');
 
@@ -118,4 +161,4 @@ console.log(`UI AUDIT: ${htmlFiles.length} páginas, ${buttonCount} botões, ${l
 for(const w of warnings)console.log('WARN:',w);
 if(failures.length){for(const f of failures)console.error('FAIL:',f);process.exit(1)}
 if(warnings.length){for(const w of warnings)console.error('FAIL:',w);process.exit(1)}
-console.log('UI AUDIT PASS: botões têm vínculo explícito/delegado, scripts inline compilam, alvos locais existem e a navegação global segue o padrão.');
+console.log('UI AUDIT PASS: botões têm vínculo explícito/delegado real, scripts inline compilam, alvos locais existem, exceções internas são preservadas e a navegação global segue o padrão.');
