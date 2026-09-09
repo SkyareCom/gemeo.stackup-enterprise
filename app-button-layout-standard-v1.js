@@ -9,12 +9,14 @@ const INTERNAL=[
   '.payGrid','.hubPay','.paymentGrid','.paymentMethods',
   '.toggleRow','.modeGrid','.dealerGrid','.confirmGrid',
   '.dealerActions','.eliminationActions','.rebuyActions','.finalTableActions','.roundControls',
+  '.modes','.hands','.voiceChoiceButtons','.messageActions','.linkBox',
   '.tabs','.tabRow','.pagination','.keypad','.keyboard','[data-internal-controls]'
 ].join(',');
 const PAGE_CONTAINERS=[
   '.actionGrid','.utilityRow','.queryGrid','.teamGrid','.topActions','.bottomActions',
   '.cta','.pageActions','.page-actions','.mainActions','.main-actions','.navActions','.navigationActions','.links'
 ].join(',');
+const PAGE_GRID_FILES=new Set(['tournament-smoke-test.html','tournament-manager.html','recognition.html','wallet.html','balancing.html']);
 function isInternal(el){return !!el?.closest?.(INTERNAL)}
 function installStyle(){
   if(document.getElementById('stackupButtonLayoutStandardV1'))return;
@@ -41,6 +43,9 @@ function markContainer(c){
   c.classList.add('stackup-page-actions');
   [...c.children].forEach(markAction);
 }
+function directButtonCount(c){
+  return [...c.children].filter(ch=>ch.matches?.('button,.btn,.button,[role="button"]')||(ch.matches?.('a[href]')&&ch.querySelector?.(':scope > button,:scope > .btn,:scope > .button,:scope > [role="button"]'))).length;
+}
 function normalizeCardLists(){
   document.querySelectorAll('.grid,.cards,.modules,.moduleGrid,.cardGrid').forEach(c=>{
     const direct=[...c.children].filter(x=>x.matches?.('a.card,.module-card,[data-module-card]'));
@@ -50,7 +55,9 @@ function normalizeCardLists(){
 function normalizePageButtons(){
   document.querySelectorAll(PAGE_CONTAINERS).forEach(markContainer);
   document.querySelectorAll('.actions').forEach(c=>{if(!isInternal(c))markContainer(c)});
+  if(PAGE_GRID_FILES.has(file))document.querySelectorAll('.grid').forEach(c=>{if(!isInternal(c)&&directButtonCount(c)>=2)markContainer(c)});
   document.querySelectorAll('main > button,main > a[href] > button,main > a[href].btn,main > a[href].button').forEach(markAction);
+  document.querySelectorAll('#openGameTournamentList,#confirmGameTournament').forEach(markAction);
   document.querySelectorAll('a[href$=".html"] > button,a[href*=".html?"] > button').forEach(btn=>{if(!isInternal(btn)){const a=btn.closest('a[href]');a?.parentElement&&markContainer(a.parentElement);markAction(btn)}});
 }
 function apply(){installStyle();normalizeCardLists();normalizePageButtons()}
