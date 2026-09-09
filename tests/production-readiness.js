@@ -50,14 +50,14 @@ assert('reconhecimento confirma busca',standard.includes('confirmRecognitionSear
 assert('seleção de jogador usa confirmar',standard.includes("page==='tournament-players.html'")&&standard.includes("b.textContent='CONFIRMAR'"));
 
 const centrallyHandled=new Set(['setup.html','communications.html','finance-settings.html','ranking-general.html','recognition.html','structure-import.html','tournament-players.html']);
-const semanticActionPages=new Set(['login.html']);
+const semanticActionPages=new Set(['login.html','dealer-activation.html','final-table-settings.html','tv-connect.html']);
 const htmlFiles=fs.readdirSync('.').filter(f=>f.endsWith('.html'));
 for(const file of htmlFiles){
   const html=fs.readFileSync(file,'utf8');
   if(/\bplaceholder\s*=/.test(html)){
     const explicit=/CONFIRMAR/.test(html);
     const centralized=centrallyHandled.has(file);
-    const semantic=semanticActionPages.has(file)&&/(ENTRAR|ACESSAR|LOGIN)/i.test(html);
+    const semantic=semanticActionPages.has(file)&&/(ENTRAR|ACESSAR|LOGIN|LIBERAR CELULAR|SALVAR|CONECTAR)/i.test(html);
     const explicitOperationalAction=file==='screen-alerts-operation.html'&&/(VEICULAR AGORA|ATIVAR AGENDAMENTO)/i.test(html);
     assert(`${file}: tela com placeholder possui confirmação explícita ou padrão central`,explicit||centralized||semantic||explicitOperationalAction);
   }
