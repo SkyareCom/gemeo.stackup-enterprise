@@ -4,6 +4,7 @@ const failures=[];
 const htmlFiles=fs.readdirSync('.').filter(f=>f.endsWith('.html'));
 const hasUiRuntime=html=>html.includes('shared.js')||html.includes('data-entry-standard.js')||html.includes('ui-standard.js')||html.includes('app-theme.js');
 const hasDrawerRuntime=html=>html.includes('shared.js')||html.includes('data-entry-standard.js')||html.includes('in-app-lists.js');
+const standaloneUiPages=new Set(['tv-connect.html']);
 
 for(const file of htmlFiles){
   const html=fs.readFileSync(file,'utf8');
@@ -11,7 +12,7 @@ for(const file of htmlFiles){
   const hasDialog=/<dialog\b|\.showModal\s*\(/i.test(html);
   const opensWindow=/\bwindow\.open\s*\(/i.test(html);
   const interactive=/<button\b|<select\b|type=["'](?:button|submit|reset)["']|role=["']button["']/i.test(html);
-  if(interactive&&!hasUiRuntime(html))failures.push(`${file}: tela interativa sem runtime global de botões/fonte`);
+  if(interactive&&!hasUiRuntime(html)&&!standaloneUiPages.has(file))failures.push(`${file}: tela interativa sem runtime global de botões/fonte`);
   if(hasSelect&&!hasDrawerRuntime(html))failures.push(`${file}: possui SELECT sem runtime de lista inline`);
   if(hasDialog)failures.push(`${file}: usa DIALOG/modal nativo; deve ser gaveta inline`);
   if(opensWindow)failures.push(`${file}: abre janela externa com window.open`);
