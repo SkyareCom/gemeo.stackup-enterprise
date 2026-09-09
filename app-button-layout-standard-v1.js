@@ -17,6 +17,13 @@ const PAGE_CONTAINERS=[
   '.cta','.pageActions','.page-actions','.mainActions','.main-actions','.navActions','.navigationActions','.links'
 ].join(',');
 const PAGE_GRID_FILES=new Set(['tournament-smoke-test.html','tournament-manager.html','wallet.html','balancing.html']);
+const KNOWN_PAGE_CONTAINERS={
+  'finance.html':['main > .grid2'],
+  'screen-settings.html':['main > .actions'],
+  'tournament-readiness.html':['main > .actions'],
+  'tournament-manager.html':['#selectedActions > .actions','#ops .grid'],
+  'transmission-room.html':['.room > .actions']
+};
 function isInternal(el){return !!el?.closest?.(INTERNAL)}
 function installStyle(){
   if(document.getElementById('stackupButtonLayoutStandardV1'))return;
@@ -61,12 +68,16 @@ function normalizeCardLists(){
     if(direct.length){c.classList.add('stackup-card-list');direct.forEach(markAction)}
   });
 }
+function normalizeKnownPageContainers(){
+  for(const selector of KNOWN_PAGE_CONTAINERS[file]||[])document.querySelectorAll(selector).forEach(c=>{if(!isInternal(c))markContainer(c)});
+}
 function normalizePageButtons(){
   document.querySelectorAll(PAGE_CONTAINERS).forEach(markContainer);
   document.querySelectorAll('main > .actions,.app > .actions').forEach(c=>{if(!isInternal(c))markContainer(c)});
   if(file==='tournament-manager.html')document.querySelectorAll('#selectedActions .actions').forEach(markContainer);
   if(PAGE_GRID_FILES.has(file))document.querySelectorAll('.grid').forEach(c=>{if(!isInternal(c)&&directButtonCount(c)>=2)markContainer(c)});
   document.querySelectorAll('main > .grid,main > .grid2,main > .grid3,main > .grid4,.app > .grid,.app > .grid2,.app > .grid3,.app > .grid4').forEach(c=>{if(!isInternal(c)&&allDirectActions(c))markContainer(c)});
+  normalizeKnownPageContainers();
   document.querySelectorAll('main > button,main > a[href],.app > button,.app > a[href]').forEach(markAction);
   document.querySelectorAll('#openGameTournamentList,#confirmGameTournament').forEach(markAction);
   document.querySelectorAll('a[href$=".html"] > button,a[href*=".html?"] > button').forEach(btn=>{if(!isInternal(btn)){const a=btn.closest('a[href]');if(a){a.classList.add('stackup-page-link');btn.classList.add('stackup-page-action')}}});
