@@ -5,14 +5,16 @@ const read=f=>fs.readFileSync(path.join(ROOT,f),'utf8');
 const hub=read('screen-alerts.html');
 const operation=read('screen-alerts-operation.html');
 const groups=read('screen-message-groups-v12.js');
+const groupsV13=read('screen-message-groups-v13.js');
 const sync=read('screen-message-language-sync-v2.js');
 const runtime=read('screen-message-spanish-runtime-v1.js');
 const patch=read('app-language-alerts-v1.js');
 const engine=read('screen-message-engine.js');
 const failures=[];
 const must=(ok,msg)=>{if(!ok)failures.push(msg)};
-must(/screen-message-groups-v12\.js/.test(operation),'OPERAÇÃO NÃO USA GRUPOS DE MENSAGENS V12');
+must(/screen-message-groups-v13\.js/.test(operation),'OPERAÇÃO NÃO USA GRUPOS DE MENSAGENS V13');
 must(!/screen-message-groups-v11\.js/.test(operation),'OPERAÇÃO AINDA CARREGA V11');
+must(/screen-message-groups-v12\.js/.test(groupsV13),'V13 NÃO PARTE DA BASE DE MENSAGENS V12');
 must(/screen-message-language-sync-v2\.js/.test(operation),'OPERAÇÃO NÃO SINCRONIZA IDIOMA DAS VOZES COM V2');
 must(/screen-message-spanish-runtime-v1\.js/.test(operation),'OPERAÇÃO NÃO CARREGA PROTEÇÃO DE RUNTIME ESPANHOL');
 must(!/c\.voiceLang\s*=\s*['"]pt['"]/.test(operation),'OPERAÇÃO AINDA FORÇA VOICE LANG PARA PORTUGUÊS');
@@ -31,4 +33,4 @@ forbiddenEnglishInSpanish.forEach(x=>must(runtime.includes(`'${x}'`),`RUNTIME ES
 const requiredPatch={'ALERTAS SONOROS':'ALERTAS SONORAS','MENSAGENS POR VOZ':'MENSAJES DE VOZ','MENSAGENS DE TEXTO':'MENSAJES DE TEXTO','VELOCIDADE':'VELOCIDAD','REPETIÇÕES':'REPETICIONES','ALERTA DESATIVADO':'ALERTA DESACTIVADA'};
 Object.entries(requiredPatch).forEach(([pt,es])=>must(patch.includes(`'${pt}':'${es}'`),`DICIONÁRIO ES AUSENTE: ${pt}`));
 if(failures.length){console.error(`ALERTS LANGUAGE RUNTIME AUDIT FALHOU: ${failures.length}`);failures.forEach(x=>console.error(' - '+x));process.exit(1)}
-console.log(`ALERTS LANGUAGE RUNTIME AUDIT OK: ESPANHOL DINÂMICO DIRETO + VOZ ES + SYNC V2 + PROTEÇÃO CONTRA RETRADUÇÃO.`);
+console.log(`ALERTS LANGUAGE RUNTIME AUDIT OK: V13 SOBRE BASE V12 + ESPANHOL DINÂMICO DIRETO + VOZ ES + SYNC V2 + PROTEÇÃO CONTRA RETRADUÇÃO.`);
