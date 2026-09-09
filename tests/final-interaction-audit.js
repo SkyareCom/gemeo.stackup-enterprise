@@ -5,11 +5,12 @@ const root=process.cwd();
 const deploy=process.env.STACKUP_DEPLOY_ARTIFACT==='1';
 const failures=[];
 const warnings=[];
+const infos=[];
 const htmlFiles=fs.readdirSync(root).filter(f=>f.endsWith('.html')).sort();
 const allFiles=new Set(fs.readdirSync(root));
 const protectedFiles=new Set(['cast-10px.html','cast-v2.html','cast-ft-live.html','cast-connect.html','tv.html','tv-connect.html','dealer-access.html']);
-let buttonCount=0,nestedInteractive=0,overlayCandidates=0;
-const nestedByFile=new Map(),overlayByFile=new Map();
+let buttonCount=0,nestedInteractive=0,normalizableNested=0,protectedNested=0,overlayCandidates=0;
+const nestedByFile=new Map(),protectedNestedByFile=new Map(),overlayByFile=new Map();
 
 const stripQuery=s=>String(s||'').split('#')[0].split('?')[0];
 const external=s=>/^(?:https?:|mailto:|tel:|data:|javascript:|#)/i.test(String(s||''));
@@ -46,7 +47,17 @@ for(const file of htmlFiles){
     const attrs=m[1]||'',label=textOf(m[2]);
     const accessible=/\baria-label=["'][^"']+["']/i.test(attrs)||/\btitle=["'][^"']+["']/i.test(attrs);
     if(!label&&!accessible)failures.push(`${file}: BOTÃO SEM RÓTULO ACESSÍVEL -> ${(attrs.match(/\bid=["']([^"']+)["']/i)||[])[1]||'(sem id)'}`);
-    if(insideTag(markup,m.index||0,'a')){nestedInteractive++;nestedByFile.set(file,(nestedByFile.get(file)||0)+1)}
+    if(insideTag(markup,m.index||0,'a')){
+      nestedInteractive++;
+      if(protectedFiles.has(file)){
+        protectedNested++;
+        protectedNestedByFile.set(file,(protectedNestedByFile.get(file)||0)+1);
+      }else{
+        normalizableNested++;
+        nestedByFile.set(file,(nestedByFile.get(file)||0)+1);
+        if(/\bon\w+\s*=|\bdisabled\b|aria-disabled=["']true/i.test(attrs))failures.push(`${file}: BOTÃO ANINHADO POSSUI COMPORTAMENTO PRÓPRIO E NÃO PODE SER NORMALIZADO COM SEGURANÇA -> ${label||'(sem rótulo)'}`);
+      }
+    }
     if(/\bstyle=["'][^"']*pointer-events\s*:\s*none/i.test(attrs)&&!/\bdisabled\b|aria-disabled=["']true/i.test(attrs))failures.push(`${file}: BOTÃO HABILITADO COM POINTER-EVENTS NONE -> ${label||'(sem rótulo)'}`);
   }
 
@@ -100,17 +111,20 @@ for(const required of [
   'pointer-events:auto!important','touch-action:manipulation!important',
   'button:disabled','pointer-events:none!important',
   '.stackup-page-actions{display:grid!important;grid-template-columns:minmax(0,1fr)!important',
-  '.stackup-page-action{height:44px!important;min-height:44px!important;max-height:44px!important'
+  '.stackup-page-action{height:44px!important;min-height:44px!important;max-height:44px!important',
+  'function normalizeNestedAnchorButtons()','a[href] > button:only-child','stackup-normalized-anchor-button','a.innerHTML=btn.innerHTML',"a.dataset.stackupNestedNormalized='1'"
 ])if(!standard.includes(required))failures.push(`app-button-layout-standard-v1.js: GARANTIA GLOBAL AUSENTE -> ${required}`);
 for(const required of ['.timeGrid','.blindModeRow','.editorActions','.payGrid','.dealerGrid','.dealerActions','.finalTableActions','.roundControls','.tabs','.pagination','.keypad','.keyboard','[data-internal-controls]'])if(!standard.includes(required))failures.push(`app-button-layout-standard-v1.js: EXCEÇÃO INTERNA AUSENTE -> ${required}`);
 
 const pages=fs.readFileSync(path.join(root,'.github/workflows/pages.yml'),'utf8');
 for(const required of ['app-theme.js?v=navfull0913','app-button-layout-standard-v1.js?v=fullrow0912',"['tv.html','tv-connect.html','dealer-access.html']",'isOfficialCast','isLegacyCast'])if(!pages.includes(required))failures.push(`pages.yml: REGRA DE PUBLICAÇÃO AUSENTE -> ${required}`);
 
-if(nestedInteractive){warnings.push(`PADRÃO LEGADO: ${nestedInteractive} botão(ões) está(ão) dentro de <a>. O clique possui destino, mas é HTML interativo aninhado.`);for(const [file,n] of nestedByFile)warnings.push(`ANINHAMENTO INTERATIVO: ${file} -> ${n}`)}
-if(overlayCandidates){warnings.push(`MAPEAMENTO: ${overlayCandidates} ocorrência(s) de overlay fixo potencial; nenhuma regra genérica de bloqueio de botão foi detectada.`);for(const [file,n] of overlayByFile)warnings.push(`OVERLAY POTENCIAL: ${file} -> ${n}`)}
+if(normalizableNested){infos.push(`NORMALIZAÇÃO DE COMPATIBILIDADE: ${normalizableNested} navegação(ões) legada(s) <a><button> serão convertidas em link-botão único antes da interação.`);for(const [file,n] of nestedByFile)infos.push(`NORMALIZADO EM RUNTIME: ${file} -> ${n}`)}
+if(protectedNested){warnings.push(`EXCEÇÕES PROTEGIDAS: ${protectedNested} aninhamento(s) interativo(s) mantido(s) sem alteração.`);for(const [file,n] of protectedNestedByFile)warnings.push(`ANINHAMENTO PROTEGIDO: ${file} -> ${n}`)}
+if(overlayCandidates){infos.push(`OVERLAYS MAPEADOS: ${overlayCandidates} ocorrência(s); nenhuma regra genérica de bloqueio de botão foi detectada.`);for(const [file,n] of overlayByFile)infos.push(`OVERLAY MAPEADO: ${file} -> ${n}`)}
 
 console.log(`FINAL INTERACTION AUDIT: modo=${deploy?'ARTEFATO PUBLICADO':'FONTE'}, ${htmlFiles.length} páginas, ${buttonCount} botões estáticos.`);
+for(const i of infos)console.log('INFO:',i);
 for(const w of warnings)console.log('WARN:',w);
 if(failures.length){for(const f of failures)console.error('FAIL:',f);process.exit(1)}
-console.log('FINAL INTERACTION AUDIT PASS: estrutura, clique/toque global, rotas locais, IDs, rótulos, exceções e camadas de publicação verificados.');
+console.log('FINAL INTERACTION AUDIT PASS: estrutura, clique/toque global, rotas locais, IDs, rótulos, exceções, normalização de compatibilidade e camadas de publicação verificados.');
