@@ -51,7 +51,8 @@ const browserRequired=[
   'tests/browser-control-dynamic-e2e.cjs',
   'tests/browser-environment-dynamic-e2e.cjs',
   'tests/browser-manager-dynamic-e2e.cjs',
-  'tests/browser-setup-dynamic-e2e.cjs'
+  'tests/browser-setup-dynamic-e2e.cjs',
+  'tests/browser-checkin-dynamic-e2e.cjs'
 ];
 for(const test of browserRequired)if(!pages.includes(`node ${test}`))failures.push(`Pages não executa ${test} antes do deploy`);
 if(failures.length){console.error(`PUBLICATION GATE PARITY AUDIT FAILED: ${failures.length}`);failures.forEach(x=>console.error('- '+x));process.exit(1)}
