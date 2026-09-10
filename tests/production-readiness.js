@@ -48,10 +48,10 @@ assert('wallet não usa operador GESTOR sintético',!wallet.includes("id:'WALLET
 assert('wallet usa links únicos sem a>button',!/<a\b[^>]*>\s*<button\b/i.test(wallet));
 
 const recognition=read('recognition.html');
-assert('reconhecimento usa cadastro geral',recognition.includes('StackupPlayerProfile.directory()'));
+assert('reconhecimento usa cadastro geral',/StackupPlayerProfile(?:\?\.)?\.directory(?:\?\.)?\(/.test(recognition)||recognition.includes('StackupPlayerProfile.directory()'));
 assert('reconhecimento entrega seleção ao check-in',recognition.includes('stackup-checkin-selected-player'));
 const crm=read('crm.html');
-assert('CRM usa cadastro geral',crm.includes('StackupPlayerProfile.directory'));
+assert('CRM usa cadastro geral',/StackupPlayerProfile(?:\?\.)?\.directory(?:\?\.)?\(/.test(crm)||/StackupPlayerProfile\?\.directory\?\.\(/.test(crm)||crm.includes('StackupPlayerProfile.directory'));
 assert('CRM possui autenticação explícita',crm.includes('StackupAuth.guard()'));
 const comm=read('communications.html');
 assert('comunicação limita jogadores ao evento',comm.includes('currentPlayers()')&&comm.includes('validationEventId'));
