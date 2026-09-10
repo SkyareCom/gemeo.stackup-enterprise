@@ -113,6 +113,9 @@ jobs:
 
               const appendIfMissing=(name,tag)=>{if(!s.includes(name))s=s.replace(/<\/body>/i,tag+'</body>')};
               if(file==='setup.html'){
+                appendIfMissing('structure-history-select.js','<script src="structure-history-select.js?v=publication0915"></script>');
+                appendIfMissing('tournament-history.js','<script src="tournament-history.js?v=publication0915"></script>');
+                appendIfMissing('ranking-hierarchy-setup-v1.js','<script src="ranking-hierarchy-setup-v1.js?v=hierarchy0915"></script>');
                 appendIfMissing('setup-confirm-dedupe.js','<script src="setup-confirm-dedupe.js?v=89fc740b"></script>');
                 appendIfMissing('setup-ft-ui-fix.js','<script src="setup-ft-ui-fix.js?v=1a4d7862"></script>');
                 appendIfMissing('setup-structure-actions-v2.js','<script src="setup-structure-actions-v2.js?v=920fbebb"></script>');
