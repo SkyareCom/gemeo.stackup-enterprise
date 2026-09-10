@@ -42,5 +42,7 @@ for(const test of required){
 }
 if(!smoke.includes('node tests/publication-gate-parity-audit.js'))failures.push('Tournament Smoke não audita paridade do gate');
 if(!pages.includes('node tests/publication-gate-parity-audit.js'))failures.push('Pages não audita paridade do gate');
+if(!pages.includes('playwright@1.55.0')||!pages.includes('playwright install --with-deps chromium'))failures.push('Pages não instala Chromium real para o gate E2E');
+if(!pages.includes('node tests/browser-role-e2e.cjs'))failures.push('Pages não executa jornadas reais de navegador antes do deploy');
 if(failures.length){console.error(`PUBLICATION GATE PARITY AUDIT FAILED: ${failures.length}`);failures.forEach(x=>console.error('- '+x));process.exit(1)}
-console.log(`PUBLICATION GATE PARITY AUDIT PASS: ${required.length} verificações críticas presentes nos dois workflows.`);
+console.log(`PUBLICATION GATE PARITY AUDIT PASS: ${required.length} verificações críticas em ambos os workflows + Chromium real obrigatório no Pages.`);
