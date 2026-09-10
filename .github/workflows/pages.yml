@@ -171,13 +171,14 @@ jobs:
           mkdir -p /tmp/stackup-e2e
           npm install --prefix /tmp/stackup-e2e playwright@1.55.0
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers /tmp/stackup-e2e/node_modules/.bin/playwright install --with-deps chromium
-      - name: Run real Chromium role journeys
+      - name: Run real Chromium role and actionability journeys
         run: |
           python3 -m http.server 4173 >/tmp/stackup-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           sleep 2
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-role-e2e.cjs
+          PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-actionability-e2e.cjs
           kill $SERVER_PID 2>/dev/null || true
           trap - EXIT
       - name: Setup Pages
