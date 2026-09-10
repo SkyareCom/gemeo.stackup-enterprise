@@ -67,6 +67,16 @@
   window.StackupInputMasks={formatCpf,formatPhone};
 })();
 
+(function ensureCompactRegistryLists(){
+  if(typeof document==='undefined')return;
+  if(document.querySelector('script[data-stackup-compact-directory]'))return;
+  const script=document.createElement('script');
+  script.src='directory-compact-v1.js?v=76d91f8';
+  script.defer=true;
+  script.dataset.stackupCompactDirectory='1';
+  (document.head||document.documentElement).appendChild(script);
+})();
+
 (function ensureGlobalLanguage(){
   if(typeof document==='undefined')return;
   const loadExtra=()=>{
