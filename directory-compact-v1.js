@@ -9,6 +9,11 @@
   const validBirth=v=>{if(!v)return true;const m=String(v).match(/^(\d{2}) \/ (\d{2}) \/ (\d{4})$/);if(!m)return false;const d=+m[1],mo=+m[2],y=+m[3],dt=new Date(y,mo-1,d);return dt.getFullYear()===y&&dt.getMonth()===mo-1&&dt.getDate()===d};
   const topGo=url=>{try{window.top.location.href=url}catch(_){location.href=url}};
   const refreshTop=()=>{try{window.top.location.reload()}catch(_){location.reload()}};
+  const notice=(message,trigger,error=true)=>{
+    if(window.StackupInlineFeedback?.show)return window.StackupInlineFeedback.show(message,{error,trigger});
+    const host=trigger?.closest?.('.card,.panel,section,.listRow,.historyRow,.row')||trigger?.parentElement||document.querySelector('main')||document.body;
+    let box=host.nextElementSibling;if(!box||!box.matches?.('[data-stackup-local-notice]')){box=document.createElement('div');box.dataset.stackupLocalNotice='1';box.style.cssText='margin:8px 0;padding:10px 12px;border:1px solid #27342D;border-radius:9px;color:#AEB8B1';host.insertAdjacentElement('afterend',box)}box.textContent=String(message||'');return box;
+  };
 
   const installStyle=()=>{
     if(document.getElementById('stackup-compact-directory-style'))return;
@@ -38,6 +43,7 @@
       .historyRow.stackup-compact-row.stackup-expanded .historyInfo>.badge{display:inline-block!important}
       .historyRow.stackup-compact-row.stackup-expanded .historyInfo>.meta{display:block!important;margin-top:8px!important;padding:10px 12px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important}
       .stackup-row-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px!important}
+      .stackup-row-actions.stackup-environment-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important}
       .stackup-row-actions button{width:100%!important;min-height:44px!important;margin:0!important}
       .stackup-row-actions .stackup-delete{color:#ff858d!important;border-color:#ff858d!important}
       .listRow.stackup-compact-row{padding:0 12px!important}
@@ -53,6 +59,7 @@
       .list>.row.stackup-compact-row.stackup-expanded>.total,
       .list>.row.stackup-compact-row.stackup-expanded>.seat,
       .list>.row.stackup-compact-row.stackup-expanded>.pos{display:block!important;margin-top:5px!important;text-align:left!important}
+      @media(max-width:700px){.stackup-row-actions,.stackup-row-actions.stackup-environment-actions{grid-template-columns:1fr!important}}
     `;
     document.head.appendChild(style);
   };
@@ -71,14 +78,11 @@
     if(page==='environment-registered.html'&&row.matches('.listRow[data-environment-row]'))return 'environment';
     return '';
   };
-  const deleteEntity=(type,id,name)=>{
-    if(!confirm(`APAGAR ${name}?`))return;
+  const performDelete=(type,id)=>{
     if(type==='player'){
       const key='stackup-player-directory-v1';
       let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(rows))rows=[]}catch(_){rows=[]}
-      rows=rows.filter(x=>String(x.id)!==String(id));
-      localStorage.setItem(key,JSON.stringify(rows));
-      refreshTop();return;
+      rows=rows.filter(x=>String(x.id)!==String(id));localStorage.setItem(key,JSON.stringify(rows));refreshTop();return;
     }
     if(type==='staff'&&typeof state!=='undefined'){
       state.staffUsers=(state.staffUsers||[]).filter(x=>String(x.id)!==String(id));
@@ -93,19 +97,37 @@
       if(typeof saveState==='function')saveState();refreshTop();
     }
   };
+  const requestDelete=(type,id,name,trigger)=>{
+    const message=`APAGAR ${name}?`;
+    if(window.StackupInlineFeedback?.mount){window.StackupInlineFeedback.mount(trigger,{message,confirmLabel:'CONFIRMAR',cancelLabel:'CANCELAR',onConfirm:()=>performDelete(type,id),onCancel:()=>{}});return}
+    notice(`${message} CLIQUE NOVAMENTE EM APAGAR PARA CONFIRMAR.`,trigger,true);
+    if(trigger.dataset.stackupDeleteArmed==='1'){delete trigger.dataset.stackupDeleteArmed;performDelete(type,id)}else trigger.dataset.stackupDeleteArmed='1';
+  };
   const editEntity=(type,id)=>{
     if(type==='player')topGo(`players-directory.html?view=register&edit=${encodeURIComponent(id)}`);
     if(type==='staff')topGo(`staff.html?view=register&edit=${encodeURIComponent(id)}`);
     if(type==='environment')topGo(`environment-register.html?edit=${encodeURIComponent(id)}`);
   };
+  const fixEnvironment=id=>{
+    if(typeof state==='undefined')return;
+    const club=(state.authClubs||[]).find(x=>x.active!==false&&String(x.id)===String(id));if(!club)return;
+    state.activeEnvironmentId=club.id;state.activeEnvironmentName=club.name;state.activeEnvironmentType=club.type;state.clubName=club.name;
+    try{localStorage.setItem('stackup-active-environment-v1',String(club.id))}catch(_){ }
+    if(typeof saveState==='function')saveState();
+    const header=document.getElementById('activeEnvironmentName');if(header)header.textContent=club.name;
+    document.querySelectorAll('[data-environment-row]').forEach(r=>{const meta=r.querySelector('.selectedMeta');if(meta)meta.remove()});
+    const row=document.querySelector(`[data-environment-row="${CSS.escape(String(id))}"]`);const content=row?.querySelector('.rowContent');if(content){const meta=document.createElement('div');meta.className='meta selectedMeta';meta.textContent='FIXADO PARA USO NOS CADASTROS';content.appendChild(meta)}
+    notice(`${club.name} FIXADO PARA USO NOS CADASTROS.`,row||header,false);
+  };
   const installActions=row=>{
     const type=entityType(row),id=entityId(row),name=nameFor(row)?.textContent.trim()||'REGISTRO';
     if(!type||!id||row.querySelector(':scope > .stackup-row-actions,.historyInfo > .stackup-row-actions'))return;
-    const actions=document.createElement('div');actions.className='stackup-row-actions';
-    actions.innerHTML=`<button type="button" data-stackup-edit="${esc(id)}">EDITAR</button><button type="button" class="stackup-delete" data-stackup-delete="${esc(id)}">APAGAR</button>`;
+    const actions=document.createElement('div');actions.className='stackup-row-actions'+(type==='environment'?' stackup-environment-actions':'');
+    actions.innerHTML=type==='environment'?`<button type="button" data-stackup-fix="${esc(id)}">FIXAR</button><button type="button" data-stackup-edit="${esc(id)}">EDITAR</button><button type="button" class="stackup-delete" data-stackup-delete="${esc(id)}">APAGAR</button>`:`<button type="button" data-stackup-edit="${esc(id)}">EDITAR</button><button type="button" class="stackup-delete" data-stackup-delete="${esc(id)}">APAGAR</button>`;
     const host=row.querySelector('.historyInfo')||row;host.appendChild(actions);
+    actions.querySelector('[data-stackup-fix]')?.addEventListener('click',e=>{e.stopPropagation();fixEnvironment(id)});
     actions.querySelector('[data-stackup-edit]').onclick=e=>{e.stopPropagation();editEntity(type,id)};
-    actions.querySelector('[data-stackup-delete]').onclick=e=>{e.stopPropagation();deleteEntity(type,id,name)};
+    actions.querySelector('[data-stackup-delete]').onclick=e=>{e.stopPropagation();requestDelete(type,id,name,e.currentTarget)};
   };
   const collapseOthers=current=>document.querySelectorAll('.stackup-compact-row.stackup-expanded').forEach(row=>{
     if(row===current)return;row.classList.remove('stackup-expanded');
@@ -138,7 +160,7 @@
     set('playerNameInput',p.name);set('cpf',p.cpf);set('birth',p.birth);set('phone',p.phone);set('whatsapp',p.whatsapp);set('email',p.email);set('instagram',p.instagram);set('team',p.team);if(by('type'))by('type').value=p.type||'PRO';
     const info=p.info||[];if(by('infoWhats'))by('infoWhats').checked=info.includes('WHATSAPP');if(by('infoSms'))by('infoSms').checked=info.includes('SMS');if(by('infoEmail'))by('infoEmail').checked=info.includes('EMAIL')||info.includes('E-MAIL');
     const title=document.querySelector('h1');if(title)title.textContent='EDITAR JOGADOR';const save=by('save');if(!save)return;save.textContent='CONFIRMAR';
-    save.onclick=()=>{const name=by('playerNameInput').value.trim(),birth=by('birth').value.trim();if(!name)return alert('INFORME O NOME.');if(birth&&!validBirth(birth))return alert('INFORME A DATA DE NASCIMENTO NO FORMATO DD / MM / AAAA.');Object.assign(p,{name,cpf:by('cpf').value.trim(),birth,phone:by('phone').value.trim(),whatsapp:by('whatsapp').value.trim(),email:by('email').value.trim(),instagram:by('instagram').value.trim(),type:by('type').value,team:by('team').value.trim(),info:[by('infoWhats').checked?'WHATSAPP':'',by('infoSms').checked?'SMS':'',by('infoEmail').checked?'EMAIL':''].filter(Boolean),updatedAt:Date.now()});localStorage.setItem(key,JSON.stringify(rows));topGo('players-registered.html')};
+    save.onclick=()=>{const name=by('playerNameInput').value.trim(),birth=by('birth').value.trim();if(!name){notice('INFORME O NOME.',save,true);return}if(birth&&!validBirth(birth)){notice('INFORME A DATA DE NASCIMENTO NO FORMATO DD / MM / AAAA.',save,true);return}Object.assign(p,{name,cpf:by('cpf').value.trim(),birth,phone:by('phone').value.trim(),whatsapp:by('whatsapp').value.trim(),email:by('email').value.trim(),instagram:by('instagram').value.trim(),type:by('type').value,team:by('team').value.trim(),info:[by('infoWhats').checked?'WHATSAPP':'',by('infoSms').checked?'SMS':'',by('infoEmail').checked?'EMAIL':''].filter(Boolean),updatedAt:Date.now()});localStorage.setItem(key,JSON.stringify(rows));topGo('players-registered.html')};
   };
 
   const staffEdit=()=>{
@@ -146,13 +168,13 @@
     const id=params.get('edit'),s=(state.staffUsers||[]).find(x=>String(x.id)===String(id));if(!s)return;const by=id=>document.getElementById(id),set=(id,v)=>{const el=by(id);if(el)el.value=v||''};
     set('staffNameInput',s.name);set('cpf',s.cpf);set('birth',s.birth);set('phone',s.phone);set('whatsapp',s.whatsapp);set('email',s.email);set('instagram',s.instagram);set('pin','');if(by('club'))by('club').value=s.clubId||'';if(by('role')){by('role').value=s.role||'DEALER';by('role').dispatchEvent(new Event('change',{bubbles:true}))}
     const title=document.getElementById('pageTitle')||document.querySelector('h1');if(title)title.textContent='EDITAR STAFF';const save=by('save');if(!save)return;save.textContent='CONFIRMAR';
-    save.onclick=()=>{const name=by('staffNameInput').value.trim(),cpf=by('cpf').value.trim(),birth=by('birth').value.trim(),clubId=by('club').value,role=by('role').value,pin=by('pin')?.value.trim()||'';if(!name)return alert('INFORME O NOME.');if(!cpf)return alert('INFORME O CPF.');if(!clubId)return alert('SELECIONE O AMBIENTE.');if(birth&&!validBirth(birth))return alert('INFORME A DATA DE NASCIMENTO NO FORMATO DD / MM / AAAA.');const duplicate=(state.staffUsers||[]).find(x=>String(x.id)!==String(id)&&digits(x.cpf)===digits(cpf)&&String(x.clubId||'')===String(clubId));if(duplicate)return alert('ESTA PESSOA JÁ POSSUI UM VÍNCULO NESTE AMBIENTE.');Object.assign(s,{name,cpf,birth,phone:by('phone').value.trim(),whatsapp:by('whatsapp').value.trim(),email:by('email').value.trim(),instagram:by('instagram').value.trim(),clubId,role,permissions:[...(window.StackupAuth?.ROLE_ACCESS?.[role]||[])],active:true,updatedAt:Date.now()});if(pin)s.pin=pin;if(typeof saveState==='function')saveState();window.StackupAuth?.ensure?.();topGo('staff-registered.html')};
+    save.onclick=()=>{const name=by('staffNameInput').value.trim(),cpf=by('cpf').value.trim(),birth=by('birth').value.trim(),clubId=by('club').value,role=by('role').value,pin=by('pin')?.value.trim()||'';if(!name){notice('INFORME O NOME.',save,true);return}if(!cpf){notice('INFORME O CPF.',save,true);return}if(!clubId){notice('SELECIONE O AMBIENTE.',save,true);return}if(birth&&!validBirth(birth)){notice('INFORME A DATA DE NASCIMENTO NO FORMATO DD / MM / AAAA.',save,true);return}const duplicate=(state.staffUsers||[]).find(x=>String(x.id)!==String(id)&&digits(x.cpf)===digits(cpf)&&String(x.clubId||'')===String(clubId));if(duplicate){notice('ESTA PESSOA JÁ POSSUI UM VÍNCULO NESTE AMBIENTE.',save,true);return}Object.assign(s,{name,cpf,birth,phone:by('phone').value.trim(),whatsapp:by('whatsapp').value.trim(),email:by('email').value.trim(),instagram:by('instagram').value.trim(),clubId,role,permissions:[...(window.StackupAuth?.ROLE_ACCESS?.[role]||[])],active:true,updatedAt:Date.now()});if(pin)s.pin=pin;if(typeof saveState==='function')saveState();window.StackupAuth?.ensure?.();topGo('staff-registered.html')};
   };
 
   const environmentEdit=()=>{
     if(page!=='environment-register.html'||!params.get('edit')||typeof state==='undefined')return;
     const id=params.get('edit'),club=(state.authClubs||[]).find(x=>String(x.id)===String(id));if(!club)return;const name=document.getElementById('newClubName'),type=document.getElementById('newClubType'),button=document.getElementById('createClub');if(name)name.value=club.name||'';if(type)type.value=club.type||'CLUB';const title=document.querySelector('.title');if(title)title.textContent='EDITAR AMBIENTE';if(!button)return;button.textContent='CONFIRMAR';
-    button.onclick=()=>{const next=name.value.trim(),nextType=type.value;if(!next)return alert('INFORME O NOME DO AMBIENTE.');const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLocaleUpperCase('pt-BR');const duplicate=(state.authClubs||[]).find(x=>x.active!==false&&String(x.id)!==String(id)&&norm(x.name)===norm(next));if(duplicate)return alert('JÁ EXISTE UM AMBIENTE ATIVO COM ESTE NOME.');club.name=next;club.type=nextType;club.updatedAt=Date.now();if(String(state.activeEnvironmentId||'')===String(id)){state.activeEnvironmentName=next;state.activeEnvironmentType=nextType;state.clubName=next}if(typeof saveState==='function')saveState();topGo('environment-registered.html')};
+    button.onclick=()=>{const next=name.value.trim(),nextType=type.value;if(!next){notice('INFORME O NOME DO AMBIENTE.',button,true);return}const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLocaleUpperCase('pt-BR');const duplicate=(state.authClubs||[]).find(x=>x.active!==false&&String(x.id)!==String(id)&&norm(x.name)===norm(next));if(duplicate){notice('JÁ EXISTE UM AMBIENTE ATIVO COM ESTE NOME.',button,true);return}club.name=next;club.type=nextType;club.updatedAt=Date.now();if(String(state.activeEnvironmentId||'')===String(id)){state.activeEnvironmentName=next;state.activeEnvironmentType=nextType;state.clubName=next}if(typeof saveState==='function')saveState();topGo('environment-registered.html')};
   };
 
   const boot=()=>{installStyle();if(page==='environment-registered.html'){const select=document.getElementById('selectMode');if(select)select.style.display='none'}playerEdit();staffEdit();environmentEdit();scan(document);new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(node=>{if(node.nodeType===1)scan(node)}))).observe(document.documentElement,{childList:true,subtree:true})};
