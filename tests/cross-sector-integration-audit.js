@@ -2,6 +2,7 @@ const fs=require('fs');
 const failures=[];
 const read=f=>fs.readFileSync(f,'utf8');
 const ok=(name,cond)=>{if(cond)console.log('PASS:',name);else failures.push(name)};
+const usesDirectory=src=>/StackupPlayerProfile(?:\?\.)?\.directory(?:\?\.)?\(/.test(src)||/StackupPlayerProfile\?\.directory\?\.\(/.test(src)||src.includes('StackupPlayerProfile.directory()');
 
 const shared=read('shared.js'),ops=read('operations.js'),engine=read('tournament-engine.js');
 ok('JOGADORES: estado operacional possui escopo de torneio',shared.includes('currentTournamentPlayers()')&&shared.includes('playerEventId'));
@@ -26,10 +27,10 @@ const preReset=read('setup-preinit-reset-v1.js'),postReset=read('setup-new-tourn
 for(const token of ['fee','reentryValue','rebuyValue','doubleRebuyValue','addonValue','specialAddonValue','bountyValue','structure','finalTableStructureMode','selectedTournamentId'])ok(`NOVO TORNEIO: limpa ${token}`,preReset.includes(token)&&postReset.includes(token));
 
 const recognition=read('recognition.html'),checkin=read('checkin.html'),crm=read('crm.html'),comm=read('communications.html'),wallet=read('wallet.html');
-ok('RECONHECIMENTO: usa diretório geral',recognition.includes('StackupPlayerProfile.directory()'));
+ok('RECONHECIMENTO: usa diretório geral',usesDirectory(recognition));
 ok('RECONHECIMENTO: entrega ID esperado pelo check-in',recognition.includes('stackup-checkin-selected-player'));
 ok('CHECK-IN: usa diretório geral',checkin.includes("DIRECTORY_KEY='stackup-player-directory-v1'"));
-ok('CRM: usa diretório geral',crm.includes('StackupPlayerProfile.directory'));
+ok('CRM: usa diretório geral',usesDirectory(crm));
 ok('CRM: consentimento é persistido no diretório',crm.includes('persistDirectory(arr)'));
 ok('COMUNICAÇÃO: usa somente evento atual',comm.includes('currentPlayers()')&&comm.includes('validationEventId'));
 ok('COMUNICAÇÃO: edição de telefone volta ao diretório',comm.includes('syncDirectoryPhone'));
