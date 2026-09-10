@@ -5,7 +5,8 @@
   "portsAttributes": {
     "4173": {
       "label": "STACKUP ENTERPRISE - APP DE TESTE",
-      "onAutoForward": "openBrowser"
+      "onAutoForward": "openBrowser",
+      "visibility": "public"
     }
   },
   "postStartCommand": "bash .devcontainer/start-test.sh",
