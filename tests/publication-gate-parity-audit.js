@@ -11,6 +11,8 @@ const required=[
   'tests/tournament-manager-permission-audit.js',
   'tests/communication-security-audit.js',
   'tests/role-navigation-audit.js',
+  'tests/cash-security-audit.js',
+  'tests/dealer-activation-audit.js',
   'tests/final-table-settings-audit.js',
   'tests/alert-save-audit.js',
   'tests/ui-button-audit.js',
