@@ -38,6 +38,9 @@ jobs:
       - name: Run runtime API contract audit
         if: always()
         run: node tests/runtime-api-contract-audit.js
+      - name: Run staff integrity audit
+        if: always()
+        run: node tests/staff-integrity-audit.js
       - name: Run in-app drawer audit
         if: always()
         run: node tests/in-app-drawer-audit.js
