@@ -33,6 +33,7 @@ jobs:
           node tests/tournament-isolation-runtime.js
           node tests/balancing-scope-runtime.js
           node tests/tournament-detail-scope-audit.js
+          node tests/control-hub-scope-audit.js
           node tests/readiness-scope-runtime.js
           node tests/tournament-manager-permission-audit.js
           node tests/communication-security-audit.js
@@ -154,6 +155,7 @@ jobs:
           node tests/tournament-isolation-runtime.js
           node tests/balancing-scope-runtime.js
           node tests/tournament-detail-scope-audit.js
+          node tests/control-hub-scope-audit.js
           node tests/readiness-scope-runtime.js
           node tests/tournament-manager-permission-audit.js
           node tests/communication-security-audit.js
