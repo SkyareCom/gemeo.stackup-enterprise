@@ -44,6 +44,8 @@ jobs:
           node tests/secondary-screen-audit.js
           node tests/confirmation-standard-audit.js
           node tests/environment-context-audit.js
+          node tests/ranking-hierarchy-audit.js
+          node tests/save-persistence-audit.js
           node tests/input-mask-audit.js
           node tests/language-audit.js
           node tests/spanish-english-audit.js
@@ -136,6 +138,8 @@ jobs:
           node tests/final-interaction-audit.js
           node tests/auth-surface-audit.js
           node tests/tertiary-structure-audit.js
+          node tests/ranking-hierarchy-audit.js
+          node tests/save-persistence-audit.js
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
