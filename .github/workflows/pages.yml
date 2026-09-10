@@ -33,6 +33,9 @@ jobs:
           node tests/tournament-isolation-runtime.js
           node tests/balancing-scope-runtime.js
           node tests/tournament-detail-scope-audit.js
+          node tests/tournament-manager-permission-audit.js
+          node tests/communication-security-audit.js
+          node tests/role-navigation-audit.js
           node tests/final-table-settings-audit.js
           node tests/alert-save-audit.js
           node tests/ui-button-audit.js
@@ -147,6 +150,9 @@ jobs:
           node tests/tournament-isolation-runtime.js
           node tests/balancing-scope-runtime.js
           node tests/tournament-detail-scope-audit.js
+          node tests/tournament-manager-permission-audit.js
+          node tests/communication-security-audit.js
+          node tests/role-navigation-audit.js
           node tests/final-table-settings-audit.js
           node tests/alert-save-audit.js
           node tests/final-interaction-audit.js
