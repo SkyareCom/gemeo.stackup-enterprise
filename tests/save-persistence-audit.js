@@ -11,6 +11,12 @@ ok('Runtime global carrega histórico/salvamento de torneios',theme.includes('to
 ok('Artefato Pages injeta SALVAR TORNEIO explicitamente',pages.includes("appendIfMissing('tournament-history.js'")&&pages.includes('ranking-hierarchy-setup-v1.js'));
 ok('Importação de estrutura possui SALVAR',structureImport.includes('id="saveBtn"')&&structureImport.includes('SALVAR EM CONFIGURAÇÕES'));
 ok('Configurações de tela possuem SALVAR CONFIGURAÇÕES',screen.includes('id="saveBtn"')&&screen.includes('SALVAR CONFIGURAÇÕES'));
+ok('Configurações de tela têm autenticação no fonte',screen.includes('shared.js')&&screen.includes('auth-engine.js')&&screen.includes('StackupAuth.guard()'));
+ok('Configurações de tela não salvam somente ao abrir',!screen.includes('renderAll();persist()'));
+ok('Seleção de cor não persiste antes de SALVAR',!screen.includes('themeState[key]=c;persist()')&&screen.includes('themeState[key]=c;dirty()'));
+ok('Seleção de modo não persiste antes de SALVAR',!screen.includes('themeState[key]=v;persist()')&&screen.includes('themeState[key]=v;dirty()'));
+ok('Restaurar padrões prepara alteração sem persistir',!screen.includes("resetBtn.onclick=()=>{Object.assign(themeState,defaults,{barStyle:'rounded'});persist()")&&screen.includes("resetBtn.onclick=()=>{Object.assign(themeState,defaults,{barStyle:'rounded'});dirty()"));
+ok('SALVAR CONFIGURAÇÕES é quem persiste o tema',screen.includes("saveBtn.onclick=()=>{persist()")&&screen.includes("localStorage.setItem('stackupScreenTheme'"));
 ok('Mesa final possui SALVAR',finalTable.includes('id="saveBtn"')&&finalTable.includes('>SALVAR<'));
 ok('Configuração financeira possui persistência principal',finance.includes('id="save"')&&finance.includes('StackupFinance.save(cfg)'));
 ok('Configuração financeira expõe SALVAR em vez de botão ambíguo',labels.includes('SALVAR CONFIGURAÇÕES FINANCEIRAS')&&labels.includes('SALVAR REGRA DO JOGADOR'));
