@@ -5,6 +5,7 @@ const registered=fs.readFileSync('environment-registered.html','utf8');
 const register=fs.readFileSync('environment-register.html','utf8');
 const context=fs.readFileSync('environment-context.js','utf8');
 const ui=fs.readFileSync('ui-standard.js','utf8');
+const auth=fs.readFileSync('auth-engine.js','utf8');
 assert('Ambientes cadastrados possui seção AMBIENTE SELECIONADO',registered.includes('AMBIENTE SELECIONADO')&&registered.includes('activeEnvironmentName'));
 assert('Botão SELECIONAR ativa modo de seleção',registered.includes('id="selectMode"')&&registered.includes("selectionMode=!selectionMode"));
 assert('Modo de seleção usa quadrado clicável padrão',registered.includes('class="pick"')&&registered.includes('data-pick-environment')&&registered.includes('type="checkbox"'));
@@ -24,5 +25,8 @@ assert('Contexto aplica ambiente no STAFF',context.includes("page!=='staff.html'
 assert('Contexto aplica ambiente nos JOGADORES',context.includes("page!=='players-directory.html'")&&context.includes('recent.environmentId=active.id'));
 assert('Contexto aplica ambiente em TORNEIOS',context.includes("page!=='setup.html'")&&context.includes('field.value=active.name'));
 assert('UI global carrega contexto de ambiente',ui.includes('environment-context.js?v='));
+assert('OWNER/GESTOR preservam ambiente de trabalho fixado',auth.includes("canKeepWorking=['GESTOR','OWNER'].includes(role)&&!!working")&&auth.includes('workingEnvironment:canKeepWorking?working:club'));
+assert('Ambiente de trabalho precisa continuar ativo para ser preservado',auth.includes("state.authClubs.find(c=>c.active!==false&&String(c.id)===String(state.activeEnvironmentId||''))"));
+assert('Demais funções continuam presas ao ambiente da sessão',auth.includes("else if(String(state.activeEnvironmentId||'')!==String(s.clubId||'')){syncActiveEnvironment(s.clubId,club);save()}"));
 if(failures.length){failures.forEach(f=>console.error('FAIL:',f));process.exit(1)}
 console.log('ENVIRONMENT CONTEXT AUDIT PASS');
