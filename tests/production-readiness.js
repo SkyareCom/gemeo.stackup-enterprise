@@ -10,7 +10,7 @@ for(const file of ['index.html','login.html']){
   assert(`${file}: limpeza auth após engine`,auth>=0&&cleanup>auth);
 }
 
-for(const file of ['checkin.html','players.html','players-directory.html','staff.html','dealer.html','tournament-close.html','tournament-manager.html','tournament-settings.html','wallet.html','crm.html','communications.html']){
+for(const file of ['checkin.html','players.html','players-directory.html','staff.html','dealer.html','tournament-close.html','tournament-manager.html','tournament-settings.html','wallet.html','crm.html','communications.html','ranking.html','ranking-tournament.html','ranking-general.html','ranking-rules.html']){
   const html=read(file);
   assert(`${file}: carrega auth-engine`,html.includes('auth-engine.js'));
   assert(`${file}: aplica guard de autenticação`,html.includes('StackupAuth.guard()'));
@@ -72,9 +72,12 @@ assert('contadores filtram transações por evento',shared.includes("String(t.ev
 const close=read('tournament-close.html');
 assert('fechamento usa jogadores do evento',close.includes('currentActive()')&&close.includes('currentPlayers()'));
 assert('fechamento bloqueia encerramento duplicado',close.includes('alreadyClosed'));
-const rankT=read('ranking-tournament.html'),rankG=read('ranking-general.html');
-assert('ranking por torneio usa validationEventId',rankT.includes('validationEventId'));
-assert('ranking geral usa filtros reais',rankG.includes('scope.value')&&rankG.includes('league.value')&&rankG.includes('period.value')&&rankG.includes('filteredEvents()'));
+const rankT=read('ranking-tournament.html'),rankG=read('ranking-general.html'),rankE=read('ranking-engine.js'),rankRules=read('ranking-rules.html');
+assert('ranking usa validationEventId no motor compartilhado',rankE.includes('validationEventId')&&rankE.includes('eventOf'));
+assert('ranking por torneios usa hierarquia ambiente/torneio/etapa',rankT.includes('id="environment"')&&rankT.includes('id="tournament"')&&rankT.includes('id="stage"')&&rankT.includes('StackupRanking.aggregate'));
+assert('ranking por ligas filtra ambiente do tipo LEAGUE',rankG.includes("filter(x=>x.type==='LEAGUE')")&&rankG.includes('StackupRanking.stages()'));
+assert('ranking por ligas filtra período real',rankG.includes("periodEl.value==='YEAR'")&&rankG.includes("periodEl.value==='SEMESTER'"));
+assert('ranking possui critérios configuráveis',rankRules.includes('SALVAR CRITÉRIOS E REGRAS')&&rankE.includes('saveRule'));
 
 const preReset=read('setup-preinit-reset-v1.js'),postReset=read('setup-new-tournament-reset-v1.js');
 for(const token of ['reentryValue','rebuyValue','addonValue','bountyValue','fee','structure','finalTableStructureMode']){
