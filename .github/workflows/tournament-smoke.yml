@@ -41,6 +41,9 @@ jobs:
       - name: Run staff integrity audit
         if: always()
         run: node tests/staff-integrity-audit.js
+      - name: Run player directory integrity audit
+        if: always()
+        run: node tests/player-directory-integrity-audit.js
       - name: Run in-app drawer audit
         if: always()
         run: node tests/in-app-drawer-audit.js
