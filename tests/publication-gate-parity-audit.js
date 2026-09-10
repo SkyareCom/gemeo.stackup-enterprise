@@ -7,6 +7,7 @@ const required=[
   'tests/tournament-isolation-runtime.js',
   'tests/balancing-scope-runtime.js',
   'tests/tournament-detail-scope-audit.js',
+  'tests/control-hub-scope-audit.js',
   'tests/readiness-scope-runtime.js',
   'tests/tournament-manager-permission-audit.js',
   'tests/communication-security-audit.js',
