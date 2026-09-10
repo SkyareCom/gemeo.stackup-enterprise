@@ -2,7 +2,7 @@ const fs=require('fs');
 const failures=[];
 const read=f=>fs.readFileSync(f,'utf8');
 const ok=(name,cond)=>{if(cond)console.log('PASS:',name);else failures.push(name)};
-const setup=read('setup.html'),history=read('tournament-history.js'),structureImport=read('structure-import.html'),screen=read('screen-settings.html'),finalTable=read('final-table-settings.html'),finance=read('finance-settings.html'),labels=read('save-action-labels-v1.js'),rankingRules=read('ranking-rules.html'),theme=read('app-theme.js'),pages=read('.github/workflows/pages.yml');
+const setup=read('setup.html'),history=read('tournament-history.js'),structureImport=read('structure-import.html'),screen=read('screen-settings.html'),finalTable=read('final-table-settings.html'),finance=read('finance-settings.html'),labels=read('save-action-labels-v1.js'),rankingRules=read('ranking-rules.html'),theme=read('app-theme.js'),pages=read('.github/workflows/pages.yml'),entry=read('data-entry-standard.js');
 ok('Estrutura do torneio possui SALVAR',setup.includes('id="saveStructure"')&&setup.includes('SALVAR'));
 ok('Estrutura salva possui confirmação real',setup.includes('id="confirmSaveStructure"')&&setup.includes('state.savedStructures'));
 ok('Torneio possui SALVAR TORNEIO explícito',history.includes('id="saveTournamentBtn"')&&history.includes('SALVAR TORNEIO'));
@@ -15,5 +15,6 @@ ok('Mesa final possui SALVAR',finalTable.includes('id="saveBtn"')&&finalTable.in
 ok('Configuração financeira possui persistência principal',finance.includes('id="save"')&&finance.includes('StackupFinance.save(cfg)'));
 ok('Configuração financeira expõe SALVAR em vez de botão ambíguo',labels.includes('SALVAR CONFIGURAÇÕES FINANCEIRAS')&&labels.includes('SALVAR REGRA DO JOGADOR'));
 ok('Critérios do ranking possuem SALVAR',rankingRules.includes('SALVAR CRITÉRIOS E REGRAS')&&rankingRules.includes('StackupRanking.saveRule'));
+ok('Runtime global não renomeia SALVAR para CONFIRMAR',!entry.includes("textContent='CONFIRMAR'")&&!entry.includes('normalizeLabels'));
 if(failures.length){console.error(`SAVE PERSISTENCE AUDIT FAILED: ${failures.length}`);failures.forEach(x=>console.error('- '+x));process.exit(1)}
 console.log('SAVE PERSISTENCE AUDIT PASS');
