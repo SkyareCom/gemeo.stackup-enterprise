@@ -44,6 +44,9 @@ jobs:
       - name: Run cash security audit
         if: always()
         run: node tests/cash-security-audit.js
+      - name: Run wallet read safety audit
+        if: always()
+        run: node tests/wallet-read-safety-audit.js
       - name: Run dealer activation audit
         if: always()
         run: node tests/dealer-activation-audit.js
