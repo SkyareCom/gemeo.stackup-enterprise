@@ -46,7 +46,7 @@ if(!smoke.includes('node tests/publication-gate-parity-audit.js'))failures.push(
 if(!pages.includes('node tests/publication-gate-parity-audit.js'))failures.push('Pages não audita paridade do gate');
 if(!pages.includes('playwright@1.55.0')||!pages.includes('playwright install --with-deps chromium'))failures.push('Pages não instala Chromium real para o gate E2E');
 const browserRequired=[
-  'tests/browser-role-e2e.cjs',
+  'tests/browser-open-test-e2e.cjs',
   'tests/browser-actionability-e2e.cjs',
   'tests/browser-control-dynamic-e2e.cjs',
   'tests/browser-environment-dynamic-e2e.cjs',
