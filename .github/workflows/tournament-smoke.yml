@@ -29,6 +29,15 @@ jobs:
       - name: Run tournament detail scope audit
         if: always()
         run: node tests/tournament-detail-scope-audit.js
+      - name: Run tournament manager permission audit
+        if: always()
+        run: node tests/tournament-manager-permission-audit.js
+      - name: Run communication security audit
+        if: always()
+        run: node tests/communication-security-audit.js
+      - name: Run role navigation audit
+        if: always()
+        run: node tests/role-navigation-audit.js
       - name: Run final table settings audit
         if: always()
         run: node tests/final-table-settings-audit.js
