@@ -38,6 +38,7 @@ jobs:
           node tests/communication-security-audit.js
           node tests/role-navigation-audit.js
           node tests/cash-security-audit.js
+          node tests/wallet-read-safety-audit.js
           node tests/dealer-activation-audit.js
           node tests/final-table-settings-audit.js
           node tests/alert-save-audit.js
@@ -158,6 +159,7 @@ jobs:
           node tests/communication-security-audit.js
           node tests/role-navigation-audit.js
           node tests/cash-security-audit.js
+          node tests/wallet-read-safety-audit.js
           node tests/dealer-activation-audit.js
           node tests/final-table-settings-audit.js
           node tests/alert-save-audit.js
