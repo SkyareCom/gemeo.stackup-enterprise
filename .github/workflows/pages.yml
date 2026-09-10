@@ -30,6 +30,11 @@ jobs:
       - name: Run publication gate
         run: |
           node tests/tournament-smoke.js
+          node tests/tournament-isolation-runtime.js
+          node tests/balancing-scope-runtime.js
+          node tests/tournament-detail-scope-audit.js
+          node tests/final-table-settings-audit.js
+          node tests/alert-save-audit.js
           node tests/ui-button-audit.js
           node tests/final-interaction-audit.js
           node tests/dom-global-collision-audit.js
@@ -50,6 +55,7 @@ jobs:
           node tests/language-audit.js
           node tests/spanish-english-audit.js
           node tests/language-runtime-alerts-audit.js
+          node tests/publication-gate-parity-audit.js
       - name: Build published artifact
         run: |
           node <<'NODE'
@@ -138,6 +144,11 @@ jobs:
         env:
           STACKUP_DEPLOY_ARTIFACT: "1"
         run: |
+          node tests/tournament-isolation-runtime.js
+          node tests/balancing-scope-runtime.js
+          node tests/tournament-detail-scope-audit.js
+          node tests/final-table-settings-audit.js
+          node tests/alert-save-audit.js
           node tests/final-interaction-audit.js
           node tests/auth-surface-audit.js
           node tests/tertiary-structure-audit.js
