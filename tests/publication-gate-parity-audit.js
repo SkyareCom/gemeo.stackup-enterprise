@@ -12,6 +12,7 @@ const required=[
   'tests/communication-security-audit.js',
   'tests/role-navigation-audit.js',
   'tests/cash-security-audit.js',
+  'tests/wallet-read-safety-audit.js',
   'tests/dealer-activation-audit.js',
   'tests/final-table-settings-audit.js',
   'tests/alert-save-audit.js',
@@ -44,5 +45,6 @@ if(!smoke.includes('node tests/publication-gate-parity-audit.js'))failures.push(
 if(!pages.includes('node tests/publication-gate-parity-audit.js'))failures.push('Pages não audita paridade do gate');
 if(!pages.includes('playwright@1.55.0')||!pages.includes('playwright install --with-deps chromium'))failures.push('Pages não instala Chromium real para o gate E2E');
 if(!pages.includes('node tests/browser-role-e2e.cjs'))failures.push('Pages não executa jornadas reais de navegador antes do deploy');
+if(!pages.includes('node tests/browser-actionability-e2e.cjs'))failures.push('Pages não executa o sweep Chromium de actionability antes do deploy');
 if(failures.length){console.error(`PUBLICATION GATE PARITY AUDIT FAILED: ${failures.length}`);failures.forEach(x=>console.error('- '+x));process.exit(1)}
-console.log(`PUBLICATION GATE PARITY AUDIT PASS: ${required.length} verificações críticas em ambos os workflows + Chromium real obrigatório no Pages.`);
+console.log(`PUBLICATION GATE PARITY AUDIT PASS: ${required.length} verificações críticas em ambos os workflows + jornadas de função e actionability Chromium obrigatórias no Pages.`);
