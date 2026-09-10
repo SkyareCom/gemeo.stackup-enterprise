@@ -181,7 +181,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           sleep 2
-          PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-role-e2e.cjs
+          PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-open-test-e2e.cjs
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-actionability-e2e.cjs
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-control-dynamic-e2e.cjs
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-environment-dynamic-e2e.cjs
