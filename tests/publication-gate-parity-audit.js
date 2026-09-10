@@ -1,0 +1,40 @@
+const fs=require('fs');
+const smoke=fs.readFileSync('.github/workflows/tournament-smoke.yml','utf8');
+const pages=fs.readFileSync('.github/workflows/pages.yml','utf8');
+const failures=[];
+const required=[
+  'tests/tournament-smoke.js',
+  'tests/tournament-isolation-runtime.js',
+  'tests/balancing-scope-runtime.js',
+  'tests/tournament-detail-scope-audit.js',
+  'tests/final-table-settings-audit.js',
+  'tests/alert-save-audit.js',
+  'tests/ui-button-audit.js',
+  'tests/final-interaction-audit.js',
+  'tests/dom-global-collision-audit.js',
+  'tests/production-readiness.js',
+  'tests/cross-sector-integration-audit.js',
+  'tests/runtime-api-contract-audit.js',
+  'tests/staff-integrity-audit.js',
+  'tests/player-directory-integrity-audit.js',
+  'tests/auth-surface-audit.js',
+  'tests/tertiary-structure-audit.js',
+  'tests/in-app-drawer-audit.js',
+  'tests/secondary-screen-audit.js',
+  'tests/confirmation-standard-audit.js',
+  'tests/environment-context-audit.js',
+  'tests/ranking-hierarchy-audit.js',
+  'tests/save-persistence-audit.js',
+  'tests/input-mask-audit.js',
+  'tests/language-audit.js',
+  'tests/spanish-english-audit.js',
+  'tests/language-runtime-alerts-audit.js'
+];
+for(const test of required){
+  if(!smoke.includes(`node ${test}`))failures.push(`Tournament Smoke não executa ${test}`);
+  if(!pages.includes(`node ${test}`))failures.push(`Pages publication gate não executa ${test}`);
+}
+if(!smoke.includes('node tests/publication-gate-parity-audit.js'))failures.push('Tournament Smoke não audita paridade do gate');
+if(!pages.includes('node tests/publication-gate-parity-audit.js'))failures.push('Pages não audita paridade do gate');
+if(failures.length){console.error(`PUBLICATION GATE PARITY AUDIT FAILED: ${failures.length}`);failures.forEach(x=>console.error('- '+x));process.exit(1)}
+console.log(`PUBLICATION GATE PARITY AUDIT PASS: ${required.length} verificações críticas presentes nos dois workflows.`);
