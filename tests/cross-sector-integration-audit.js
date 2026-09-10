@@ -7,6 +7,10 @@ const usesDirectory=src=>/StackupPlayerProfile(?:\?\.)?\.directory(?:\?\.)?\(/.t
 const shared=read('shared.js'),ops=read('operations.js'),engine=read('tournament-engine.js');
 ok('JOGADORES: estado operacional possui escopo de torneio',shared.includes('currentTournamentPlayers()')&&shared.includes('playerEventId'));
 ok('JOGADORES: ativos são do evento atual',/function activeTournamentPlayers\(\)\{return currentTournamentPlayers\(\)\.filter/.test(shared));
+ok('OPERAÇÕES: resolução de jogador exige evento atual',ops.includes('function belongsToCurrentEvent')&&ops.includes('p.id===id&&belongsToCurrentEvent(p)'));
+ok('OPERAÇÕES: conflito de assento ignora outros eventos',ops.includes('x.id!==p.id&&belongsToCurrentEvent(x)'));
+ok('OPERAÇÕES: movimentos pendentes respeitam eventId',ops.includes("m.eventId===state.eventId&&m.playerId===p.id"));
+ok('OPERAÇÕES: plano de balancing filtra evento',ops.includes("filter(m=>!m.eventId||String(m.eventId)===String(state.eventId||''))"));
 ok('FINANCEIRO: transações operacionais recebem eventId',ops.includes('eventId:state.eventId'));
 ok('MOTOR: sem operador LOCAL sintético',!engine.includes("||'LOCAL'"));
 
@@ -30,7 +34,7 @@ const recognition=read('recognition.html'),checkin=read('checkin.html'),crm=read
 ok('RECONHECIMENTO: usa diretório geral',usesDirectory(recognition));
 ok('RECONHECIMENTO: entrega ID esperado pelo check-in',recognition.includes('stackup-checkin-selected-player'));
 ok('CHECK-IN: usa diretório geral',checkin.includes("DIRECTORY_KEY='stackup-player-directory-v1'"));
-ok('CRM: usa diretório geral',usesDirectory(crm));
+ok('CRM: usa cadastro geral',usesDirectory(crm));
 ok('CRM: consentimento é persistido no diretório',crm.includes('persistDirectory(arr)'));
 ok('COMUNICAÇÃO: usa somente evento atual',comm.includes('currentPlayers()')&&comm.includes('validationEventId'));
 ok('COMUNICAÇÃO: edição de telefone volta ao diretório',comm.includes('syncDirectoryPhone'));
@@ -65,6 +69,8 @@ ok('AUTH: CASHIER tem allowlist',auth.includes('CASHIER_PAGES'));
 ok('AUTH: VIEWER tem allowlist',auth.includes('VIEWER_PAGES'));
 ok('AUTH: wallet exige permissão WALLET',auth.includes("'wallet.html':'WALLET'"));
 ok('AUTH: financeiro exige FINANCE',auth.includes("'finance.html':'FINANCE'")&&auth.includes("'finance-settings.html':'FINANCE'"));
+ok('AUTH: TD possui permissão BROADCAST',/TD:\s*\[[^\]]*'BROADCAST'/.test(auth));
+ok('AUTH: transmissão mapeia BROADCAST',auth.includes("'screen-settings.html':'BROADCAST'")&&auth.includes("'screen-alerts-operation.html':'BROADCAST'")&&auth.includes("'transmission-room.html':'BROADCAST'"));
 
 const confirmation=read('confirmation-standard.js'),dataEntry=read('data-entry-standard.js'),lists=read('in-app-lists.js');
 ok('UI: camada global não auto-confirma confirmação nativa',!confirmation.includes('window.confirm='));
