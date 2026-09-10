@@ -20,6 +20,9 @@ jobs:
           node-version: 24
       - name: Run tournament smoke test
         run: node tests/tournament-smoke.js
+      - name: Run tournament isolation runtime proof
+        if: always()
+        run: node tests/tournament-isolation-runtime.js
       - name: Run static UI button audit
         if: always()
         run: node tests/ui-button-audit.js
