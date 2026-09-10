@@ -23,6 +23,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run publication gate
+        run: |
+          node tests/tournament-smoke.js
+          node tests/ui-button-audit.js
+          node tests/final-interaction-audit.js
+          node tests/dom-global-collision-audit.js
+          node tests/production-readiness.js
+          node tests/cross-sector-integration-audit.js
+          node tests/runtime-api-contract-audit.js
+          node tests/in-app-drawer-audit.js
+          node tests/secondary-screen-audit.js
+          node tests/confirmation-standard-audit.js
+          node tests/environment-context-audit.js
+          node tests/input-mask-audit.js
+          node tests/language-audit.js
+          node tests/spanish-english-audit.js
+          node tests/language-runtime-alerts-audit.js
       - name: Inject final language layer and CAST mobile fit
         run: |
           node <<'NODE'
