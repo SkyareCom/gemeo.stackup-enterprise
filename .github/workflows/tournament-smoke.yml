@@ -23,6 +23,9 @@ jobs:
       - name: Run tournament isolation runtime proof
         if: always()
         run: node tests/tournament-isolation-runtime.js
+      - name: Run balancing environment isolation proof
+        if: always()
+        run: node tests/balancing-scope-runtime.js
       - name: Run tournament detail scope audit
         if: always()
         run: node tests/tournament-detail-scope-audit.js
