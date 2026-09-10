@@ -28,6 +28,8 @@ jobs:
         run: node tests/dom-global-collision-audit.js
       - name: Run production readiness audit
         run: node tests/production-readiness.js
+      - name: Run cross-sector integration audit
+        run: node tests/cross-sector-integration-audit.js
       - name: Run in-app drawer audit
         run: node tests/in-app-drawer-audit.js
       - name: Run secondary screen audit
