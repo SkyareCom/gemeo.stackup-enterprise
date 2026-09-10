@@ -47,6 +47,9 @@ jobs:
       - name: Run authenticated surface audit
         if: always()
         run: node tests/auth-surface-audit.js
+      - name: Run tertiary structure audit
+        if: always()
+        run: node tests/tertiary-structure-audit.js
       - name: Run in-app drawer audit
         if: always()
         run: node tests/in-app-drawer-audit.js
