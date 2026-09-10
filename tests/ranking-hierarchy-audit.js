@@ -17,7 +17,7 @@ ok('Critérios possuem SALVAR explícito',rules.includes('SALVAR CRITÉRIOS E RE
 ok('Motor possui hierarquia persistente',engine.includes('rankingStageMeta')&&engine.includes('rankingTournamentId')&&engine.includes('stageName'));
 ok('Motor aplica regra específica antes da organização',engine.includes('if(tournament)return state.rankingRules.find'));
 ok('Motor suporta melhores etapas',engine.includes('scopeRule?.bestStages')&&engine.includes('countedStages'));
-ok('Setup instala campo ETAPA',setup.includes("input.id='stageName'")&&setup.includes('CLUBE / LIGA → TORNEIO → ETAPA'));
+ok('Setup instala campo ETAPA funcional',setup.includes("input.id='stageName'")&&setup.includes("input.placeholder='ETAPA (EX.: ETAPA 1)'")&&setup.includes('HIERARQUIA ATUAL:'));
 ok('Setup grava metadados da etapa ao salvar torneio',setup.includes('saveTournamentBtn')&&setup.includes('state.rankingStageMeta[id]=meta'));
 ok('Setup corrige nome/id do ambiente antes de persistir',setup.includes('syncEnvironmentState')&&setup.includes('state.clubName=env.name'));
 ok('Snapshot de fechamento preserva hierarquia',snap.includes('rankingTournamentId')&&snap.includes('rankingTournamentName')&&snap.includes('stageId')&&snap.includes('stageName'));
