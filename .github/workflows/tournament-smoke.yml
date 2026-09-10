@@ -29,6 +29,9 @@ jobs:
       - name: Run final table settings audit
         if: always()
         run: node tests/final-table-settings-audit.js
+      - name: Run alert save audit
+        if: always()
+        run: node tests/alert-save-audit.js
       - name: Run static UI button audit
         if: always()
         run: node tests/ui-button-audit.js
