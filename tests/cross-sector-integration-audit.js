@@ -46,13 +46,17 @@ ok('FINANCEIRO: motor não mantém 5% PIX / 9% cartão',!finance.includes('pixPc
 ok('FINANCEIRO: falta de cotação USD retorna bloqueio',finance.includes("missingRate:'USD'"));
 ok('FINANCEIRO: configurações exigem autenticação',financeUi.includes('auth-engine.js')&&financeUi.includes('StackupAuth.guard()'));
 
-const close=read('tournament-close.html'),rankT=read('ranking-tournament.html'),rankG=read('ranking-general.html'),rankSnapshot=read('ranking-snapshot-v1.js');
+const close=read('tournament-close.html'),rankT=read('ranking-tournament.html'),rankG=read('ranking-general.html'),rankRules=read('ranking-rules.html'),rankEngine=read('ranking-engine.js'),rankSnapshot=read('ranking-snapshot-v1.js');
 ok('FECHAMENTO: usa jogadores do evento atual',close.includes('currentActive()')&&close.includes('currentPlayers()'));
 ok('FECHAMENTO: não fecha duas vezes o mesmo evento',close.includes('alreadyClosed'));
 ok('FECHAMENTO: desativa operação após encerrar',close.includes("state.prepared=false"));
-ok('RANKING: por torneio usa validationEventId',rankT.includes('validationEventId'));
-ok('RANKING: geral filtra ano/semestre/liga',rankG.includes("mode==='YEAR'")&&rankG.includes("mode==='SEMESTER'")&&rankG.includes("mode==='LEAGUE'"));
+ok('RANKING: motor usa eventId/validationEventId',rankEngine.includes('validationEventId')&&rankEngine.includes('eventOf'));
+ok('RANKING: por torneios respeita clube/liga -> torneio -> etapa',rankT.includes('id="environment"')&&rankT.includes('id="tournament"')&&rankT.includes('id="stage"')&&rankT.includes('StackupRanking.aggregate'));
+ok('RANKING: por ligas limita ambiente a LIGA',rankG.includes("filter(x=>x.type==='LEAGUE')")&&rankG.includes('StackupRanking.stages()'));
+ok('RANKING: por ligas filtra ano e semestre',rankG.includes("periodEl.value==='YEAR'")&&rankG.includes("periodEl.value==='SEMESTER'"));
+ok('RANKING: critérios são persistentes e configuráveis',rankRules.includes('StackupRanking.saveRule')&&rankEngine.includes('rankingRules'));
 ok('RANKING: snapshot preserva identidade do diretório',rankSnapshot.includes('directoryId')&&rankSnapshot.includes('directoryCpf'));
+ok('RANKING: snapshot preserva torneio e etapa',rankSnapshot.includes('rankingTournamentId')&&rankSnapshot.includes('stageId')&&rankSnapshot.includes('stageName'));
 
 const auth=read('auth-engine.js');
 ok('AUTH: CASHIER definido',/CASHIER:\s*\[/.test(auth));
