@@ -24,9 +24,11 @@ function auditEvent(type,payload={}){ensureOperationalState();const row={id:'aud
 function enqueueMessage({playerId=null,channel='WHATSAPP',kind='INFO',body='',recipient='',source='SYSTEM',dedupeKey='',category='TRANSACTIONAL'}){ensureOperationalState();if(dedupeKey&&state.messageQueue.some(m=>m.dedupeKey===dedupeKey&&['queued','opened','sent','delivered'].includes(m.status)))return null;const m={id:'mq-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),eventId:state.eventId,playerId,channel,kind,body,recipient,source,dedupeKey,category,createdAt:Date.now(),status:'queued'};state.messageQueue.unshift(m);return m}
 function ensurePlayerCRM(player){if(!player)return null;if(typeof player.marketingConsent!=='boolean')player.marketingConsent=false;if(typeof player.transactionalConsent!=='boolean')player.transactionalConsent=true;if(!player.preferredChannel)player.preferredChannel='WHATSAPP';if(!player.crmStatus)player.crmStatus='ACTIVE';let loyalty=state.loyaltyAccounts.find(x=>x.playerId===player.id);if(!loyalty){loyalty={playerId:player.id,points:0,tier:'BASE',updatedAt:Date.now()};state.loyaltyAccounts.push(loyalty)}return loyalty}
 function playerPerformance(playerId){const tx=state.transactions.filter(t=>t.playerId===playerId),invested=tx.filter(t=>t.type!=='PAYOUT').reduce((a,t)=>a+(+t.value||0),0),payout=tx.filter(t=>t.type==='PAYOUT').reduce((a,t)=>a+(+t.value||0),0),profit=payout-invested,entries=tx.filter(t=>['ENTRY','REENTRY'].includes(t.type)).length;const rank=state.rankings.find(r=>r.playerId===playerId)||{};return{invested,payout,profit,roi:invested?profit/invested*100:0,entries,rankingPoints:+rank.points||0,rankingPosition:+rank.position||0}}
-function activeTournamentPlayers(){return state.players.filter(p=>p.status==='active')}
+function playerEventId(p){return String(p?.eventId||p?.validationEventId||'')}
+function currentTournamentPlayers(){const event=String(state.eventId||'');return state.players.filter(p=>!event||!playerEventId(p)||playerEventId(p)===event)}
+function activeTournamentPlayers(){return currentTournamentPlayers().filter(p=>p.status==='active')}
 function tournamentTableGroups(players=activeTournamentPlayers()){const g={};players.forEach(p=>(g[p.table]??=[]).push(p));return g}
-function syncTournamentCounts(){state.field=state.players.length;state.playersLeft=activeTournamentPlayers().length;state.rebuys=state.transactions.filter(t=>t.type==='REBUY').length;state.doubleRebuys=state.transactions.filter(t=>t.type==='DOUBLE_REBUY').length;state.reentries=state.transactions.filter(t=>t.type==='REENTRY').length;state.addons=state.transactions.filter(t=>t.type==='ADDON').length}
+function syncTournamentCounts(){const event=String(state.eventId||''),players=currentTournamentPlayers(),tx=state.transactions.filter(t=>!event||String(t.eventId||'')===event);state.field=players.length;state.playersLeft=players.filter(p=>p.status==='active').length;state.rebuys=tx.filter(t=>t.type==='REBUY').length;state.doubleRebuys=tx.filter(t=>t.type==='DOUBLE_REBUY').length;state.reentries=tx.filter(t=>t.type==='REENTRY').length;state.addons=tx.filter(t=>t.type==='ADDON').length}
 function tableButtonSeat(table,sim){const arr=(sim[table]||[]).slice().sort((a,b)=>+a.seat-+b.seat);if(!arr.length)return 1;return +state.tableButtons[table]||+arr[0].seat}
 function seatPosition(table,seat,sim){const arr=(sim[table]||[]).slice().sort((a,b)=>+a.seat-+b.seat),seats=arr.map(p=>+p.seat),btn=tableButtonSeat(table,sim);if(!seats.length)return'';const after=seats.filter(s=>s>btn).concat(seats.filter(s=>s<=btn)),sb=after[0],bb=after[1]??after[0];return +seat===btn?'BTN':+seat===sb?'SB':+seat===bb?'BB':''}
 function nextBigBlindPlayerShared(table,sim){const arr=(sim[table]||[]).slice().sort((a,b)=>+a.seat-+b.seat);if(!arr.length)return null;const btn=tableButtonSeat(table,sim),seats=arr.map(p=>+p.seat),after=seats.filter(s=>s>btn).concat(seats.filter(s=>s<=btn)),bb=after[1]??after[0];return arr.find(p=>+p.seat===bb)||arr[0]}
@@ -48,21 +50,26 @@ const I18N={pt:{live:"TORNEIO AO VIVO",remaining:"TEMPO RESTANTE DO NÍVEL",brea
 function tr(k){return(I18N[state.language]||I18N.pt)[k]||k}
 
 (function ensureStackupGlobalTheme(){
+  if(typeof document==='undefined')return;
   const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   if(page==='index.html'||page==='')return;
-  if(document.querySelector('script[data-stackup-theme-loader]')||document.getElementById('stackup-global-nav'))return;
-  const script=document.createElement('script');
-  script.src='app-theme.js?v=3b12bac38b2c985348bef29462f60a2583ab3e91';
-  script.defer=true;
-  script.dataset.stackupThemeLoader='1';
-  (document.head||document.documentElement).appendChild(script);
+  const load=()=>{
+    const existing=[...document.scripts].find(s=>(s.getAttribute('src')||'').split('?')[0].endsWith('app-theme.js'));
+    if(existing||document.getElementById('stackup-global-nav'))return;
+    const script=document.createElement('script');
+    script.src='app-theme.js?v=publication0914';
+    script.defer=true;
+    script.dataset.stackupThemeLoader='1';
+    (document.head||document.documentElement).appendChild(script);
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
 })();
 
 (function ensureDataEntryStandard(){
   if(typeof document==='undefined')return;
   if(document.querySelector('script[data-stackup-data-entry]'))return;
   const script=document.createElement('script');
-  script.src='data-entry-standard.js?v=7c0d1e126814527832cf8c3b572d1a580e32989c';
+  script.src='data-entry-standard.js?v=publication0914';
   script.defer=true;
   script.dataset.stackupDataEntry='1';
   (document.head||document.documentElement).appendChild(script);
