@@ -5,14 +5,14 @@ window.__stackupBalancingScopeGuard=true;
 const envId=()=>String(state?.activeEnvironmentId||state?.clubId||window.StackupAuth?.current?.()?.clubId||'');
 const eventId=()=>String(state?.eventId||'');
 const currentPlan=()=>{const event=eventId();return(event&&Array.isArray(state?.balancePlan))?state.balancePlan.filter(m=>String(m?.eventId||'')===event):[]};
-const stampPlan=()=>{const event=eventId(),environment=envId();if(!event||!Array.isArray(state?.balancePlan))return[];state.balancePlan=state.balancePlan.map(m=>({...m,eventId:event,environmentId:environment}));return currentPlan()};
+const stampGeneratedPlan=()=>{const event=eventId(),environment=envId();if(!event||!Array.isArray(state?.balancePlan))return[];state.balancePlan=state.balancePlan.map(m=>({...m,eventId:event,environmentId:environment}));return currentPlan()};
 const originalRecompute=window.recomputeBalancePlan;
-if(typeof originalRecompute==='function')window.recomputeBalancePlan=function(...args){const out=originalRecompute.apply(this,args);stampPlan();return currentPlan()};
+if(typeof originalRecompute==='function')window.recomputeBalancePlan=function(...args){originalRecompute.apply(this,args);return stampGeneratedPlan()};
 window.queueBalancingStaffAlerts=function(source='SYSTEM'){
   if(typeof ensureOperationalState==='function')ensureOperationalState();
   const event=eventId(),environment=envId();
   if(!event||!environment)return null;
-  const plan=stampPlan();
+  const plan=currentPlan();
   if(!plan.length)return null;
   const fingerprint=`${event}|${plan.map(m=>`${m.playerId}:${m.fromTable}:${m.fromSeat}:${m.toTable}:${m.toSeat}`).join('|')}`;
   if((state.staffAlerts||[]).some(a=>String(a.eventId||'')===event&&a.fingerprint===fingerprint&&a.status!=='resolved'))return null;
@@ -33,7 +33,8 @@ const wrapOperations=()=>{
   if(typeof original==='function')api.applyBalancePlan=function(args={}){
     const event=eventId();
     if(!event)return{ok:false,error:'NO_ACTIVE_TOURNAMENT'};
-    stampPlan();
+    state.balancePlan=currentPlan();
+    if(!state.balancePlan.length)return{ok:true,count:0,moves:[]};
     const foreign=(state.staffAlerts||[]).filter(a=>a.type==='BALANCING'&&String(a.eventId||'')!==event).map(a=>({a,status:a.status,resolvedAt:a.resolvedAt}));
     const result=original.call(this,args);
     foreign.forEach(x=>{x.a.status=x.status;if(x.resolvedAt===undefined)delete x.a.resolvedAt;else x.a.resolvedAt=x.resolvedAt});
