@@ -2,12 +2,12 @@
   const $=id=>document.getElementById(id);
   const saveBtn=$('save');
   const historyBtn=$('historyBtn');
-  const history=$('history');
+  const history=$('playerHistory');
   if(historyBtn)historyBtn.remove();
   if(history)history.remove();
-  if(!saveBtn||typeof persist!=='function'||typeof render!=='function')return;
+  if(!saveBtn||typeof persist!=='function')return;
   const fields={
-    name:$('name'),cpf:$('cpf'),birth:$('birth'),phone:$('phone'),whatsapp:$('whatsapp'),email:$('email'),instagram:$('instagram'),type:$('type'),team:$('team'),
+    name:$('playerNameInput'),cpf:$('cpf'),birth:$('birth'),phone:$('phone'),whatsapp:$('whatsapp'),email:$('email'),instagram:$('instagram'),type:$('type'),team:$('team'),
     infoWhats:$('infoWhats'),infoSms:$('infoSms'),infoEmail:$('infoEmail')
   };
   const notice=document.createElement('div');
@@ -20,12 +20,15 @@
   saveBtn.onclick=()=>{
     const playerName=String(fields.name?.value||'').trim();
     const birthValue=String(fields.birth?.value||'').trim();
+    const cpfValue=String(fields.cpf?.value||'').trim();
     if(!playerName){show('INFORME O NOME.');fields.name?.focus();return}
     if(birthValue&&typeof validBirth==='function'&&!validBirth(birthValue)){show('INFORME A DATA DE NASCIMENTO NO FORMATO DD / MM / AAAA.');fields.birth?.focus();return}
+    const cleanCpf=cpfValue.replace(/\D/g,'');
+    if(cleanCpf&&players.some(p=>String(p.cpf||'').replace(/\D/g,'')===cleanCpf)){show('JOGADOR JÁ CADASTRADO COM ESTE CPF.');fields.cpf?.focus();return}
     players.push({
       id:'player-'+Date.now(),
       name:playerName,
-      cpf:String(fields.cpf?.value||'').trim(),
+      cpf:cpfValue,
       birth:birthValue,
       phone:String(fields.phone?.value||'').trim(),
       whatsapp:String(fields.whatsapp?.value||'').trim(),
