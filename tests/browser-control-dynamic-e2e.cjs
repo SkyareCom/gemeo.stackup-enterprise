@@ -12,11 +12,13 @@ function assert(name,ok,detail=''){checks++;if(ok)console.log('PASS:',name);else
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
  try{
    await page.goto(`${BASE}/control.html`,{waitUntil:'domcontentloaded',timeout:15000});
-   const action=page.locator('.hubAction[data-action="CHECKIN"]');await action.waitFor({state:'visible',timeout:5000});await action.click();
+   const action=page.locator('[data-action="CHECKIN"]');await action.waitFor({state:'visible',timeout:5000});await action.click();
    assert('Painel CHECK IN abre por clique real',await page.locator('#hubActionPanel').isVisible());
    const resultText=await page.locator('#hubSearchResults').innerText();
    assert('Busca dinâmica mostra evento atual',resultText.includes('ALFA')&&resultText.includes('BRAVO'),resultText);
    assert('Busca dinâmica não vaza outro evento',!resultText.includes('OUTRO EVENTO'),resultText);
+   assert('Resumo ignora jogador de outro torneio',(await page.locator('#miniPlayers').innerText()).trim()==='2 / 2',await page.locator('#miniPlayers').innerText());
+   assert('Balancing ignora plano de outro torneio',(await page.locator('#hubBalancingCount').innerText()).trim()==='1',await page.locator('#hubBalancingCount').innerText());
    await page.locator('#hubSearchResults [data-player="a"]').click({trial:true});await page.locator('#hubSearchResults [data-player="a"]').click();
    assert('Jogador dinâmico é selecionável',(await page.locator('#hubSelectedPlayer').innerText()).includes('ALFA'));
    await page.locator('#hubConfirm').click();
