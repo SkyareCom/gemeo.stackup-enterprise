@@ -53,7 +53,9 @@ function directIdBinding(id,code){
 
   const aliases=[
     new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.getElementById\\(\\s*['\"]${e}['\"]\\s*\\)`,'g'),
-    new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.querySelector\\(\\s*['\"]#${e}['\"]\\s*\\)`,'g')
+    new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*document\\.querySelector\\(\\s*['\"]#${e}['\"]\\s*\\)`,'g'),
+    new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*\\$\\(\\s*['\"]${e}['\"]\\s*\\)`,'g'),
+    new RegExp(`(?:const|let|var)?\\s*([A-Za-z_$][\\w$]*)\\s*=\\s*byId\\(\\s*['\"]${e}['\"]\\s*\\)`,'g')
   ];
   for(const rx of aliases){
     for(const m of code.matchAll(rx)){
