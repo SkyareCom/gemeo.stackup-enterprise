@@ -37,6 +37,7 @@ jobs:
           node tests/cross-sector-integration-audit.js
           node tests/runtime-api-contract-audit.js
           node tests/staff-integrity-audit.js
+          node tests/player-directory-integrity-audit.js
           node tests/in-app-drawer-audit.js
           node tests/secondary-screen-audit.js
           node tests/confirmation-standard-audit.js
