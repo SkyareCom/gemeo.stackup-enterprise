@@ -44,6 +44,9 @@ jobs:
       - name: Run player directory integrity audit
         if: always()
         run: node tests/player-directory-integrity-audit.js
+      - name: Run authenticated surface audit
+        if: always()
+        run: node tests/auth-surface-audit.js
       - name: Run in-app drawer audit
         if: always()
         run: node tests/in-app-drawer-audit.js
