@@ -28,12 +28,18 @@
     const active=getActive(); if(!active.id)return;
     const title=[...document.querySelectorAll('.section')].find(x=>/CADASTRO DE JOGADORES/.test(x.textContent||''));
     if(title&&!document.getElementById('stackupActiveEnvironment')){const el=document.createElement('div');el.id='stackupActiveEnvironment';el.style.cssText='margin:8px 0;padding:10px 12px;border:1px solid #27342D;border-radius:9px;color:#8DFC3B;font-size:12px';el.textContent='AMBIENTE SELECIONADO • '+active.name;title.insertAdjacentElement('afterend',el)}
-    document.addEventListener('click',e=>{if(e.target?.id!=='save')return;setTimeout(()=>{try{const key='stackup-player-directory-v1',arr=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(arr)||!arr.length)return;const recent=[...arr].sort((a,b)=>(+b.createdAt||0)-(+a.createdAt||0))[0];if(recent&&Date.now()-(+recent.createdAt||0)<3000){recent.clubId=active.id;recent.environmentId=active.id;recent.environmentName=active.name;localStorage.setItem(key,JSON.stringify(arr))}}catch(_){}},0)},false);
+    const stampRecent=()=>{try{
+      let stamped=false;
+      if(typeof players!=='undefined'&&Array.isArray(players)&&players.length){const recent=[...players].sort((a,b)=>(+b.createdAt||0)-(+a.createdAt||0))[0];if(recent&&Date.now()-(+recent.createdAt||0)<3000){recent.clubId=active.id;recent.environmentId=active.id;recent.environmentName=active.name;stamped=true;if(typeof persist==='function')persist()}}
+      if(stamped)return;
+      const key='stackup-player-directory-v1',arr=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(arr)||!arr.length)return;const recent=[...arr].sort((a,b)=>(+b.createdAt||0)-(+a.createdAt||0))[0];if(recent&&Date.now()-(+recent.createdAt||0)<3000){recent.clubId=active.id;recent.environmentId=active.id;recent.environmentName=active.name;localStorage.setItem(key,JSON.stringify(arr))}
+    }catch(_){}};
+    document.addEventListener('click',e=>{if(e.target?.id!=='save')return;setTimeout(stampRecent,0)},false);
   }
   function tournament(){
     if(page!=='setup.html')return;
     const active=getActive(); if(!active.id&&!active.name)return;
-    const apply=()=>{const field=document.getElementById('clubName');if(!field)return false;field.value=active.name;field.readOnly=true;state.clubName=active.name;state.activeEnvironmentId=active.id;state.activeEnvironmentName=active.name;try{saveState()}catch(_){};return true};
+    const apply=()=>{const field=document.getElementById('clubName');if(!field)return false;field.value=active.name;field.readOnly=true;state.clubName=active.name;state.activeEnvironmentId=active.id;state.activeEnvironmentName=active.name;state.activeEnvironmentType=active.type;try{saveState()}catch(_){};return true};
     badge(); if(!apply())document.addEventListener('DOMContentLoaded',apply,{once:true});
   }
   const boot=()=>{try{staff();players();tournament()}catch(_){}};
