@@ -29,6 +29,9 @@ jobs:
       - name: Run tournament detail scope audit
         if: always()
         run: node tests/tournament-detail-scope-audit.js
+      - name: Run control hub tournament isolation audit
+        if: always()
+        run: node tests/control-hub-scope-audit.js
       - name: Run readiness tournament isolation proof
         if: always()
         run: node tests/readiness-scope-runtime.js
