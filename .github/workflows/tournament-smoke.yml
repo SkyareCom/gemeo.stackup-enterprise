@@ -26,6 +26,9 @@ jobs:
       - name: Run tournament detail scope audit
         if: always()
         run: node tests/tournament-detail-scope-audit.js
+      - name: Run final table settings audit
+        if: always()
+        run: node tests/final-table-settings-audit.js
       - name: Run static UI button audit
         if: always()
         run: node tests/ui-button-audit.js
