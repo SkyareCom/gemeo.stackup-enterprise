@@ -24,6 +24,7 @@
 
   const isCandidate=el=>{
     if(!(el instanceof HTMLElement)||el.closest('[data-stackup-inline-ui]')||el.closest('.stackup-row-actions'))return false;
+    if(el.closest('#tournamentList'))return false;
     if(el.classList.contains('stackup-compact-row')||el.closest('.stackup-compact-row'))return false;
     return el.matches(itemSelector);
   };
