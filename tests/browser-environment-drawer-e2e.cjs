@@ -11,11 +11,13 @@ function check(name,ok,detail=''){checks++;if(ok)console.log('PASS:',name);else{
     authMemberships:[{id:'member-b',clubId:'league-b',staffId:'staff-b',role:'FLOOR',active:true}],
     authPeople:[],staffUsers:[],players:[],transactions:[],auditLog:[],messageQueue:[],messageLog:[]
   };
-  await context.addInitScript(seed=>{
+  await context.addInitScript(({seed,marker})=>{
+    if(localStorage.getItem(marker)==='1')return;
     localStorage.setItem('stackup-production-reset-version','2026-09-04-professional-v1');
     localStorage.setItem('poker-club-state-v4',JSON.stringify(seed));
     localStorage.setItem('stackup-active-environment-v1','club-a');
-  },state);
+    localStorage.setItem(marker,'1');
+  },{seed:state,marker:'stackup-e2e-environment-seeded-v1'});
   const page=await context.newPage(),errors=[],dialogs=[];
   page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
